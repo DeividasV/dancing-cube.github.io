@@ -313,7 +313,7 @@ body {
   align-items: center;
   text-align: center;
   gap: 20px;
-  margin-bottom: 25px;
+  margin-bottom: 40px;
 }
 
 .card-icon {
@@ -450,7 +450,7 @@ body {
   justify-content: center;
   align-items: center;
   gap: 20px;
-  margin-bottom: 25px;
+  margin-bottom: 40px;
   font-size: 0.85rem;
   color: var(--text-secondary);
 }
