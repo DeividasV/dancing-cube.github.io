@@ -1,0 +1,121 @@
+/* 3D Bouncing Cubes Styles */
+body {
+  margin: 0;
+  padding: 20px;
+  background: #000;
+  font-family: "Inter", Arial, sans-serif;
+  overflow: hidden;
+}
+
+#container {
+  width: 100vw;
+  height: 100vh;
+}
+
+.controls {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: white;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 20px;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.controls h3 {
+  margin: 0 0 15px 0;
+  color: #00ff88;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.control-group {
+  margin-bottom: 15px;
+}
+
+button {
+  background: linear-gradient(135deg, #333, #444);
+  color: white;
+  border: 1px solid #666;
+  padding: 10px 20px;
+  margin: 5px 5px 5px 0;
+  cursor: pointer;
+  border-radius: 8px;
+  font-family: inherit;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #555, #666);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.instruction {
+  color: #b0b0b0;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  font-style: italic;
+}
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 255, 136, 0.2);
+  border: 1px solid #00ff88;
+  color: #00ff88;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-family: inherit;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.back-button:hover {
+  background: rgba(0, 255, 136, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 255, 136, 0.2);
+}
+
+/* Loading indicator */
+.loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1.2rem;
+  z-index: 200;
+}
+
+.loading::after {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-left: 10px;
+  border: 2px solid transparent;
+  border-top-color: #00ff88;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

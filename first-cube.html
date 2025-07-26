@@ -3,101 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Bouncing Cubes</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            background: #000;
-            font-family: Arial, sans-serif;
-            overflow: hidden;
-        }
-        #container {
-            width: 100vw;
-            height: 100vh;
-        }
-        .controls {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            color: white;
-            z-index: 100;
-        }
-        button {
-            background: #333;
-            color: white;
-            border: 1px solid #666;
-            padding: 8px 16px;
-            margin: 5px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        button:hover {
-            background: #555;
-        }
-    </style>
+    <title>3D Bouncing Cubes - Dancing Cube Exhibition</title>
+    <meta name="description" content="Interactive 3D physics simulation with bouncing cubes in a wireframe grid environment.">
+    
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/bouncing-cubes.css">
 </head>
 <body>
+    <!-- Loading indicator -->
+    <div class="loading">Loading 3D Environment...</div>
+    
+    <!-- Back to exhibition button -->
+    <a href="index.html" class="back-button">← Back to Exhibition</a>
+    
+    <!-- Controls -->
     <div class="controls">
-        <button onclick="togglePause()">Pause/Resume</button>
-        <button onclick="resetCubes()">Reset Cubes</button>
-        <div>Use mouse to rotate view</div>
+        <h3>Controls</h3>
+        <div class="control-group">
+            <button onclick="togglePause()">⏸️ Pause/Resume</button>
+            <button onclick="resetCubes()">🔄 Reset Cubes</button>
+        </div>
+        <div class="instruction">
+            🖱️ Click and drag to rotate view<br>
+            🎯 Watch cubes change colors on collision
+        </div>
     </div>
+    
+    <!-- 3D Container -->
     <div id="container"></div>
 
+    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>
-        let scene, camera, renderer, gridGroup, movingCubes = [];
-        let isPaused = false;
-        const GRID_SIZE = 8;
-        const CUBE_SIZE = 0.8;
-        const SPACING = 1;
-        
-        // Mouse controls
-        let mouseX = 0, mouseY = 0;
-        let targetRotationX = 0, targetRotationY = 0;
-        let isMouseDown = false;
-        
-        // Auto rotation
-        let autoRotationX = Math.random() * 0.002 - 0.001; // Random slow rotation speed
-        let autoRotationY = Math.random() * 0.002 - 0.001;
-        let autoRotationZ = Math.random() * 0.002 - 0.001;
-
-        class MovingCube {
-            constructor() {
-                this.position = {
-                    x: Math.random() * (GRID_SIZE - 1),
-                    y: Math.random() * (GRID_SIZE - 1),
-                    z: Math.random() * (GRID_SIZE - 1)
-                };
-                
-                // Random velocity in all directions
-                this.velocity = {
-                    x: (Math.random() - 0.5) * 0.1,
-                    y: (Math.random() - 0.5) * 0.1,
-                    z: (Math.random() - 0.5) * 0.1
-                };
-                
-                // Color properties for smooth transitions
-                this.currentColor = {
-                    h: Math.random(),
-                    s: 0.8,
-                    l: 0.6
-                };
-                this.targetColor = { ...this.currentColor };
-                
-                // Create cube mesh
-                const geometry = new THREE.BoxGeometry(CUBE_SIZE, CUBE_SIZE, CUBE_SIZE);
-                const material = new THREE.MeshPhongMaterial({
-                    color: new THREE.Color().setHSL(this.currentColor.h, this.currentColor.s, this.currentColor.l),
-                    shininess: 100
-                });
-                this.mesh = new THREE.Mesh(geometry, material);
-                this.updateMeshPosition();
-                // Don't add to scene here - will be added to gridGroup in init()
-            }
-            
-            changeColor() {
+    <script src="js/bouncing-cubes.js"></script>
+</body>
+</html>
                 // Set new target color after collision
                 this.targetColor = {
                     h: Math.random(),

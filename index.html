@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dancing Cube - Interactive 3D Exhibition</title>
+    <meta
+      name="description"
+      content="Explore cutting-edge 3D visualizations and interactive geometric art in our digital exhibition space."
+    />
+
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/exhibition.css" />
+  </head>
+  <body>
+    <!-- Animated background grid -->
+    <div class="background-grid"></div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="#" class="logo">Dancing Cube</a>
+        <ul class="nav-menu">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#exhibitions">Exhibitions</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+      <div class="hero-content">
+        <h1 class="hero-title">Dancing Cube</h1>
+        <p class="hero-subtitle">Interactive 3D Exhibition Center</p>
+        <a href="#exhibitions" class="hero-cta"> Explore Exhibitions ↓ </a>
+      </div>
+    </section>
+
+    <!-- Exhibitions Section -->
+    <section id="exhibitions" class="exhibitions">
+      <h2 class="section-title">Current Exhibitions</h2>
+
+      <div class="exhibition-grid">
+        <!-- Featured Exhibition -->
+        <div class="exhibition-card featured-exhibition">
+          <div class="featured-badge">Featured</div>
+          <div class="card-header">
+            <div class="card-icon">🎯</div>
+            <h3 class="card-title">3D Bouncing Cubes</h3>
+          </div>
+          <p class="card-description">
+            Immerse yourself in a mesmerizing display of physics-based cube
+            dynamics. Watch as colorful geometric forms dance through
+            three-dimensional space with realistic gravity, collision detection,
+            and fluid motion.
+          </p>
+          <div class="card-meta">
+            <span>Tech: Three.js, WebGL</span>
+            <span>Status: Interactive</span>
+          </div>
+          <a href="first-cube.html" class="card-action">
+            Launch Experience →
+          </a>
+        </div>
+
+        <!-- Future Exhibitions -->
+        <div class="exhibition-card">
+          <div class="card-header">
+            <div class="card-icon">🌊</div>
+            <h3 class="card-title">Fluid Dynamics</h3>
+          </div>
+          <p class="card-description">
+            Experience the beauty of computational fluid dynamics through
+            interactive particle systems and wave simulations.
+          </p>
+          <div class="card-meta">
+            <span>Tech: WebGL Shaders</span>
+            <span>Status: Coming Soon</span>
+          </div>
+          <a href="#" class="card-action"> Coming Soon → </a>
+        </div>
+
+        <div class="exhibition-card">
+          <div class="card-header">
+            <div class="card-icon">🌟</div>
+            <h3 class="card-title">Particle Galaxy</h3>
+          </div>
+          <p class="card-description">
+            Journey through an infinite cosmos of animated particles forming
+            constellation patterns and celestial phenomena.
+          </p>
+          <div class="card-meta">
+            <span>Tech: WebGL, GPU Compute</span>
+            <span>Status: In Development</span>
+          </div>
+          <a href="#" class="card-action"> Preview Soon → </a>
+        </div>
+
+        <div class="exhibition-card">
+          <div class="card-header">
+            <div class="card-icon">🎵</div>
+            <h3 class="card-title">Audio Visualizer</h3>
+          </div>
+          <p class="card-description">
+            Transform sound into stunning visual experiences with real-time
+            audio analysis and reactive 3D environments.
+          </p>
+          <div class="card-meta">
+            <span>Tech: Web Audio API</span>
+            <span>Status: Planned</span>
+          </div>
+          <a href="#" class="card-action"> Notify Me → </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <p class="footer-text">
+          Pushing the boundaries of interactive web experiences
+        </p>
+        <div class="footer-links">
+          <a href="https://github.com">GitHub</a>
+          <a href="#about">About</a>
+          <a href="#contact">Contact</a>
+          <a href="#exhibitions">Exhibitions</a>
+        </div>
+        <p class="footer-copyright">
+          © 2025 Dancing Cube Exhibition. Built with passion for creative
+          coding.
+        </p>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/exhibition.js"></script>
+  </body>
+</html>
