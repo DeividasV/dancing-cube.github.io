@@ -11,7 +11,7 @@
   --text-cyber: #00ff88;
   --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-border: rgba(255, 255, 255, 0.1);
-  --exhibition-spacing: 80px;
+  --exhibition-spacing: 20px;
   --cyber-glow: 0 0 20px rgba(0, 255, 136, 0.3);
 }
 
@@ -144,7 +144,7 @@ body {
 .hero-title {
   font-size: clamp(3rem, 8vw, 8rem);
   font-weight: 900;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   background: linear-gradient(
     135deg,
     var(--accent-color),
@@ -171,7 +171,7 @@ body {
 .hero-subtitle {
   font-size: clamp(1.2rem, 3vw, 2rem);
   color: var(--text-cyber);
-  margin-bottom: 50px;
+  margin-bottom: 30px;
   font-weight: 500;
   letter-spacing: 3px;
   font-family: "Courier New", monospace;
@@ -204,7 +204,7 @@ body {
 
 /* Exhibition Grid */
 .exhibitions {
-  padding: var(--exhibition-spacing) 40px;
+  padding: 40px 40px var(--exhibition-spacing) 40px;
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -242,14 +242,15 @@ body {
 }
 
 .exhibition-card {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
   padding: 40px;
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(15px);
   transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .exhibition-card::before {
@@ -303,8 +304,11 @@ body {
 
 .exhibition-card:hover {
   transform: translateY(-10px);
-  border-color: var(--accent-color);
-  box-shadow: 0 20px 60px rgba(0, 255, 136, 0.2);
+  border-color: rgba(0, 255, 136, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0, 255, 136, 0.15),
+    0 0 40px rgba(0, 255, 136, 0.1);
 }
 
 .card-header {
@@ -533,8 +537,10 @@ body {
 
 /* Featured Exhibition */
 .featured-exhibition {
-  background: var(--secondary-dark);
-  border: 2px solid var(--accent-color);
+  background: rgba(0, 255, 136, 0.03);
+  border: 2px solid rgba(0, 255, 136, 0.3);
+  backdrop-filter: blur(25px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 255, 136, 0.1);
   position: relative;
 }
 
