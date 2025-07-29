@@ -1,0 +1,508 @@
+/* Dancing Cube - Constellation Cards Styles */
+
+/* CSS Custom Properties */
+:root {
+  --primary-bg: #0a0a0a;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --accent-color: #00ff88;
+  --gradient-start: #00ff88;
+  --gradient-end: #00ccff;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: rgba(0, 0, 0, 0.3);
+  --featured-glow: #00ff88;
+}
+
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  background: var(--primary-bg);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Animated Background Grid */
+.background-grid {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(rgba(0, 255, 136, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 136, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: gridMove 20s linear infinite;
+  z-index: -1;
+}
+
+@keyframes gridMove {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(50px, 50px);
+  }
+}
+
+/* Hero Section */
+.hero {
+  min-height: 100vh;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  padding: 2rem 0;
+  overflow: visible;
+}
+
+.hero-content {
+  text-align: center;
+  max-width: 800px;
+  padding: 2rem;
+  margin: auto;
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  font-weight: 800;
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+  animation: titlePulse 3s ease-in-out infinite alternate;
+  line-height: 1.1;
+  word-break: keep-all;
+  overflow: visible;
+}
+
+@keyframes titlePulse {
+  0% {
+    text-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+  }
+  100% {
+    text-shadow: 0 0 50px rgba(0, 255, 136, 0.6);
+  }
+}
+
+.title-line {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent-color),
+    transparent
+  );
+  margin: 2rem auto;
+  animation: lineGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes lineGlow {
+  0% {
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
+  }
+}
+
+/* Constellation Section */
+.constellation-section {
+  min-height: 100vh;
+  padding: 4rem 2rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.constellation-container {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  height: 80vh;
+  margin: 0 auto;
+}
+
+/* Glass Cards */
+.glass-card {
+  position: absolute;
+  width: 280px;
+  height: 200px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  overflow: hidden;
+  animation: cardFloat 6s ease-in-out infinite;
+}
+
+.glass-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 25%,
+    transparent 50%,
+    rgba(0, 255, 136, 0.05) 75%,
+    rgba(0, 204, 255, 0.1) 100%
+  );
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+.glass-card::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.glass-card:hover::after {
+  transform: translateX(100%);
+}
+
+@keyframes cardFloat {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-15px) rotate(-1deg);
+  }
+}
+
+.glass-card:nth-child(1) {
+  animation-delay: 0s;
+}
+.glass-card:nth-child(2) {
+  animation-delay: 1s;
+}
+.glass-card:nth-child(3) {
+  animation-delay: 2s;
+}
+.glass-card:nth-child(4) {
+  animation-delay: 3s;
+}
+.glass-card:nth-child(5) {
+  animation-delay: 4s;
+}
+
+.glass-card:hover {
+  transform: translateY(-20px) scale(1.05);
+  box-shadow: 0 20px 40px var(--glass-shadow), 0 0 30px rgba(0, 255, 136, 0.3);
+  border-color: var(--accent-color);
+}
+
+/* Featured Card */
+.featured-card {
+  border: 2px solid var(--featured-glow);
+  box-shadow: 0 10px 30px var(--glass-shadow), 0 0 30px rgba(0, 255, 136, 0.4);
+  animation: featuredPulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes featuredPulse {
+  0% {
+    box-shadow: 0 10px 30px var(--glass-shadow), 0 0 30px rgba(0, 255, 136, 0.4);
+  }
+  100% {
+    box-shadow: 0 15px 40px var(--glass-shadow), 0 0 50px rgba(0, 255, 136, 0.7);
+  }
+}
+
+.featured-badge {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  background: linear-gradient(135deg, var(--featured-glow), #00ccff);
+  color: var(--primary-bg);
+  padding: 0.5rem 1rem;
+  border-radius: 0 16px 0 16px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  animation: badgePulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes badgePulse {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+/* Card Content */
+.card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  height: 100%;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.card-icon {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.icon-gradient {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+  animation: iconRotate 8s linear infinite;
+}
+
+.icon-gradient.fluid {
+  background: linear-gradient(135deg, #00ccff, #0099ff);
+}
+
+.icon-gradient.blood {
+  background: linear-gradient(135deg, #ff4757, #ff3742);
+}
+
+.icon-gradient.water {
+  background: linear-gradient(135deg, #74b9ff, #0984e3);
+}
+
+.icon-gradient.morph {
+  background: linear-gradient(135deg, #fd79a8, #fdcb6e);
+}
+
+@keyframes iconRotate {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  25% {
+    transform: rotate(90deg) scale(1.1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1);
+  }
+  75% {
+    transform: rotate(270deg) scale(1.1);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  margin: 0;
+  background: linear-gradient(135deg, var(--text-primary), var(--accent-color));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Constellation Lines */
+.constellation-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.constellation-lines line {
+  animation: lineFlicker 4s ease-in-out infinite;
+}
+
+.constellation-lines line:nth-child(1) {
+  animation-delay: 0s;
+}
+.constellation-lines line:nth-child(2) {
+  animation-delay: 0.8s;
+}
+.constellation-lines line:nth-child(3) {
+  animation-delay: 1.6s;
+}
+.constellation-lines line:nth-child(4) {
+  animation-delay: 2.4s;
+}
+.constellation-lines line:nth-child(5) {
+  animation-delay: 3.2s;
+}
+
+@keyframes lineFlicker {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .constellation-container {
+    height: 70vh;
+  }
+
+  .glass-card {
+    width: 240px;
+    height: 180px;
+    padding: 1.2rem;
+  }
+
+  .card-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .constellation-section {
+    padding: 2rem 1rem;
+  }
+
+  .hero {
+    min-height: 80vh;
+    padding: 4rem 0 2rem 0;
+  }
+
+  .hero-content {
+    padding: 1rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 10vw, 4rem);
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.1em;
+  }
+
+  .constellation-container {
+    height: auto;
+    min-height: 60vh;
+  }
+
+  .glass-card {
+    position: relative !important;
+    width: 100%;
+    max-width: 300px;
+    margin: 1rem auto;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    display: block;
+  }
+
+  .constellation-lines {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    min-height: 70vh;
+    padding: 3rem 0 1rem 0;
+  }
+
+  .hero-content {
+    padding: 0.5rem;
+  }
+
+  .hero-title {
+    font-size: clamp(1.8rem, 12vw, 3rem);
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+  }
+
+  .title-line {
+    margin: 1rem auto;
+  }
+
+  .glass-card {
+    width: 100%;
+    height: 160px;
+    padding: 1rem;
+    margin: 0.8rem auto;
+  }
+
+  .card-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .card-title {
+    font-size: 0.9rem;
+  }
+}

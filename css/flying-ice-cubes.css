@@ -1,0 +1,694 @@
+/* Cyberpunk Flying Ice Cubes Exhibition */
+:root {
+  --primary-dark: #0a0a0a;
+  --secondary-dark: #1a1a1a;
+  --accent-color: #00ff88;
+  --accent-secondary: #ff006b;
+  --accent-tertiary: #00d4ff;
+  --accent-purple: #8b00ff;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --text-cyber: #00ff88;
+  --ice-color: rgba(220, 248, 255, 0.15);
+  --ice-edge: rgba(255, 255, 255, 0.4);
+  --ice-highlight: rgba(255, 255, 255, 0.8);
+  --cyber-glow: 0 0 20px rgba(0, 255, 136, 0.3);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", "Arial", sans-serif;
+  background: var(--primary-dark);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  line-height: 1.6;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  perspective: 2000px;
+}
+
+/* Animated Background Grid */
+.background-grid {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.03;
+  background-image: linear-gradient(
+      rgba(255, 255, 255, 0.1) 1px,
+      transparent 1px
+    ),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(50px, 50px);
+  }
+}
+
+/* Hero Section */
+.hero {
+  min-height: 30vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding-bottom: 2rem;
+  z-index: 100;
+}
+
+.hero-content {
+  text-align: center;
+  z-index: 10;
+  position: relative;
+}
+
+.hero-title {
+  font-size: clamp(3rem, 8vw, 8rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, #00ff88, #ff6b9d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  text-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+  animation: titlePulse 3s ease-in-out infinite;
+  position: relative;
+  margin-bottom: 2rem;
+  z-index: 10;
+}
+
+/* Line under title */
+.title-line {
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent-color),
+    transparent
+  );
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.8);
+  animation: linePulse 2s ease-in-out infinite alternate;
+  border-radius: 3px;
+}
+
+@keyframes linePulse {
+  0% {
+    opacity: 0.6;
+    transform: scaleX(0.8);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+    box-shadow: 0 0 40px rgba(0, 255, 136, 1);
+  }
+}
+
+@keyframes titlePulse {
+  0%,
+  100% {
+    text-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 50px rgba(0, 255, 136, 0.6),
+      0 0 80px rgba(255, 107, 157, 0.3);
+  }
+}
+
+/* Flying Cubes Section */
+.flying-cubes-section {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.flying-cubes-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Flying Cube Structure */
+.flying-cube {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  pointer-events: all;
+  z-index: 2;
+}
+
+/* 3D Ice Cube */
+.ice-cube {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: gentleFloatRotate 12s linear infinite; /* Much slower rotation */
+  text-decoration: none;
+  display: block;
+  cursor: pointer;
+  transition: transform 0.5s ease; /* Smoother transitions */
+}
+
+@keyframes gentleFloatRotate {
+  0% {
+    transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+  25% {
+    transform: rotateX(90deg) rotateY(90deg) rotateZ(90deg);
+  }
+  50% {
+    transform: rotateX(180deg) rotateY(180deg) rotateZ(180deg);
+  }
+  75% {
+    transform: rotateX(270deg) rotateY(270deg) rotateZ(270deg);
+  }
+  100% {
+    transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg);
+  }
+}
+
+/* Cube Faces */
+.cube-faces {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.cube-face {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(240, 250, 255, 0.25) 25%,
+    rgba(220, 240, 255, 0.35) 50%,
+    rgba(200, 230, 255, 0.25) 75%,
+    rgba(180, 220, 255, 0.15) 100%
+  );
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  border-top: 3px solid rgba(255, 255, 255, 0.8);
+  border-left: 3px solid rgba(255, 255, 255, 0.7);
+  border-right: 3px solid rgba(200, 230, 255, 0.4);
+  border-bottom: 3px solid rgba(180, 220, 255, 0.3);
+  backdrop-filter: blur(15px) saturate(1.8) brightness(1.1);
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.3),
+    0 8px 32px rgba(220, 240, 255, 0.4), inset 0 0 50px rgba(255, 255, 255, 0.2),
+    inset 30px 30px 80px rgba(255, 255, 255, 0.15),
+    inset -30px -30px 80px rgba(180, 220, 255, 0.2),
+    inset 0 30px 60px rgba(255, 255, 255, 0.1),
+    inset 0 -30px 60px rgba(200, 230, 250, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 15px;
+}
+
+/* Enhanced ice crystal texture overlay with realistic reflections */
+.cube-face::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    /* Main highlight reflection */ radial-gradient(
+      ellipse 60px 80px at 25% 20%,
+      rgba(255, 255, 255, 0.8) 0%,
+      transparent 50%
+    ),
+    /* Secondary reflection */
+      radial-gradient(
+        ellipse 40px 50px at 75% 25%,
+        rgba(255, 255, 255, 0.4) 0%,
+        transparent 40%
+      ),
+    /* Bottom reflection */
+      radial-gradient(
+        ellipse 50px 30px at 60% 85%,
+        rgba(255, 255, 255, 0.3) 0%,
+        transparent 50%
+      ),
+    /* Ice crystal patterns */
+      linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.3) 40%,
+        rgba(255, 255, 255, 0.6) 50%,
+        rgba(255, 255, 255, 0.3) 60%,
+        transparent 70%
+      ),
+    linear-gradient(
+      -45deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.2) 40%,
+      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0.2) 60%,
+      transparent 70%
+    ),
+    /* Subtle ice texture */
+      radial-gradient(
+        circle at 30% 40%,
+        rgba(255, 255, 255, 0.2) 0%,
+        transparent 30%
+      ),
+    radial-gradient(
+      circle at 70% 60%,
+      rgba(255, 255, 255, 0.15) 0%,
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 45% 80%,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 20%
+    );
+  background-size: 100% 100%, 100% 100%, 100% 100%, 80px 80px, 60px 60px,
+    40px 40px, 35px 35px, 30px 30px;
+  pointer-events: none;
+  animation: glassReflectionShimmer 6s ease-in-out infinite alternate;
+  border-radius: 4px;
+}
+
+@keyframes glassReflectionShimmer {
+  0% {
+    opacity: 0.7;
+    transform: translateX(-2px) translateY(-1px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(1px) translateY(1px);
+  }
+  100% {
+    opacity: 0.8;
+    transform: translateX(-1px) translateY(-2px);
+  }
+}
+
+/* Positioning each face of the cube */
+.cube-face.front {
+  transform: translateZ(60px);
+}
+
+.cube-face.back {
+  transform: rotateY(180deg) translateZ(60px);
+}
+
+.cube-face.right {
+  transform: rotateY(90deg) translateZ(60px);
+}
+
+.cube-face.left {
+  transform: rotateY(-90deg) translateZ(60px);
+}
+
+.cube-face.top {
+  transform: rotateX(90deg) translateZ(60px);
+}
+
+.cube-face.bottom {
+  transform: rotateX(-90deg) translateZ(60px);
+}
+
+/* Frozen Content Inside Ice */
+.frozen-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  opacity: 0.9;
+  filter: blur(0.5px) contrast(1.2);
+}
+
+.cube-icon {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.icon-gradient {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  opacity: 0.8;
+}
+
+.icon-gradient::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    var(--accent-color),
+    var(--accent-secondary)
+  );
+  clip-path: polygon(
+    20% 0%,
+    80% 0%,
+    100% 20%,
+    100% 80%,
+    80% 100%,
+    20% 100%,
+    0% 80%,
+    0% 20%
+  );
+}
+
+.icon-gradient.fluid::before {
+  background: linear-gradient(
+    135deg,
+    var(--accent-tertiary),
+    var(--accent-purple)
+  );
+  clip-path: ellipse(40% 60% at 50% 40%);
+}
+
+.icon-gradient.blood::before {
+  background: linear-gradient(135deg, #8b0000, #ff4444);
+  clip-path: polygon(
+    50% 0%,
+    58% 20%,
+    80% 20%,
+    68% 34%,
+    74% 55%,
+    50% 45%,
+    26% 55%,
+    32% 34%,
+    20% 20%,
+    42% 20%
+  );
+}
+
+.icon-gradient.water::before {
+  background: linear-gradient(135deg, #006699, #00aaff);
+  clip-path: ellipse(60% 80% at 50% 60%);
+}
+
+.icon-gradient.morph::before {
+  background: linear-gradient(135deg, #0f0f23, #00ffff);
+  clip-path: polygon(
+    30% 0%,
+    70% 0%,
+    100% 30%,
+    100% 70%,
+    70% 100%,
+    30% 100%,
+    0% 70%,
+    0% 30%
+  );
+}
+
+.cube-title {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  text-align: center;
+  margin: 0;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  line-height: 1;
+  font-family: "Courier New", monospace;
+  letter-spacing: 0.5px;
+  filter: brightness(1.2);
+}
+
+/* Featured Badge */
+.featured-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: rgba(0, 255, 136, 0.9);
+  color: rgba(0, 20, 40, 1);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.5rem;
+  font-weight: 800;
+  z-index: 10;
+  animation: badgePulse 2s ease-in-out infinite;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+}
+
+@keyframes badgePulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* Hover Effects */
+.ice-cube:hover {
+  animation-play-state: paused;
+  transform: scale(1.05) rotateX(10deg) rotateY(10deg);
+}
+
+.ice-cube:hover .cube-face {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(240, 250, 255, 0.35) 25%,
+    rgba(220, 240, 255, 0.45) 50%,
+    rgba(200, 230, 255, 0.35) 75%,
+    rgba(180, 220, 255, 0.25) 100%
+  );
+  box-shadow: 0 0 60px rgba(255, 255, 255, 0.5),
+    0 12px 48px rgba(220, 240, 255, 0.6),
+    inset 0 0 60px rgba(255, 255, 255, 0.3),
+    inset 40px 40px 100px rgba(255, 255, 255, 0.2),
+    inset -40px -40px 100px rgba(180, 220, 255, 0.3),
+    inset 0 40px 80px rgba(255, 255, 255, 0.15),
+    inset 0 -40px 80px rgba(200, 230, 250, 0.2);
+  border-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px) saturate(2) brightness(1.3);
+}
+
+.ice-cube:hover .frozen-content {
+  filter: blur(0px) contrast(1.5) brightness(1.2);
+}
+
+.ice-cube:hover .cube-title {
+  color: rgba(255, 255, 255, 1);
+  text-shadow: 0 0 15px rgba(255, 255, 255, 1);
+}
+
+/* Enhanced ice refractions and internal reflections */
+.cube-face::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    /* Strong edge highlights */ linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0.6) 0%,
+      transparent 8%,
+      transparent 92%,
+      rgba(255, 255, 255, 0.6) 100%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.6) 0%,
+      transparent 8%,
+      transparent 92%,
+      rgba(255, 255, 255, 0.4) 100%
+    ),
+    /* Corner highlights */
+      radial-gradient(
+        circle at 0% 0%,
+        rgba(255, 255, 255, 0.8) 0%,
+        transparent 25%
+      ),
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(255, 255, 255, 0.6) 0%,
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 0% 100%,
+      rgba(255, 255, 255, 0.4) 0%,
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      rgba(255, 255, 255, 0.3) 0%,
+      transparent 25%
+    ),
+    /* Ice crack patterns */
+      linear-gradient(
+        47deg,
+        transparent 47%,
+        rgba(255, 255, 255, 0.4) 49%,
+        rgba(255, 255, 255, 0.6) 50%,
+        rgba(255, 255, 255, 0.4) 51%,
+        transparent 53%
+      ),
+    linear-gradient(
+      -47deg,
+      transparent 47%,
+      rgba(255, 255, 255, 0.3) 49%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0.3) 51%,
+      transparent 53%
+    ),
+    linear-gradient(
+      133deg,
+      transparent 65%,
+      rgba(255, 255, 255, 0.2) 67%,
+      rgba(255, 255, 255, 0.4) 68%,
+      rgba(255, 255, 255, 0.2) 69%,
+      transparent 71%
+    );
+  background-size: 100% 100%, 100% 100%, 50px 50px, 50px 50px, 50px 50px,
+    50px 50px, 90px 90px, 70px 70px, 110px 110px;
+  opacity: 0.8;
+  pointer-events: none;
+  animation: iceRefractionPulse 8s ease-in-out infinite alternate;
+  border-radius: 4px;
+}
+
+@keyframes iceRefractionPulse {
+  0% {
+    opacity: 0.6;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02) rotate(0.5deg);
+  }
+  100% {
+    opacity: 0.7;
+    transform: scale(1) rotate(-0.5deg);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .flying-cube {
+    width: 100px;
+    height: 100px;
+  }
+
+  .cube-face {
+    width: 100px;
+    height: 100px;
+  }
+
+  .cube-face.front,
+  .cube-face.back,
+  .cube-face.right,
+  .cube-face.left,
+  .cube-face.top,
+  .cube-face.bottom {
+    transform: translateZ(50px);
+  }
+
+  .cube-face.back {
+    transform: rotateY(180deg) translateZ(50px);
+  }
+  .cube-face.right {
+    transform: rotateY(90deg) translateZ(50px);
+  }
+  .cube-face.left {
+    transform: rotateY(-90deg) translateZ(50px);
+  }
+  .cube-face.top {
+    transform: rotateX(90deg) translateZ(50px);
+  }
+  .cube-face.bottom {
+    transform: rotateX(-90deg) translateZ(50px);
+  }
+
+  .cube-icon {
+    width: 35px;
+    height: 35px;
+  }
+
+  .cube-title {
+    font-size: 0.5rem;
+  }
+}
+
+/* Special ice refractions for different cube types */
+.ice-cube.featured-cube .cube-face {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 255, 136, 0.1) 0%,
+    rgba(220, 248, 255, 0.15) 50%,
+    rgba(0, 255, 136, 0.05) 100%
+  );
+}
+
+.ice-cube:nth-child(2) .cube-face {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 212, 255, 0.1) 0%,
+    rgba(220, 248, 255, 0.15) 50%,
+    rgba(139, 0, 255, 0.05) 100%
+  );
+}
+
+.ice-cube:nth-child(3) .cube-face {
+  background: linear-gradient(
+    135deg,
+    rgba(139, 0, 0, 0.1) 0%,
+    rgba(220, 248, 255, 0.15) 50%,
+    rgba(255, 68, 68, 0.05) 100%
+  );
+}
+
+.ice-cube:nth-child(4) .cube-face {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 102, 153, 0.1) 0%,
+    rgba(220, 248, 255, 0.15) 50%,
+    rgba(0, 170, 255, 0.05) 100%
+  );
+}
+
+.ice-cube:nth-child(5) .cube-face {
+  background: linear-gradient(
+    135deg,
+    rgba(15, 15, 35, 0.1) 0%,
+    rgba(220, 248, 255, 0.15) 50%,
+    rgba(0, 255, 255, 0.05) 100%
+  );
+}
