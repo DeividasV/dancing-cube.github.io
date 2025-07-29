@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Bouncing Cubes - Dancing Cube Exhibition</title>
+    <title>QU4NTUM_B0UNC3 - Dancing Cube Exhibition</title>
     <meta name="description" content="Interactive 3D physics simulation with bouncing cubes in a wireframe grid environment.">
     
     <!-- Preload fonts -->
@@ -12,14 +12,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/shared-navigation.css">
     <link rel="stylesheet" href="css/bouncing-cubes.css">
 </head>
 <body>
+    <!-- Animated background grid -->
+    <div class="background-grid"></div>
+
     <!-- Loading indicator -->
-    <div class="loading">Loading 3D Environment...</div>
+    <div class="loading">INITIALIZING QU4NTUM SPACE...</div>
     
-    <!-- Back to exhibition button -->
-    <a href="index.html" class="back-button">← Back to Exhibition</a>
+    <!-- Header with title and back button -->
+    <header class="exhibition-header">
+        <h1 class="exhibition-title">QU4NTUM_B0UNC3</h1>
+        <a href="index.html" class="back-button">Back to Gallery</a>
+    </header>
+
+    <!-- Main content container -->
+    <div class="main-content">
     
     <!-- Controls -->
     <div class="controls">
@@ -389,5 +399,7 @@
         init();
         animate();
     </script>
+    
+    </div> <!-- End main-content -->
 </body>
 </html>

@@ -18,58 +18,69 @@
     />
 
     <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/shared-navigation.css" />
     <link rel="stylesheet" href="css/fluid-dynamics.css" />
   </head>
   <body>
+    <!-- Animated background grid -->
+    <div class="background-grid"></div>
+
     <!-- Loading indicator -->
-    <div class="loading">INITIALIZING FLUID SYSTEM...</div>
+    <div class="loading">INITIALIZING FLU1D SY5T3M...</div>
 
-    <!-- Back to exhibition button -->
-    <a href="index.html" class="back-button">← BACK TO G4LL3RY</a>
+    <!-- Header with title and back button -->
+    <header class="exhibition-header">
+      <h1 class="exhibition-title">FLU1D_DYN4M1X</h1>
+      <a href="index.html" class="back-button">Back to Gallery</a>
+    </header>
 
-    <!-- Controls -->
-    <div class="controls">
-      <h3>FLU1D_C0NTR0LS</h3>
-      <div class="control-group">
-        <button onclick="toggleSimulation()">⏸️ PAUSE/RESUME</button>
-        <button onclick="resetFluid()">🌊 RESET FLUID</button>
-        <button onclick="addTurbulence()">💨 ADD TURBULENCE</button>
+    <!-- Main content container -->
+    <div class="main-content">
+      <!-- Controls -->
+      <div class="controls">
+        <h3>FLU1D_C0NTR0LS</h3>
+        <div class="control-group">
+          <button onclick="toggleSimulation()">⏸️ PAUSE/RESUME</button>
+          <button onclick="resetFluid()">🌊 RESET FLUID</button>
+          <button onclick="addTurbulence()">💨 ADD TURBULENCE</button>
+        </div>
+        <div class="control-group">
+          <label>VISCOSITY:</label>
+          <input
+            type="range"
+            id="viscosity"
+            min="0.01"
+            max="0.1"
+            step="0.01"
+            value="0.03"
+            onchange="updateViscosity(this.value)"
+          />
+        </div>
+        <div class="control-group">
+          <label>PARTICLE COUNT:</label>
+          <input
+            type="range"
+            id="particleCount"
+            min="1000"
+            max="10000"
+            step="500"
+            value="5000"
+            onchange="updateParticleCount(this.value)"
+          />
+        </div>
+        <div class="instruction">
+          🖱️ Click and drag to create fluid disturbances<br />
+          🌊 Watch particles follow fluid flow patterns
+        </div>
       </div>
-      <div class="control-group">
-        <label>VISCOSITY:</label>
-        <input
-          type="range"
-          id="viscosity"
-          min="0.01"
-          max="0.1"
-          step="0.01"
-          value="0.03"
-          onchange="updateViscosity(this.value)"
-        />
-      </div>
-      <div class="control-group">
-        <label>PARTICLE COUNT:</label>
-        <input
-          type="range"
-          id="particleCount"
-          min="1000"
-          max="10000"
-          step="500"
-          value="5000"
-          onchange="updateParticleCount(this.value)"
-        />
-      </div>
-      <div class="instruction">
-        🖱️ Click and drag to create fluid disturbances<br />
-        🌊 Watch particles follow fluid flow patterns
-      </div>
+
+      <!-- Fluid Container -->
+      <div id="container"></div>
+
+      <!-- Scripts -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+      <script src="js/fluid-dynamics.js"></script>
     </div>
-
-    <!-- Fluid Container -->
-    <div id="container"></div>
-
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="js/fluid-dynamics.js"></script>
+    <!-- End main-content -->
   </body>
 </html>

@@ -21,7 +21,7 @@ body {
 
 .controls {
   position: absolute;
-  top: 20px;
+  top: 100px;
   left: 20px;
   color: white;
   z-index: 100;

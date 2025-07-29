@@ -3,7 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Morphing 3D Shapes</title>
+    <title>M0RPH1N_F0RMS - Dancing Cube Exhibition</title>
+    <meta
+      name="description"
+      content="Morphing 3D shapes simulation in a space environment with dynamic transformations."
+    />
+
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/shared-navigation.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
       body {
@@ -11,482 +26,507 @@
         padding: 0;
         overflow: hidden;
         background: radial-gradient(ellipse at center, #0f0f23 0%, #000000 70%);
-        font-family: "Arial", sans-serif;
+        font-family: "Inter", sans-serif;
       }
       canvas {
         display: block;
       }
       .info {
         position: absolute;
-        top: 20px;
+        bottom: 20px;
         left: 20px;
         color: #00ffff;
         font-size: 16px;
         text-shadow: 0 0 10px #00ffff;
         z-index: 100;
+        background: rgba(0, 0, 0, 0.3);
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
       }
     </style>
   </head>
   <body>
-    <div class="info">Morphing 3D Shapes • Space Environment</div>
+    <!-- Animated background grid -->
+    <div class="background-grid"></div>
 
-    <script>
-      // Scene setup
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000
-      );
-      const renderer = new THREE.WebGLRenderer({
-        antialias: true,
-        alpha: true,
-      });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setClearColor(0x000000, 0);
-      document.body.appendChild(renderer.domElement);
+    <!-- Loading indicator -->
+    <div class="loading">INITIALIZING M0RPH SY5T3M...</div>
 
-      // Space background with stars
-      function createStarField() {
-        const starGeometry = new THREE.BufferGeometry();
-        const starCount = 2000;
-        const positions = new Float32Array(starCount * 3);
+    <!-- Header with title and back button -->
+    <header class="exhibition-header">
+      <h1 class="exhibition-title">M0RPH1N_F0RMS</h1>
+      <a href="index.html" class="back-button">Back to Gallery</a>
+    </header>
 
-        for (let i = 0; i < starCount * 3; i += 3) {
-          positions[i] = (Math.random() - 0.5) * 2000;
-          positions[i + 1] = (Math.random() - 0.5) * 2000;
-          positions[i + 2] = (Math.random() - 0.5) * 2000;
-        }
+    <!-- Main content container -->
+    <div class="main-content">
+      <div class="info">Morphing 3D Shapes • Space Environment</div>
 
-        starGeometry.setAttribute(
-          "position",
-          new THREE.BufferAttribute(positions, 3)
+      <script>
+        // Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(
+          75,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          1000
         );
-        const starMaterial = new THREE.PointsMaterial({
-          color: 0xffffff,
-          size: 2,
-          transparent: true,
-          opacity: 0.8,
+        const renderer = new THREE.WebGLRenderer({
+          antialias: true,
+          alpha: true,
         });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 0);
+        document.body.appendChild(renderer.domElement);
 
-        const stars = new THREE.Points(starGeometry, starMaterial);
-        scene.add(stars);
-        return stars;
-      }
+        // Space background with stars
+        function createStarField() {
+          const starGeometry = new THREE.BufferGeometry();
+          const starCount = 2000;
+          const positions = new Float32Array(starCount * 3);
 
-      const starField = createStarField();
-
-      // Futuristic color palette
-      const colors = [
-        0x00ffff, // Cyan
-        0xff00ff, // Magenta
-        0x00ff00, // Green
-        0xffff00, // Yellow
-        0xff4500, // Orange Red
-        0x9400d3, // Violet
-        0x00bfff, // Deep Sky Blue
-        0xff1493, // Deep Pink
-      ];
-
-      // Shape class for morphing blob objects
-      class MorphingShape {
-        constructor() {
-          this.position = new THREE.Vector3(
-            (Math.random() - 0.5) * 20,
-            (Math.random() - 0.5) * 20,
-            (Math.random() - 0.5) * 20
-          );
-
-          this.velocity = new THREE.Vector3(
-            (Math.random() - 0.5) * 0.05,
-            (Math.random() - 0.5) * 0.05,
-            (Math.random() - 0.5) * 0.05
-          );
-
-          this.color = colors[Math.floor(Math.random() * colors.length)];
-          this.targetColor = this.color;
-          this.currentColor = new THREE.Color(this.color);
-          this.baseSize = Math.random() * 1.5 + 1;
-          this.isAlive = true;
-          this.time = Math.random() * 1000;
-          this.colorTransitionSpeed = 0.002;
-          this.mergeProgress = 0;
-          this.splitProgress = 0;
-          this.isMerging = false;
-          this.isSplitting = false;
-
-          // Create base sphere geometry with more vertices for smooth deformation
-          this.baseGeometry = new THREE.SphereGeometry(this.baseSize, 32, 32);
-          this.geometry = this.baseGeometry.clone();
-
-          // Store original positions for morphing
-          this.originalPositions =
-            this.geometry.attributes.position.array.slice();
-          this.noiseSeeds = [];
-
-          // Generate noise seeds for each vertex
-          for (let i = 0; i < this.originalPositions.length / 3; i++) {
-            this.noiseSeeds.push({
-              x: Math.random() * 1000,
-              y: Math.random() * 1000,
-              z: Math.random() * 1000,
-            });
+          for (let i = 0; i < starCount * 3; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 2000;
+            positions[i + 1] = (Math.random() - 0.5) * 2000;
+            positions[i + 2] = (Math.random() - 0.5) * 2000;
           }
 
-          this.createMesh();
-        }
-
-        // Simple noise function
-        noise(x, y, z) {
-          return Math.sin(x) * Math.cos(y) * Math.sin(z) * 0.5 + 0.5;
-        }
-
-        // Multi-octave noise for more organic shapes
-        fbm(x, y, z) {
-          let value = 0;
-          let amplitude = 1;
-          let frequency = 1;
-
-          for (let i = 0; i < 4; i++) {
-            value +=
-              this.noise(x * frequency, y * frequency, z * frequency) *
-              amplitude;
-            frequency *= 2;
-            amplitude *= 0.5;
-          }
-
-          return value;
-        }
-
-        createMesh() {
-          const material = new THREE.MeshPhongMaterial({
-            color: this.currentColor,
+          starGeometry.setAttribute(
+            "position",
+            new THREE.BufferAttribute(positions, 3)
+          );
+          const starMaterial = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 2,
             transparent: true,
-            opacity: 0.85,
-            emissive: this.currentColor,
-            emissiveIntensity: 0.15,
-            shininess: 100,
-            specular: 0x444444,
+            opacity: 0.8,
           });
 
-          if (this.mesh) {
-            scene.remove(this.mesh);
-          }
-
-          this.mesh = new THREE.Mesh(this.geometry, material);
-          this.mesh.position.copy(this.position);
-          scene.add(this.mesh);
+          const stars = new THREE.Points(starGeometry, starMaterial);
+          scene.add(stars);
+          return stars;
         }
 
-        updateGeometry() {
-          const positions = this.geometry.attributes.position.array;
+        const starField = createStarField();
 
-          // Deform each vertex based on noise functions
-          for (let i = 0; i < positions.length; i += 3) {
-            const vertexIndex = i / 3;
-            const seed = this.noiseSeeds[vertexIndex];
+        // Futuristic color palette
+        const colors = [
+          0x00ffff, // Cyan
+          0xff00ff, // Magenta
+          0x00ff00, // Green
+          0xffff00, // Yellow
+          0xff4500, // Orange Red
+          0x9400d3, // Violet
+          0x00bfff, // Deep Sky Blue
+          0xff1493, // Deep Pink
+        ];
 
-            // Get original position
-            const originalX = this.originalPositions[i];
-            const originalY = this.originalPositions[i + 1];
-            const originalZ = this.originalPositions[i + 2];
+        // Shape class for morphing blob objects
+        class MorphingShape {
+          constructor() {
+            this.position = new THREE.Vector3(
+              (Math.random() - 0.5) * 20,
+              (Math.random() - 0.5) * 20,
+              (Math.random() - 0.5) * 20
+            );
 
-            // Calculate noise-based displacement
-            const noiseX =
-              this.fbm(seed.x + this.time * 0.002, seed.y, seed.z) * 0.8;
-            const noiseY =
-              this.fbm(seed.x, seed.y + this.time * 0.0025, seed.z) * 0.8;
-            const noiseZ =
-              this.fbm(seed.x, seed.y, seed.z + this.time * 0.003) * 0.8;
+            this.velocity = new THREE.Vector3(
+              (Math.random() - 0.5) * 0.05,
+              (Math.random() - 0.5) * 0.05,
+              (Math.random() - 0.5) * 0.05
+            );
 
-            // Additional layer of deformation
-            const wave1 = Math.sin(this.time * 0.004 + originalX * 2) * 0.3;
-            const wave2 = Math.cos(this.time * 0.003 + originalY * 2) * 0.3;
-            const wave3 = Math.sin(this.time * 0.005 + originalZ * 2) * 0.3;
+            this.color = colors[Math.floor(Math.random() * colors.length)];
+            this.targetColor = this.color;
+            this.currentColor = new THREE.Color(this.color);
+            this.baseSize = Math.random() * 1.5 + 1;
+            this.isAlive = true;
+            this.time = Math.random() * 1000;
+            this.colorTransitionSpeed = 0.002;
+            this.mergeProgress = 0;
+            this.splitProgress = 0;
+            this.isMerging = false;
+            this.isSplitting = false;
 
-            // Apply deformation
-            const deformationFactor = 1 + noiseX + wave1;
-            positions[i] = originalX * deformationFactor;
-            positions[i + 1] = originalY * (1 + noiseY + wave2);
-            positions[i + 2] = originalZ * (1 + noiseZ + wave3);
-          }
+            // Create base sphere geometry with more vertices for smooth deformation
+            this.baseGeometry = new THREE.SphereGeometry(this.baseSize, 32, 32);
+            this.geometry = this.baseGeometry.clone();
 
-          // Update geometry
-          this.geometry.attributes.position.needsUpdate = true;
-          this.geometry.computeVertexNormals(); // Smooth lighting
-        }
+            // Store original positions for morphing
+            this.originalPositions =
+              this.geometry.attributes.position.array.slice();
+            this.noiseSeeds = [];
 
-        update() {
-          if (!this.isAlive) return;
-
-          // Update time for continuous morphing
-          this.time += 1;
-
-          // Smooth color transitions
-          if (Math.random() < 0.0002) {
-            // Very rare color changes
-            this.targetColor =
-              colors[Math.floor(Math.random() * colors.length)];
-          }
-
-          // Gradually interpolate to target color
-          const targetColorObj = new THREE.Color(this.targetColor);
-          this.currentColor.lerp(targetColorObj, this.colorTransitionSpeed);
-
-          // Update geometry deformation with smooth scaling during merge/split
-          let scaleModifier = 1;
-
-          if (this.isMerging) {
-            this.mergeProgress += 0.02;
-            scaleModifier = 1 + Math.sin(this.mergeProgress * Math.PI) * 0.3;
-            if (this.mergeProgress >= 1) {
-              this.isMerging = false;
-              this.mergeProgress = 0;
+            // Generate noise seeds for each vertex
+            for (let i = 0; i < this.originalPositions.length / 3; i++) {
+              this.noiseSeeds.push({
+                x: Math.random() * 1000,
+                y: Math.random() * 1000,
+                z: Math.random() * 1000,
+              });
             }
+
+            this.createMesh();
           }
 
-          if (this.isSplitting) {
-            this.splitProgress += 0.03;
-            scaleModifier = 1 + Math.sin(this.splitProgress * Math.PI) * 0.4;
-            if (this.splitProgress >= 1) {
-              this.isSplitting = false;
-              this.splitProgress = 0;
+          // Simple noise function
+          noise(x, y, z) {
+            return Math.sin(x) * Math.cos(y) * Math.sin(z) * 0.5 + 0.5;
+          }
+
+          // Multi-octave noise for more organic shapes
+          fbm(x, y, z) {
+            let value = 0;
+            let amplitude = 1;
+            let frequency = 1;
+
+            for (let i = 0; i < 4; i++) {
+              value +=
+                this.noise(x * frequency, y * frequency, z * frequency) *
+                amplitude;
+              frequency *= 2;
+              amplitude *= 0.5;
             }
+
+            return value;
           }
 
-          this.updateGeometry();
-          this.mesh.scale.setScalar(scaleModifier);
+          createMesh() {
+            const material = new THREE.MeshPhongMaterial({
+              color: this.currentColor,
+              transparent: true,
+              opacity: 0.85,
+              emissive: this.currentColor,
+              emissiveIntensity: 0.15,
+              shininess: 100,
+              specular: 0x444444,
+            });
 
-          // Movement
-          this.position.add(this.velocity);
+            if (this.mesh) {
+              scene.remove(this.mesh);
+            }
 
-          // Boundary checking - wrap around
-          if (Math.abs(this.position.x) > 30) this.velocity.x *= -1;
-          if (Math.abs(this.position.y) > 30) this.velocity.y *= -1;
-          if (Math.abs(this.position.z) > 30) this.velocity.z *= -1;
-
-          // Update mesh position with gentle floating motion
-          this.mesh.position.copy(this.position);
-          this.mesh.position.y += Math.sin(this.time * 0.001) * 0.5;
-
-          // Gentle rotation
-          this.mesh.rotation.x += 0.005;
-          this.mesh.rotation.y += 0.007;
-          this.mesh.rotation.z += 0.003;
-
-          // Update material colors smoothly
-          this.mesh.material.color.copy(this.currentColor);
-          this.mesh.material.emissive.copy(this.currentColor);
-
-          // Subtle emissive intensity variation
-          const colorShift = Math.sin(this.time * 0.001) * 0.05 + 0.15;
-          this.mesh.material.emissiveIntensity = colorShift;
-        }
-
-        distanceTo(other) {
-          return this.position.distanceTo(other.position);
-        }
-
-        mergeWith(other) {
-          // Smooth color blending
-          const mergeColor = new THREE.Color().lerpColors(
-            this.currentColor,
-            new THREE.Color(other.currentColor),
-            0.5
-          );
-          this.targetColor = mergeColor.getHex();
-          this.currentColor.copy(mergeColor);
-
-          // Gradual size increase
-          this.baseSize = Math.min(this.baseSize + other.baseSize * 0.3, 4);
-          this.velocity.lerp(other.velocity, 0.5);
-
-          // Blend time offsets for interesting morphing
-          this.time = (this.time + other.time) * 0.5;
-
-          // Start merge animation
-          this.isMerging = true;
-          this.mergeProgress = 0;
-
-          // Remove other shape
-          scene.remove(other.mesh);
-          other.isAlive = false;
-
-          // Update material smoothly
-          this.mesh.material.color.copy(this.currentColor);
-          this.mesh.material.emissive.copy(this.currentColor);
-        }
-
-        split() {
-          if (this.baseSize < 1.5) return null;
-
-          const newShape = new MorphingShape();
-          newShape.position.copy(this.position);
-          newShape.position.add(
-            new THREE.Vector3(
-              (Math.random() - 0.5) * 3,
-              (Math.random() - 0.5) * 3,
-              (Math.random() - 0.5) * 3
-            )
-          );
-
-          // Inherit similar color with slight variation
-          const colorVariation = new THREE.Color(this.currentColor);
-          colorVariation.offsetHSL(0, 0, (Math.random() - 0.5) * 0.1); // Slight lightness variation
-          newShape.currentColor.copy(colorVariation);
-          newShape.targetColor = colorVariation.getHex();
-
-          newShape.baseSize = this.baseSize * 0.6;
-          newShape.time = this.time + Math.random() * 50; // Small timing offset
-
-          // Start split animation for both shapes
-          this.isSplitting = true;
-          this.splitProgress = 0;
-          newShape.isSplitting = true;
-          newShape.splitProgress = 0;
-
-          this.baseSize *= 0.7;
-
-          // Update both geometries
-          this.baseGeometry = new THREE.SphereGeometry(this.baseSize, 32, 32);
-          this.geometry = this.baseGeometry.clone();
-          this.originalPositions =
-            this.geometry.attributes.position.array.slice();
-
-          return newShape;
-        }
-      }
-
-      // Create initial blob shapes
-      const shapes = [];
-      for (let i = 0; i < 6; i++) {
-        shapes.push(new MorphingShape());
-      }
-
-      // Lighting
-      const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
-      scene.add(ambientLight);
-
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-      directionalLight.position.set(10, 10, 5);
-      scene.add(directionalLight);
-
-      // Add some colored point lights for atmosphere
-      const light1 = new THREE.PointLight(0x00ffff, 1, 50);
-      light1.position.set(10, 10, 10);
-      scene.add(light1);
-
-      const light2 = new THREE.PointLight(0xff00ff, 1, 50);
-      light2.position.set(-10, -10, 10);
-      scene.add(light2);
-
-      // Camera position
-      camera.position.z = 25;
-
-      // Nebula effect particles
-      function createNebula() {
-        const nebulaGeometry = new THREE.BufferGeometry();
-        const nebulaCount = 500;
-        const positions = new Float32Array(nebulaCount * 3);
-        const colors = new Float32Array(nebulaCount * 3);
-
-        for (let i = 0; i < nebulaCount * 3; i += 3) {
-          positions[i] = (Math.random() - 0.5) * 100;
-          positions[i + 1] = (Math.random() - 0.5) * 100;
-          positions[i + 2] = (Math.random() - 0.5) * 100;
-
-          const color = new THREE.Color();
-          color.setHSL(Math.random() * 0.3 + 0.5, 0.7, 0.5);
-          colors[i] = color.r;
-          colors[i + 1] = color.g;
-          colors[i + 2] = color.b;
-        }
-
-        nebulaGeometry.setAttribute(
-          "position",
-          new THREE.BufferAttribute(positions, 3)
-        );
-        nebulaGeometry.setAttribute(
-          "color",
-          new THREE.BufferAttribute(colors, 3)
-        );
-
-        const nebulaMaterial = new THREE.PointsMaterial({
-          size: 4,
-          transparent: true,
-          opacity: 0.3,
-          vertexColors: true,
-          blending: THREE.AdditiveBlending,
-        });
-
-        const nebula = new THREE.Points(nebulaGeometry, nebulaMaterial);
-        scene.add(nebula);
-        return nebula;
-      }
-
-      const nebula = createNebula();
-
-      // Animation loop
-      function animate() {
-        requestAnimationFrame(animate);
-
-        // Rotate star field slowly
-        starField.rotation.y += 0.0002;
-        nebula.rotation.x += 0.0001;
-        nebula.rotation.z += 0.0003;
-
-        // Update shapes
-        for (let i = shapes.length - 1; i >= 0; i--) {
-          if (!shapes[i].isAlive) {
-            shapes.splice(i, 1);
-            continue;
+            this.mesh = new THREE.Mesh(this.geometry, material);
+            this.mesh.position.copy(this.position);
+            scene.add(this.mesh);
           }
 
-          shapes[i].update();
+          updateGeometry() {
+            const positions = this.geometry.attributes.position.array;
 
-          // Check for merging with smooth approach
-          for (let j = i + 1; j < shapes.length; j++) {
-            const distance = shapes[i].distanceTo(shapes[j]);
-            if (distance < 4 && !shapes[i].isMerging && !shapes[j].isMerging) {
-              if (Math.random() < 0.003) {
-                shapes[i].mergeWith(shapes[j]);
-                break;
+            // Deform each vertex based on noise functions
+            for (let i = 0; i < positions.length; i += 3) {
+              const vertexIndex = i / 3;
+              const seed = this.noiseSeeds[vertexIndex];
+
+              // Get original position
+              const originalX = this.originalPositions[i];
+              const originalY = this.originalPositions[i + 1];
+              const originalZ = this.originalPositions[i + 2];
+
+              // Calculate noise-based displacement
+              const noiseX =
+                this.fbm(seed.x + this.time * 0.002, seed.y, seed.z) * 0.8;
+              const noiseY =
+                this.fbm(seed.x, seed.y + this.time * 0.0025, seed.z) * 0.8;
+              const noiseZ =
+                this.fbm(seed.x, seed.y, seed.z + this.time * 0.003) * 0.8;
+
+              // Additional layer of deformation
+              const wave1 = Math.sin(this.time * 0.004 + originalX * 2) * 0.3;
+              const wave2 = Math.cos(this.time * 0.003 + originalY * 2) * 0.3;
+              const wave3 = Math.sin(this.time * 0.005 + originalZ * 2) * 0.3;
+
+              // Apply deformation
+              const deformationFactor = 1 + noiseX + wave1;
+              positions[i] = originalX * deformationFactor;
+              positions[i + 1] = originalY * (1 + noiseY + wave2);
+              positions[i + 2] = originalZ * (1 + noiseZ + wave3);
+            }
+
+            // Update geometry
+            this.geometry.attributes.position.needsUpdate = true;
+            this.geometry.computeVertexNormals(); // Smooth lighting
+          }
+
+          update() {
+            if (!this.isAlive) return;
+
+            // Update time for continuous morphing
+            this.time += 1;
+
+            // Smooth color transitions
+            if (Math.random() < 0.0002) {
+              // Very rare color changes
+              this.targetColor =
+                colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            // Gradually interpolate to target color
+            const targetColorObj = new THREE.Color(this.targetColor);
+            this.currentColor.lerp(targetColorObj, this.colorTransitionSpeed);
+
+            // Update geometry deformation with smooth scaling during merge/split
+            let scaleModifier = 1;
+
+            if (this.isMerging) {
+              this.mergeProgress += 0.02;
+              scaleModifier = 1 + Math.sin(this.mergeProgress * Math.PI) * 0.3;
+              if (this.mergeProgress >= 1) {
+                this.isMerging = false;
+                this.mergeProgress = 0;
+              }
+            }
+
+            if (this.isSplitting) {
+              this.splitProgress += 0.03;
+              scaleModifier = 1 + Math.sin(this.splitProgress * Math.PI) * 0.4;
+              if (this.splitProgress >= 1) {
+                this.isSplitting = false;
+                this.splitProgress = 0;
+              }
+            }
+
+            this.updateGeometry();
+            this.mesh.scale.setScalar(scaleModifier);
+
+            // Movement
+            this.position.add(this.velocity);
+
+            // Boundary checking - wrap around
+            if (Math.abs(this.position.x) > 30) this.velocity.x *= -1;
+            if (Math.abs(this.position.y) > 30) this.velocity.y *= -1;
+            if (Math.abs(this.position.z) > 30) this.velocity.z *= -1;
+
+            // Update mesh position with gentle floating motion
+            this.mesh.position.copy(this.position);
+            this.mesh.position.y += Math.sin(this.time * 0.001) * 0.5;
+
+            // Gentle rotation
+            this.mesh.rotation.x += 0.005;
+            this.mesh.rotation.y += 0.007;
+            this.mesh.rotation.z += 0.003;
+
+            // Update material colors smoothly
+            this.mesh.material.color.copy(this.currentColor);
+            this.mesh.material.emissive.copy(this.currentColor);
+
+            // Subtle emissive intensity variation
+            const colorShift = Math.sin(this.time * 0.001) * 0.05 + 0.15;
+            this.mesh.material.emissiveIntensity = colorShift;
+          }
+
+          distanceTo(other) {
+            return this.position.distanceTo(other.position);
+          }
+
+          mergeWith(other) {
+            // Smooth color blending
+            const mergeColor = new THREE.Color().lerpColors(
+              this.currentColor,
+              new THREE.Color(other.currentColor),
+              0.5
+            );
+            this.targetColor = mergeColor.getHex();
+            this.currentColor.copy(mergeColor);
+
+            // Gradual size increase
+            this.baseSize = Math.min(this.baseSize + other.baseSize * 0.3, 4);
+            this.velocity.lerp(other.velocity, 0.5);
+
+            // Blend time offsets for interesting morphing
+            this.time = (this.time + other.time) * 0.5;
+
+            // Start merge animation
+            this.isMerging = true;
+            this.mergeProgress = 0;
+
+            // Remove other shape
+            scene.remove(other.mesh);
+            other.isAlive = false;
+
+            // Update material smoothly
+            this.mesh.material.color.copy(this.currentColor);
+            this.mesh.material.emissive.copy(this.currentColor);
+          }
+
+          split() {
+            if (this.baseSize < 1.5) return null;
+
+            const newShape = new MorphingShape();
+            newShape.position.copy(this.position);
+            newShape.position.add(
+              new THREE.Vector3(
+                (Math.random() - 0.5) * 3,
+                (Math.random() - 0.5) * 3,
+                (Math.random() - 0.5) * 3
+              )
+            );
+
+            // Inherit similar color with slight variation
+            const colorVariation = new THREE.Color(this.currentColor);
+            colorVariation.offsetHSL(0, 0, (Math.random() - 0.5) * 0.1); // Slight lightness variation
+            newShape.currentColor.copy(colorVariation);
+            newShape.targetColor = colorVariation.getHex();
+
+            newShape.baseSize = this.baseSize * 0.6;
+            newShape.time = this.time + Math.random() * 50; // Small timing offset
+
+            // Start split animation for both shapes
+            this.isSplitting = true;
+            this.splitProgress = 0;
+            newShape.isSplitting = true;
+            newShape.splitProgress = 0;
+
+            this.baseSize *= 0.7;
+
+            // Update both geometries
+            this.baseGeometry = new THREE.SphereGeometry(this.baseSize, 32, 32);
+            this.geometry = this.baseGeometry.clone();
+            this.originalPositions =
+              this.geometry.attributes.position.array.slice();
+
+            return newShape;
+          }
+        }
+
+        // Create initial blob shapes
+        const shapes = [];
+        for (let i = 0; i < 6; i++) {
+          shapes.push(new MorphingShape());
+        }
+
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(10, 10, 5);
+        scene.add(directionalLight);
+
+        // Add some colored point lights for atmosphere
+        const light1 = new THREE.PointLight(0x00ffff, 1, 50);
+        light1.position.set(10, 10, 10);
+        scene.add(light1);
+
+        const light2 = new THREE.PointLight(0xff00ff, 1, 50);
+        light2.position.set(-10, -10, 10);
+        scene.add(light2);
+
+        // Camera position
+        camera.position.z = 25;
+
+        // Nebula effect particles
+        function createNebula() {
+          const nebulaGeometry = new THREE.BufferGeometry();
+          const nebulaCount = 500;
+          const positions = new Float32Array(nebulaCount * 3);
+          const colors = new Float32Array(nebulaCount * 3);
+
+          for (let i = 0; i < nebulaCount * 3; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 100;
+            positions[i + 1] = (Math.random() - 0.5) * 100;
+            positions[i + 2] = (Math.random() - 0.5) * 100;
+
+            const color = new THREE.Color();
+            color.setHSL(Math.random() * 0.3 + 0.5, 0.7, 0.5);
+            colors[i] = color.r;
+            colors[i + 1] = color.g;
+            colors[i + 2] = color.b;
+          }
+
+          nebulaGeometry.setAttribute(
+            "position",
+            new THREE.BufferAttribute(positions, 3)
+          );
+          nebulaGeometry.setAttribute(
+            "color",
+            new THREE.BufferAttribute(colors, 3)
+          );
+
+          const nebulaMaterial = new THREE.PointsMaterial({
+            size: 4,
+            transparent: true,
+            opacity: 0.3,
+            vertexColors: true,
+            blending: THREE.AdditiveBlending,
+          });
+
+          const nebula = new THREE.Points(nebulaGeometry, nebulaMaterial);
+          scene.add(nebula);
+          return nebula;
+        }
+
+        const nebula = createNebula();
+
+        // Animation loop
+        function animate() {
+          requestAnimationFrame(animate);
+
+          // Rotate star field slowly
+          starField.rotation.y += 0.0002;
+          nebula.rotation.x += 0.0001;
+          nebula.rotation.z += 0.0003;
+
+          // Update shapes
+          for (let i = shapes.length - 1; i >= 0; i--) {
+            if (!shapes[i].isAlive) {
+              shapes.splice(i, 1);
+              continue;
+            }
+
+            shapes[i].update();
+
+            // Check for merging with smooth approach
+            for (let j = i + 1; j < shapes.length; j++) {
+              const distance = shapes[i].distanceTo(shapes[j]);
+              if (
+                distance < 4 &&
+                !shapes[i].isMerging &&
+                !shapes[j].isMerging
+              ) {
+                if (Math.random() < 0.003) {
+                  shapes[i].mergeWith(shapes[j]);
+                  break;
+                }
+              }
+            }
+
+            // Check for split events
+            if (Math.random() < 0.0008 && !shapes[i].isSplitting) {
+              const newShape = shapes[i].split();
+              if (newShape) {
+                shapes.push(newShape);
               }
             }
           }
 
-          // Check for split events
-          if (Math.random() < 0.0008 && !shapes[i].isSplitting) {
-            const newShape = shapes[i].split();
-            if (newShape) {
-              shapes.push(newShape);
-            }
+          // Maintain minimum number of shapes
+          if (shapes.length < 3) {
+            shapes.push(new MorphingShape());
           }
+
+          // Camera movement
+          camera.position.x = Math.sin(Date.now() * 0.0005) * 5;
+          camera.position.y = Math.cos(Date.now() * 0.0003) * 3;
+          camera.lookAt(0, 0, 0);
+
+          renderer.render(scene, camera);
         }
 
-        // Maintain minimum number of shapes
-        if (shapes.length < 3) {
-          shapes.push(new MorphingShape());
-        }
+        // Handle window resize
+        window.addEventListener("resize", () => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        });
 
-        // Camera movement
-        camera.position.x = Math.sin(Date.now() * 0.0005) * 5;
-        camera.position.y = Math.cos(Date.now() * 0.0003) * 3;
-        camera.lookAt(0, 0, 0);
-
-        renderer.render(scene, camera);
-      }
-
-      // Handle window resize
-      window.addEventListener("resize", () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      });
-
-      // Start animation
-      animate();
-    </script>
+        // Start animation
+        animate();
+      </script>
+    </div>
+    <!-- End main-content -->
   </body>
 </html>
