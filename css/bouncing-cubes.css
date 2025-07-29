@@ -17,8 +17,8 @@ body {
   top: 20px;
   left: 20px;
   color: white;
-  z-index: 100;
-  background: rgba(0, 0, 0, 0.7);
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.8);
   padding: 20px;
   border-radius: 10px;
   backdrop-filter: blur(10px);
@@ -79,7 +79,7 @@ button:active {
   font-family: inherit;
   font-weight: 500;
   transition: all 0.3s ease;
-  z-index: 100;
+  z-index: 200;
 }
 
 .back-button:hover {
@@ -118,4 +118,46 @@ button:active {
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* ASCII Display */
+.ascii-display {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  color: white;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-width: 300px;
+}
+
+.ascii-display h3 {
+  margin: 0 0 15px 0;
+  color: #ff6b6b;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.ascii-chars {
+  font-family: "Courier New", monospace;
+  font-size: 1.1rem;
+  color: #00ff88;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  word-break: break-all;
+  letter-spacing: 2px;
+  line-height: 1.5;
+}
+
+.ascii-info {
+  color: #b0b0b0;
+  font-size: 0.8rem;
+  margin-top: 10px;
+  font-style: italic;
 }

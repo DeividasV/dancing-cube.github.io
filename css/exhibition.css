@@ -400,6 +400,41 @@ body {
   clip-path: polygon(0% 40%, 30% 40%, 60% 0%, 60% 100%, 30% 60%, 0% 60%);
 }
 
+.icon-gradient.blood::before {
+  background: linear-gradient(135deg, #8b0000, #ff4444);
+  clip-path: polygon(
+    50% 0%,
+    58% 20%,
+    80% 20%,
+    68% 34%,
+    74% 55%,
+    50% 45%,
+    26% 55%,
+    32% 34%,
+    20% 20%,
+    42% 20%
+  );
+}
+
+.icon-gradient.water::before {
+  background: linear-gradient(135deg, #006699, #00aaff);
+  clip-path: ellipse(60% 80% at 50% 60%);
+}
+
+.icon-gradient.morph::before {
+  background: linear-gradient(135deg, #0f0f23, #00ffff);
+  clip-path: polygon(
+    30% 0%,
+    70% 0%,
+    100% 30%,
+    100% 70%,
+    70% 100%,
+    30% 100%,
+    0% 70%,
+    0% 30%
+  );
+}
+
 .icon-gradient::after {
   content: "";
   position: absolute;
