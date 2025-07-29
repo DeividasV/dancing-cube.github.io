@@ -422,6 +422,57 @@
         // Start animation
         animate();
       </script>
+
+      <script src="js/shared-controls.js"></script>
+      <script>
+        // Initialize custom controls after the page loads
+        document.addEventListener("DOMContentLoaded", () => {
+          setTimeout(() => {
+            if (window.exhibitionControls) {
+              // Add custom controls for this exhibition
+              exhibitionControls.addControl(`
+                      <button class="control-button" onclick="resetDroplets()">💧 Reset Droplets</button>
+                      <button class="control-button" onclick="addTurbulence()">🌪️ Add Turbulence</button>
+                  `);
+
+              // Update instructions
+              exhibitionControls.setInstructions(`
+                      💧 5 droplets connected by water strings<br>
+                      🔗 Physics simulation with tension effects<br>
+                      🖱️ Interactive 3D environment
+                  `);
+            }
+          }, 100);
+        });
+
+        // Additional control functions
+        function resetDroplets() {
+          // Reset droplet positions
+          droplets.forEach((droplet, index) => {
+            const angle = (index / droplets.length) * Math.PI * 2;
+            const radius = 3;
+            droplet.position.set(
+              Math.cos(angle) * radius,
+              Math.sin(angle) * radius,
+              0
+            );
+            droplet.velocity.set(0, 0, 0);
+          });
+        }
+
+        function addTurbulence() {
+          // Add random forces to droplets
+          droplets.forEach((droplet) => {
+            droplet.velocity.add(
+              new THREE.Vector3(
+                (Math.random() - 0.5) * 0.2,
+                (Math.random() - 0.5) * 0.2,
+                (Math.random() - 0.5) * 0.2
+              )
+            );
+          });
+        }
+      </script>
     </div>
     <!-- End main-content -->
   </body>

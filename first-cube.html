@@ -30,33 +30,41 @@
 
     <!-- Main content container -->
     <div class="main-content">
-    
-    <!-- Controls -->
-    <div class="controls">
-        <h3>Controls</h3>
-        <div class="control-group">
-            <button onclick="togglePause()">⏸️ Pause/Resume</button>
-            <button onclick="resetCubes()">🔄 Reset Cubes</button>
-        </div>
-        <div class="instruction">
-            🖱️ Click and drag to rotate view<br>
-            🎯 Watch cubes change colors on collision
-        </div>
-    </div>
 
-    <!-- ASCII Display -->
-    <div class="ascii-display">
-        <h3>Position ASCII (3×8=24 chars)</h3>
-        <div class="ascii-chars" id="ascii-output">Initializing...</div>
-        <div class="ascii-info">Each cube's XYZ → binary → ASCII character</div>
-    </div>
-    
     <!-- 3D Container -->
     <div id="container"></div>
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/shared-controls.js"></script>
     <script src="js/bouncing-cubes.js"></script>
+    <script>
+        // Initialize custom controls after the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (window.exhibitionControls) {
+                    // Add custom controls for this exhibition
+                    exhibitionControls.addControl(`
+                        <button class="control-button" onclick="togglePause()">⏸️ Pause/Resume</button>
+                        <button class="control-button" onclick="resetCubes()">🔄 Reset Cubes</button>
+                    `);
+
+                    // Add ASCII display
+                    const asciiOutput = exhibitionControls.addInfoDisplay('Position ASCII (3×8=24 chars)', 'Initializing...');
+                    
+                    // Update instructions
+                    exhibitionControls.setInstructions(`
+                        🖱️ Click and drag to rotate view<br>
+                        🎯 Watch cubes change colors on collision<br>
+                        ⚙️ Use the controls panel to interact
+                    `);
+
+                    // Store reference for ASCII updates
+                    window.asciiOutputElement = asciiOutput;
+                }
+            }, 100);
+        });
+    </script>
 </body>
 </html>
                 // Set new target color after collision

@@ -638,6 +638,41 @@
           setTimeout(() => drops.push(new BloodDrop3D()), i * 800);
         }
       </script>
+
+      <script src="js/shared-controls.js"></script>
+      <script>
+        // Initialize custom controls after the page loads
+        document.addEventListener("DOMContentLoaded", () => {
+          setTimeout(() => {
+            if (window.exhibitionControls) {
+              // Add custom controls for this exhibition
+              exhibitionControls.addControl(`
+                      <button class="control-button" onclick="clearOcean()">🌊 Clear Ocean</button>
+                      <button class="control-button" onclick="addBloodDrop()">🩸 Add Blood Drop</button>
+                  `);
+
+              // Update instructions
+              exhibitionControls.setInstructions(`
+                      🖱️ Click anywhere to create ripples<br>
+                      🩸 Watch the blood ocean respond to your touch<br>
+                      🌊 See reflective 3D effects in motion
+                  `);
+            }
+          }, 100);
+        });
+
+        // Additional control functions
+        function clearOcean() {
+          ripples.length = 0;
+          drops.length = 0;
+        }
+
+        function addBloodDrop() {
+          const x = (Math.random() - 0.5) * canvas.width;
+          const y = (Math.random() - 0.5) * canvas.height;
+          drops.push(new BloodDrop3D(x, y));
+        }
+      </script>
     </div>
     <!-- End main-content -->
   </body>

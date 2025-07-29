@@ -526,6 +526,60 @@
         // Start animation
         animate();
       </script>
+
+      <script src="js/shared-controls.js"></script>
+      <script>
+        // Initialize custom controls after the page loads
+        document.addEventListener("DOMContentLoaded", () => {
+          setTimeout(() => {
+            if (window.exhibitionControls) {
+              // Add custom controls for this exhibition
+              exhibitionControls.addControl(`
+                      <button class="control-button" onclick="resetShapes()">🔄 Reset Shapes</button>
+                      <button class="control-button" onclick="forceMerge()">🔗 Force Merge</button>
+                      <button class="control-button" onclick="addShape()">➕ Add Shape</button>
+                  `);
+
+              // Update instructions
+              exhibitionControls.setInstructions(`
+                      🔄 Shapes continuously morph and transform<br>
+                      🔗 Watch automatic merging and splitting<br>
+                      🌌 Space environment with particle effects
+                  `);
+            }
+          }, 100);
+        });
+
+        // Additional control functions
+        function resetShapes() {
+          // Clear existing shapes and recreate
+          shapes.forEach((shape) => scene.remove(shape.mesh));
+          shapes.length = 0;
+
+          // Create new shapes
+          for (let i = 0; i < 8; i++) {
+            shapes.push(new MorphingShape());
+          }
+        }
+
+        function forceMerge() {
+          // Force two random shapes to merge
+          if (shapes.length >= 2) {
+            const shape1 = shapes[Math.floor(Math.random() * shapes.length)];
+            const shape2 = shapes[Math.floor(Math.random() * shapes.length)];
+            if (shape1 !== shape2 && !shape1.isMerging && !shape2.isMerging) {
+              shape1.mergeWith(shape2);
+            }
+          }
+        }
+
+        function addShape() {
+          // Add a new shape at random position
+          if (shapes.length < 15) {
+            shapes.push(new MorphingShape());
+          }
+        }
+      </script>
     </div>
     <!-- End main-content -->
   </body>

@@ -443,7 +443,8 @@ class BouncingCubesApp {
     });
 
     // Update display
-    const asciiElement = document.getElementById("ascii-output");
+    const asciiElement =
+      document.getElementById("ascii-output") || window.asciiOutputElement;
     if (asciiElement) {
       asciiElement.textContent = asciiString;
     }

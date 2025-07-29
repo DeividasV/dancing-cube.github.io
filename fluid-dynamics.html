@@ -36,50 +36,45 @@
 
     <!-- Main content container -->
     <div class="main-content">
-      <!-- Controls -->
-      <div class="controls">
-        <h3>FLU1D_C0NTR0LS</h3>
-        <div class="control-group">
-          <button onclick="toggleSimulation()">⏸️ PAUSE/RESUME</button>
-          <button onclick="resetFluid()">🌊 RESET FLUID</button>
-          <button onclick="addTurbulence()">💨 ADD TURBULENCE</button>
-        </div>
-        <div class="control-group">
-          <label>VISCOSITY:</label>
-          <input
-            type="range"
-            id="viscosity"
-            min="0.01"
-            max="0.1"
-            step="0.01"
-            value="0.03"
-            onchange="updateViscosity(this.value)"
-          />
-        </div>
-        <div class="control-group">
-          <label>PARTICLE COUNT:</label>
-          <input
-            type="range"
-            id="particleCount"
-            min="1000"
-            max="10000"
-            step="500"
-            value="5000"
-            onchange="updateParticleCount(this.value)"
-          />
-        </div>
-        <div class="instruction">
-          🖱️ Click and drag to create fluid disturbances<br />
-          🌊 Watch particles follow fluid flow patterns
-        </div>
-      </div>
-
       <!-- Fluid Container -->
       <div id="container"></div>
 
       <!-- Scripts -->
       <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+      <script src="js/shared-controls.js"></script>
       <script src="js/fluid-dynamics.js"></script>
+      <script>
+        // Initialize custom controls after the page loads
+        document.addEventListener("DOMContentLoaded", () => {
+          setTimeout(() => {
+            if (window.exhibitionControls) {
+              // Add custom controls for this exhibition
+              exhibitionControls.addControl(`
+                        <button class="control-button" onclick="toggleSimulation()">⏸️ PAUSE/RESUME</button>
+                        <button class="control-button" onclick="resetFluid()">🌊 RESET FLUID</button>
+                        <button class="control-button" onclick="addTurbulence()">💨 ADD TURBULENCE</button>
+                    `);
+
+              exhibitionControls.addControl(`
+                        <label>VISCOSITY:</label>
+                        <input class="control-range" type="range" id="viscosity" min="0.01" max="0.1" step="0.01" value="0.03" onchange="updateViscosity(this.value)" />
+                    `);
+
+              exhibitionControls.addControl(`
+                        <label>PARTICLE COUNT:</label>
+                        <input class="control-range" type="range" id="particleCount" min="1000" max="10000" step="500" value="5000" onchange="updateParticleCount(this.value)" />
+                    `);
+
+              // Update instructions
+              exhibitionControls.setInstructions(`
+                        🖱️ Click and drag to create fluid disturbances<br>
+                        🌊 Watch particles follow fluid flow patterns<br>
+                        ⚙️ Adjust viscosity and particle count
+                    `);
+            }
+          }, 100);
+        });
+      </script>
     </div>
     <!-- End main-content -->
   </body>
