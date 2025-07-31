@@ -665,6 +665,14 @@ function resetCubes() {
   if (app) app.resetCubes();
 }
 
+function focusCenter() {
+  if (app && app.camera) {
+    // Reset camera to center position
+    app.camera.position.set(0, 5, 10);
+    app.camera.lookAt(0, 0, 0);
+  }
+}
+
 // Initialize when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   // Check if Three.js is loaded
