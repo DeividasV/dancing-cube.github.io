@@ -8,22 +8,25 @@ class ExhibitionControls {
 
   init() {
     // Hide any existing old controls
-    const oldControls = document.querySelectorAll('.controls:not(.shared-controls)');
-    oldControls.forEach(control => {
-      control.style.display = 'none';
+    const oldControls = document.querySelectorAll(
+      ".controls:not(.shared-controls)"
+    );
+    oldControls.forEach((control) => {
+      control.style.display = "none";
     });
 
     // Create controls toggle button
     this.createToggleButton();
-    
+
     // Create controls panel if it doesn't exist
-    if (!document.querySelector('.controls.shared-controls')) {
+    if (!document.querySelector(".controls.shared-controls")) {
       this.createControlsPanel();
     }
 
     // Setup event listeners
     this.setupEventListeners();
-  }  createToggleButton() {
+  }
+  createToggleButton() {
     const toggle = document.createElement("div");
     toggle.className = "controls-toggle";
     toggle.setAttribute("aria-label", "Toggle Controls");

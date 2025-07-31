@@ -1,44 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QU4NTUM_B0UNC3 - Dancing Cube Exhibition</title>
-    <meta name="description" content="Interactive 3D physics simulation with bouncing cubes in a wireframe grid environment.">
-    
+    <meta
+      name="description"
+      content="Interactive 3D physics simulation with bouncing cubes in a wireframe grid environment."
+    />
+
     <!-- Preload fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="css/shared-navigation.css">
-    <link rel="stylesheet" href="css/bouncing-cubes.css">
-</head>
-<body>
+    <link rel="stylesheet" href="css/shared-navigation.css" />
+    <link rel="stylesheet" href="css/bouncing-cubes.css" />
+  </head>
+  <body>
     <!-- Animated background grid -->
     <div class="background-grid"></div>
 
     <!-- Loading indicator -->
     <div class="loading">INITIALIZING QU4NTUM SPACE...</div>
-    
+
     <!-- Header with title and back button -->
     <header class="exhibition-header">
-        <h1 class="exhibition-title">QU4NTUM_B0UNC3</h1>
-        <a href="index.html" class="back-button">Back to Gallery</a>
+      <h1 class="exhibition-title">QU4NTUM_B0UNC3</h1>
+      <a href="index.html" class="back-button">Back to Gallery</a>
     </header>
 
     <!-- Main content container -->
     <div class="main-content">
+      <!-- 3D Container -->
+      <div id="container"></div>
 
-    <!-- 3D Container -->
-    <div id="container"></div>
-
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="js/shared-controls.js"></script>
-    <script src="js/bouncing-cubes.js"></script>
-    <script>
+      <!-- Scripts -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+      <script src="js/shared-controls.js"></script>
+      <script src="js/bouncing-cubes.js"></script>
+      <script>
         // Initialize custom controls after the page loads
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
@@ -49,7 +54,7 @@
                         <button class="control-button" onclick="resetCubes()">🔄 Reset Cubes</button>
                         <button class="control-button" onclick="focusCenter()">🎯 Focus Center</button>
                     `);
-                    
+
                     // Update instructions
                     exhibitionControls.setInstructions(`
                         🖱️ Click and drag to rotate view<br>
@@ -59,376 +64,51 @@
                 }
             }, 100);
         });
-        
+
         // Add focus center function
         function focusCenter() {
             // Smooth camera movement to center focus
             const targetPosition = { x: 12, y: 12, z: 12 };
             const currentPosition = camera.position;
-            
+
             function animateCamera() {
                 const lerpSpeed = 0.05;
                 currentPosition.x += (targetPosition.x - currentPosition.x) * lerpSpeed;
                 currentPosition.y += (targetPosition.y - currentPosition.y) * lerpSpeed;
                 currentPosition.z += (targetPosition.z - currentPosition.z) * lerpSpeed;
-                
+
                 camera.lookAt(0, 0, 0);
-                
-                const distance = Math.abs(currentPosition.x - targetPosition.x) + 
-                               Math.abs(currentPosition.y - targetPosition.y) + 
+
+                const distance = Math.abs(currentPosition.x - targetPosition.x) +
+                               Math.abs(currentPosition.y - targetPosition.y) +
                                Math.abs(currentPosition.z - targetPosition.z);
-                
+
                 if (distance > 0.1) {
                     requestAnimationFrame(animateCamera);
                 }
             }
-            
+
             animateCamera();
         }
-    </script>
-</body>
-</html>
-                // Set new target color after collision
-                this.targetColor = {
-                    h: Math.random(),
-                    s: 0.7 + Math.random() * 0.3,
-                    l: 0.5 + Math.random() * 0.3
-                };
-            }
-            
-            updateColor() {
-                // Smooth color interpolation
-                const lerpSpeed = 0.02;
-                this.currentColor.h += (this.targetColor.h - this.currentColor.h) * lerpSpeed;
-                this.currentColor.s += (this.targetColor.s - this.currentColor.s) * lerpSpeed;
-                this.currentColor.l += (this.targetColor.l - this.currentColor.l) * lerpSpeed;
-                
-                // Handle hue wraparound
-                if (Math.abs(this.targetColor.h - this.currentColor.h) > 0.5) {
-                    if (this.targetColor.h > this.currentColor.h) {
-                        this.currentColor.h += 1;
-                    } else {
-                        this.currentColor.h -= 1;
-                    }
-                }
-                
-                // Normalize hue to 0-1 range
-                this.currentColor.h = ((this.currentColor.h % 1) + 1) % 1;
-                
-                // Update mesh color
-                this.mesh.material.color.setHSL(this.currentColor.h, this.currentColor.s, this.currentColor.l);
-            }
-            
-            updateMeshPosition() {
-                this.mesh.position.set(
-                    (this.position.x - GRID_SIZE/2 + 0.5) * SPACING,
-                    (this.position.y - GRID_SIZE/2 + 0.5) * SPACING,
-                    (this.position.z - GRID_SIZE/2 + 0.5) * SPACING
-                );
-            }
-            
-            update() {
-                if (isPaused) return;
-                
-                // Update color animation
-                this.updateColor();
-                
-                // Update position
-                this.position.x += this.velocity.x;
-                this.position.y += this.velocity.y;
-                this.position.z += this.velocity.z;
-                
-                // Wall collision detection with light mutations
-                if (this.position.x <= 0 || this.position.x >= GRID_SIZE - 1) {
-                    this.velocity.x = -this.velocity.x * (0.9 + Math.random() * 0.2);
-                    this.velocity.y += (Math.random() - 0.5) * 0.01; // Random mutation
-                    this.velocity.z += (Math.random() - 0.5) * 0.01;
-                    this.position.x = Math.max(0, Math.min(GRID_SIZE - 1, this.position.x));
-                    this.changeColor(); // Change color on wall bounce
-                }
-                
-                if (this.position.y <= 0 || this.position.y >= GRID_SIZE - 1) {
-                    this.velocity.y = -this.velocity.y * (0.9 + Math.random() * 0.2);
-                    this.velocity.x += (Math.random() - 0.5) * 0.01;
-                    this.velocity.z += (Math.random() - 0.5) * 0.01;
-                    this.position.y = Math.max(0, Math.min(GRID_SIZE - 1, this.position.y));
-                    this.changeColor(); // Change color on wall bounce
-                }
-                
-                if (this.position.z <= 0 || this.position.z >= GRID_SIZE - 1) {
-                    this.velocity.z = -this.velocity.z * (0.9 + Math.random() * 0.2);
-                    this.velocity.x += (Math.random() - 0.5) * 0.01;
-                    this.velocity.y += (Math.random() - 0.5) * 0.01;
-                    this.position.z = Math.max(0, Math.min(GRID_SIZE - 1, this.position.z));
-                    this.changeColor(); // Change color on wall bounce
-                }
-                
-                // Speed limiting to prevent runaway acceleration
-                const maxSpeed = 0.15;
-                const speed = Math.sqrt(this.velocity.x**2 + this.velocity.y**2 + this.velocity.z**2);
-                if (speed > maxSpeed) {
-                    this.velocity.x = (this.velocity.x / speed) * maxSpeed;
-                    this.velocity.y = (this.velocity.y / speed) * maxSpeed;
-                    this.velocity.z = (this.velocity.z / speed) * maxSpeed;
-                }
-                
-                this.updateMeshPosition();
-            }
-        }
+                currentPosition.x += (targetPosition.x - currentPosition.x) * lerpSpeed;
+                currentPosition.y += (targetPosition.y - currentPosition.y) * lerpSpeed;
+                currentPosition.z += (targetPosition.z - currentPosition.z) * lerpSpeed;
 
-        function init() {
-            // Scene setup
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setClearColor(0x111111);
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            document.getElementById('container').appendChild(renderer.domElement);
+                camera.lookAt(0, 0, 0);
 
-            // Create grid structure (wireframe)
-            gridGroup = new THREE.Group();
-            
-            // Create wireframe grid with transparency for hollow effect
-            const wireframeMaterial = new THREE.LineBasicMaterial({ 
-                color: 0x333333, 
-                transparent: true, 
-                opacity: 0.15 
-            });
-            
-            // Draw selective grid lines for hollow effect
-            for (let i = 0; i <= GRID_SIZE; i++) {
-                for (let j = 0; j <= GRID_SIZE; j++) {
-                    // Only draw outer edge lines and some sparse internal lines
-                    const isEdge = (i === 0 || i === GRID_SIZE || j === 0 || j === GRID_SIZE);
-                    const isSparse = (i % 2 === 0 && j % 2 === 0); // Every other line
-                    
-                    if (isEdge || (isSparse && Math.random() > 0.6)) {
-                        // X-direction lines
-                        const geometry1 = new THREE.BufferGeometry().setFromPoints([
-                            new THREE.Vector3((i - GRID_SIZE/2) * SPACING, (j - GRID_SIZE/2) * SPACING, -GRID_SIZE/2 * SPACING),
-                            new THREE.Vector3((i - GRID_SIZE/2) * SPACING, (j - GRID_SIZE/2) * SPACING, GRID_SIZE/2 * SPACING)
-                        ]);
-                        gridGroup.add(new THREE.Line(geometry1, wireframeMaterial));
-                    }
-                    
-                    if (isEdge || (isSparse && Math.random() > 0.6)) {
-                        // Y-direction lines
-                        const geometry2 = new THREE.BufferGeometry().setFromPoints([
-                            new THREE.Vector3((i - GRID_SIZE/2) * SPACING, -GRID_SIZE/2 * SPACING, (j - GRID_SIZE/2) * SPACING),
-                            new THREE.Vector3((i - GRID_SIZE/2) * SPACING, GRID_SIZE/2 * SPACING, (j - GRID_SIZE/2) * SPACING)
-                        ]);
-                        gridGroup.add(new THREE.Line(geometry2, wireframeMaterial));
-                    }
-                    
-                    if (isEdge || (isSparse && Math.random() > 0.6)) {
-                        // Z-direction lines
-                        const geometry3 = new THREE.BufferGeometry().setFromPoints([
-                            new THREE.Vector3(-GRID_SIZE/2 * SPACING, (i - GRID_SIZE/2) * SPACING, (j - GRID_SIZE/2) * SPACING),
-                            new THREE.Vector3(GRID_SIZE/2 * SPACING, (i - GRID_SIZE/2) * SPACING, (j - GRID_SIZE/2) * SPACING)
-                        ]);
-                        gridGroup.add(new THREE.Line(geometry3, wireframeMaterial));
-                    }
+                const distance = Math.abs(currentPosition.x - targetPosition.x) +
+                               Math.abs(currentPosition.y - targetPosition.y) +
+                               Math.abs(currentPosition.z - targetPosition.z);
+
+                if (distance > 0.1) {
+                    requestAnimationFrame(animateCamera);
                 }
             }
-            
-            // Add moving cubes to the grid group so they rotate with it
-            scene.add(gridGroup);
 
-            // Lighting
-            const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
-            scene.add(ambientLight);
-            
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(10, 10, 5);
-            directionalLight.castShadow = true;
-            scene.add(directionalLight);
-
-            // Create moving cubes and add them to the grid group
-            for (let i = 0; i < 8; i++) {
-                const cube = new MovingCube();
-                gridGroup.add(cube.mesh); // Add to grid group instead of scene
-                movingCubes.push(cube);
-            }
-
-            // Camera position
-            camera.position.set(15, 15, 15);
-            camera.lookAt(0, 0, 0);
-
-            // Mouse event listeners
-            renderer.domElement.addEventListener('mousedown', onMouseDown);
-            renderer.domElement.addEventListener('mousemove', onMouseMove);
-            renderer.domElement.addEventListener('mouseup', onMouseUp);
-            
-            // Window resize handler
-            window.addEventListener('resize', onWindowResize);
+            animateCamera();
         }
-
-        function checkCollisions() {
-            for (let i = 0; i < movingCubes.length; i++) {
-                for (let j = i + 1; j < movingCubes.length; j++) {
-                    const cube1 = movingCubes[i];
-                    const cube2 = movingCubes[j];
-                    
-                    const distance = Math.sqrt(
-                        Math.pow(cube1.position.x - cube2.position.x, 2) +
-                        Math.pow(cube1.position.y - cube2.position.y, 2) +
-                        Math.pow(cube1.position.z - cube2.position.z, 2)
-                    );
-                    
-                    if (distance < 1.2) { // Collision detected
-                        // Calculate collision normal
-                        const nx = (cube2.position.x - cube1.position.x) / distance;
-                        const ny = (cube2.position.y - cube1.position.y) / distance;
-                        const nz = (cube2.position.z - cube1.position.z) / distance;
-                        
-                        // Relative velocity
-                        const rvx = cube2.velocity.x - cube1.velocity.x;
-                        const rvy = cube2.velocity.y - cube1.velocity.y;
-                        const rvz = cube2.velocity.z - cube1.velocity.z;
-                        
-                        // Relative velocity along normal
-                        const speedAlongNormal = rvx * nx + rvy * ny + rvz * nz;
-                        
-                        if (speedAlongNormal > 0) continue; // Objects separating
-                        
-                        // Collision response with mutations
-                        const restitution = 0.8 + Math.random() * 0.4; // Random restitution
-                        const impulse = 2 * speedAlongNormal / 2; // Assuming equal mass
-                        
-                        cube1.velocity.x += impulse * nx * restitution;
-                        cube1.velocity.y += impulse * ny * restitution;
-                        cube1.velocity.z += impulse * nz * restitution;
-                        
-                        cube2.velocity.x -= impulse * nx * restitution;
-                        cube2.velocity.y -= impulse * ny * restitution;
-                        cube2.velocity.z -= impulse * nz * restitution;
-                        
-                        // Add random mutations
-                        const mutationStrength = 0.02;
-                        cube1.velocity.x += (Math.random() - 0.5) * mutationStrength;
-                        cube1.velocity.y += (Math.random() - 0.5) * mutationStrength;
-                        cube1.velocity.z += (Math.random() - 0.5) * mutationStrength;
-                        
-                        cube2.velocity.x += (Math.random() - 0.5) * mutationStrength;
-                        cube2.velocity.y += (Math.random() - 0.5) * mutationStrength;
-                        cube2.velocity.z += (Math.random() - 0.5) * mutationStrength;
-                        
-                        // Change colors on collision
-                        cube1.changeColor();
-                        cube2.changeColor();
-                        
-                        // Separate cubes to prevent overlap
-                        const overlap = 1.2 - distance;
-                        const separationX = nx * overlap * 0.5;
-                        const separationY = ny * overlap * 0.5;
-                        const separationZ = nz * overlap * 0.5;
-                        
-                        cube1.position.x -= separationX;
-                        cube1.position.y -= separationY;
-                        cube1.position.z -= separationZ;
-                        
-                        cube2.position.x += separationX;
-                        cube2.position.y += separationY;
-                        cube2.position.z += separationZ;
-                    }
-                }
-            }
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            // Update moving cubes
-            movingCubes.forEach(cube => cube.update());
-            
-            // Check for collisions
-            checkCollisions();
-            
-            // Auto rotation of the entire grid (slow and smooth)
-            if (!isMouseDown) {
-                gridGroup.rotation.x += autoRotationX;
-                gridGroup.rotation.y += autoRotationY;
-                gridGroup.rotation.z += autoRotationZ;
-                
-                // Occasionally change rotation direction slightly for variety
-                if (Math.random() < 0.001) {
-                    autoRotationX += (Math.random() - 0.5) * 0.0005;
-                    autoRotationY += (Math.random() - 0.5) * 0.0005;
-                    autoRotationZ += (Math.random() - 0.5) * 0.0005;
-                    
-                    // Clamp rotation speeds to keep them slow
-                    autoRotationX = Math.max(-0.003, Math.min(0.003, autoRotationX));
-                    autoRotationY = Math.max(-0.003, Math.min(0.003, autoRotationY));
-                    autoRotationZ = Math.max(-0.003, Math.min(0.003, autoRotationZ));
-                }
-            }
-            
-            // Mouse rotation (overrides auto rotation when active)
-            if (isMouseDown) {
-                gridGroup.rotation.y += (targetRotationY - gridGroup.rotation.y) * 0.05;
-                gridGroup.rotation.x += (targetRotationX - gridGroup.rotation.x) * 0.05;
-            }
-            
-            // Moving cubes don't need to copy grid rotation anymore since they're inside the rotating grid
-            
-            renderer.render(scene, camera);
-        }
-
-        function onMouseDown(event) {
-            isMouseDown = true;
-            mouseX = event.clientX;
-            mouseY = event.clientY;
-        }
-
-        function onMouseMove(event) {
-            if (isMouseDown) {
-                const deltaX = event.clientX - mouseX;
-                const deltaY = event.clientY - mouseY;
-                
-                targetRotationY = gridGroup.rotation.y + deltaX * 0.01;
-                targetRotationX = gridGroup.rotation.x + deltaY * 0.01;
-                
-                mouseX = event.clientX;
-                mouseY = event.clientY;
-            }
-        }
-
-        function onMouseUp() {
-            isMouseDown = false;
-        }
-
-        function togglePause() {
-            isPaused = !isPaused;
-        }
-
-        function resetCubes() {
-            // Remove existing cubes from grid group
-            movingCubes.forEach(cube => {
-                gridGroup.remove(cube.mesh);
-            });
-            movingCubes = [];
-            
-            // Create new cubes and add to grid group
-            for (let i = 0; i < 8; i++) {
-                const cube = new MovingCube();
-                gridGroup.add(cube.mesh);
-                movingCubes.push(cube);
-            }
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        // Initialize and start
-        init();
-        animate();
-    </script>
-    
-    </div> <!-- End main-content -->
-</body>
+      </script>
+    </div>
+    <!-- End main-content -->
+  </body>
 </html>
