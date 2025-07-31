@@ -22,60 +22,95 @@
     <link rel="stylesheet" href="../css/fluid-dynamics.css" />
   </head>
   <body>
-    <!-- Animated background grid -->
-    <div class="background-grid"></div>
+    <!-- Top Navigation Menu -->
+    <nav class="top-menu">
+      <div class="menu-left">
+        <h1 class="menu-title">FLU1D_DYN4M1X</h1>
+      </div>
+      <div class="menu-center">
+        <div class="fluid-status">
+          <span class="status-label">STATUS:</span>
+          <span class="status-value" id="fluidStatus">ACTIVE</span>
+        </div>
+      </div>
+      <div class="menu-right">
+        <button class="menu-button" onclick="toggleSimulation()">
+          ⏸️ PAUSE
+        </button>
+        <button class="menu-button" onclick="resetFluid()">🌊 RESET</button>
+        <button class="menu-button" onclick="addTurbulence()">💨 TURB</button>
+        <a href="../index.html" class="back-button">← GALLERY</a>
+      </div>
+    </nav>
 
     <!-- Loading indicator -->
     <div class="loading">INITIALIZING FLU1D SY5T3M...</div>
 
-    <!-- Header with title and back button -->
-    <header class="exhibition-header">
-      <h1 class="exhibition-title">FLU1D_DYN4M1X</h1>
-      <a href="index.html" class="back-button">Back to Gallery</a>
-    </header>
+    <!-- Main fluid container - fills remaining space -->
+    <div id="container"></div>
 
-    <!-- Main content container -->
-    <div class="main-content">
-      <!-- Fluid Container -->
-      <div id="container"></div>
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="../js/shared-controls.js"></script>
+    <script src="../js/fluid-dynamics.js"></script>
+    <script>
+      // Global variables for fluid simulation control
+      let isSimulationPaused = false;
 
-      <!-- Scripts -->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-      <script src="../js/shared-controls.js"></script>
-      <script src="../js/fluid-dynamics.js"></script>
-      <script>
-        // Initialize custom controls after the page loads
-        document.addEventListener("DOMContentLoaded", () => {
-          setTimeout(() => {
-            if (window.exhibitionControls) {
-              // Add custom controls for this exhibition
-              exhibitionControls.addControl(`
-                        <button class="control-button" onclick="toggleSimulation()">⏸️ PAUSE/RESUME</button>
-                        <button class="control-button" onclick="resetFluid()">🌊 RESET FLUID</button>
-                        <button class="control-button" onclick="addTurbulence()">💨 ADD TURBULENCE</button>
-                    `);
+      // Initialize after page loads
+      document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+          // Hide loading indicator
+          const loading = document.querySelector(".loading");
+          if (loading) {
+            loading.style.display = "none";
+          }
+        }, 2000);
+      });
 
-              exhibitionControls.addControl(`
-                        <label>VISCOSITY:</label>
-                        <input class="control-range" type="range" id="viscosity" min="0.01" max="0.1" step="0.01" value="0.03" onchange="updateViscosity(this.value)" />
-                    `);
+      // Function to toggle simulation
+      function toggleSimulation() {
+        isSimulationPaused = !isSimulationPaused;
+        const statusEl = document.getElementById("fluidStatus");
+        const pauseBtn = document.querySelector(".menu-button");
 
-              exhibitionControls.addControl(`
-                        <label>PARTICLE COUNT:</label>
-                        <input class="control-range" type="range" id="particleCount" min="1000" max="10000" step="500" value="5000" onchange="updateParticleCount(this.value)" />
-                    `);
+        if (isSimulationPaused) {
+          statusEl.textContent = "PAUSED";
+          pauseBtn.innerHTML = "▶️ RESUME";
+        } else {
+          statusEl.textContent = "ACTIVE";
+          pauseBtn.innerHTML = "⏸️ PAUSE";
+        }
 
-              // Update instructions
-              exhibitionControls.setInstructions(`
-                        🖱️ Click and drag to create fluid disturbances<br>
-                        🌊 Watch particles follow fluid flow patterns<br>
-                        ⚙️ Adjust viscosity and particle count
-                    `);
-            }
-          }, 100);
-        });
-      </script>
-    </div>
-    <!-- End main-content -->
+        // Call the actual fluid simulation toggle if it exists
+        if (window.toggleFluidSimulation) {
+          window.toggleFluidSimulation();
+        }
+      }
+
+      // Function to reset fluid
+      function resetFluid() {
+        if (window.resetFluidSimulation) {
+          window.resetFluidSimulation();
+        }
+        const statusEl = document.getElementById("fluidStatus");
+        statusEl.textContent = "RESET";
+        setTimeout(() => {
+          statusEl.textContent = isSimulationPaused ? "PAUSED" : "ACTIVE";
+        }, 1000);
+      }
+
+      // Function to add turbulence
+      function addTurbulence() {
+        if (window.addFluidTurbulence) {
+          window.addFluidTurbulence();
+        }
+        const statusEl = document.getElementById("fluidStatus");
+        statusEl.textContent = "TURBULENT";
+        setTimeout(() => {
+          statusEl.textContent = isSimulationPaused ? "PAUSED" : "ACTIVE";
+        }, 2000);
+      }
+    </script>
   </body>
 </html>
