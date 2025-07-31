@@ -47,23 +47,44 @@
                     exhibitionControls.addControl(`
                         <button class="control-button" onclick="togglePause()">⏸️ Pause/Resume</button>
                         <button class="control-button" onclick="resetCubes()">🔄 Reset Cubes</button>
+                        <button class="control-button" onclick="focusCenter()">🎯 Focus Center</button>
                     `);
-
-                    // Add ASCII display
-                    const asciiOutput = exhibitionControls.addInfoDisplay('Position ASCII (3×8=24 chars)', 'Initializing...');
                     
                     // Update instructions
                     exhibitionControls.setInstructions(`
                         🖱️ Click and drag to rotate view<br>
                         🎯 Watch cubes change colors on collision<br>
-                        ⚙️ Use the controls panel to interact
+                        🔄 Reset to experience again
                     `);
-
-                    // Store reference for ASCII updates
-                    window.asciiOutputElement = asciiOutput;
                 }
             }, 100);
         });
+        
+        // Add focus center function
+        function focusCenter() {
+            // Smooth camera movement to center focus
+            const targetPosition = { x: 12, y: 12, z: 12 };
+            const currentPosition = camera.position;
+            
+            function animateCamera() {
+                const lerpSpeed = 0.05;
+                currentPosition.x += (targetPosition.x - currentPosition.x) * lerpSpeed;
+                currentPosition.y += (targetPosition.y - currentPosition.y) * lerpSpeed;
+                currentPosition.z += (targetPosition.z - currentPosition.z) * lerpSpeed;
+                
+                camera.lookAt(0, 0, 0);
+                
+                const distance = Math.abs(currentPosition.x - targetPosition.x) + 
+                               Math.abs(currentPosition.y - targetPosition.y) + 
+                               Math.abs(currentPosition.z - targetPosition.z);
+                
+                if (distance > 0.1) {
+                    requestAnimationFrame(animateCamera);
+                }
+            }
+            
+            animateCamera();
+        }
     </script>
 </body>
 </html>

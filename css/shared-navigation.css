@@ -168,6 +168,14 @@ body {
   display: none !important;
 }
 
+/* Hide side panels and password generation panels */
+.password-panel,
+.side-panel,
+.info-panel,
+.stats-panel {
+  display: none !important;
+}
+
 /* Control Panel Styles */
 .controls-toggle {
   position: fixed;
@@ -210,23 +218,23 @@ body {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0.8);
   z-index: 1400;
-  width: 320px;
-  max-height: 80vh;
+  width: 300px;
+  max-width: 90vw;
+  max-height: 70vh;
   overflow-y: auto;
   background: rgba(10, 10, 10, 0.95);
   border: 1px solid var(--glass-border);
   border-radius: 12px;
   padding: 20px;
   backdrop-filter: blur(15px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
-              opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-              visibility 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   visibility: hidden;
   opacity: 0;
-  transform: translate(-50%, -50%) scale(0.8);
 }
 
 .controls.active {
@@ -403,11 +411,11 @@ body {
 
   .controls {
     width: calc(100vw - 40px);
-    max-width: 350px;
+    max-width: 300px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0.8);
-    max-height: 70vh;
+    max-height: 60vh;
     visibility: hidden;
     opacity: 0;
   }

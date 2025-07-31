@@ -415,41 +415,6 @@ class BouncingCubesApp {
     }
   }
 
-  // Convert cube positions to ASCII characters
-  updateAsciiDisplay() {
-    let asciiString = "";
-
-    // Process each cube's position (x, y, z) as binary values
-    this.movingCubes.forEach((cube, index) => {
-      // Convert position to binary (0 or 1) based on grid position
-      // Using the middle of the grid (GRID_SIZE/2) as the threshold
-      const xBit = cube.position.x > this.GRID_SIZE / 2 ? 1 : 0;
-      const yBit = cube.position.y > this.GRID_SIZE / 2 ? 1 : 0;
-      const zBit = cube.position.z > this.GRID_SIZE / 2 ? 1 : 0;
-
-      // Create 3 separate ASCII values from each coordinate
-      // Each coordinate becomes an ASCII character (32-126 range for printable chars)
-      const xChar = String.fromCharCode(
-        32 + Math.floor((cube.position.x / this.GRID_SIZE) * 94)
-      );
-      const yChar = String.fromCharCode(
-        32 + Math.floor((cube.position.y / this.GRID_SIZE) * 94)
-      );
-      const zChar = String.fromCharCode(
-        32 + Math.floor((cube.position.z / this.GRID_SIZE) * 94)
-      );
-
-      asciiString += xChar + yChar + zChar;
-    });
-
-    // Update display
-    const asciiElement =
-      document.getElementById("ascii-output") || window.asciiOutputElement;
-    if (asciiElement) {
-      asciiElement.textContent = asciiString;
-    }
-  }
-
   animate() {
     requestAnimationFrame(() => this.animate());
 
@@ -458,9 +423,6 @@ class BouncingCubesApp {
 
     // Check for collisions
     this.checkCollisions();
-
-    // Update ASCII display
-    this.updateAsciiDisplay();
 
     // Update 3D text
     this.update3DText();
