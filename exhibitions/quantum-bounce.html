@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QU4NTUM_B0UNC3 - Dancing Cube Exhibition</title>
+    <meta
+      name="description"
+      content="Interactive 3D physics simulation with bouncing cubes in a wireframe grid environment."
+    />
+
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/shared-navigation.css" />
+    <link rel="stylesheet" href="../css/quantum-bounce.css" />
+  </head>
+  <body>
+    <!-- Animated background grid -->
+    <div class="background-grid"></div>
+
+    <!-- Loading indicator -->
+    <div class="loading">INITIALIZING QU4NTUM SPACE...</div>
+
+    <!-- Header with title and back button -->
+    <header class="exhibition-header">
+      <h1 class="exhibition-title">QU4NTUM_B0UNC3</h1>
+      <a href="index.html" class="back-button">Back to Gallery</a>
+    </header>
+
+    <!-- Main content container -->
+    <div class="main-content">
+      <!-- 3D Container -->
+      <div id="container"></div>
+
+      <!-- Scripts -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+      <script src="../js/shared-controls.js"></script>
+      <script src="../js/quantum-bounce.js"></script>
+      <script>
+        // Initialize custom controls after the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                if (window.exhibitionControls) {
+                    // Add custom controls for this exhibition
+                    exhibitionControls.addControl(`
+                        <button class="control-button" onclick="togglePause()">⏸️ Pause/Resume</button>
+                        <button class="control-button" onclick="resetCubes()">🔄 Reset Cubes</button>
+                        <button class="control-button" onclick="focusCenter()">🎯 Focus Center</button>
+                    `);
+
+                    // Update instructions
+                    exhibitionControls.setInstructions(`
+                        🖱️ Click and drag to rotate view<br>
+                        🎯 Watch cubes change colors on collision<br>
+                        🔄 Reset to experience again
+                    `);
+                }
+            }, 100);
+        });
+
+        // Add focus center function
+        function focusCenter() {
+            // Smooth camera movement to center focus
+            const targetPosition = { x: 12, y: 12, z: 12 };
+            const currentPosition = camera.position;
+
+            function animateCamera() {
+                const lerpSpeed = 0.05;
+                currentPosition.x += (targetPosition.x - currentPosition.x) * lerpSpeed;
+                currentPosition.y += (targetPosition.y - currentPosition.y) * lerpSpeed;
+                currentPosition.z += (targetPosition.z - currentPosition.z) * lerpSpeed;
+
+                camera.lookAt(0, 0, 0);
+
+                const distance = Math.abs(currentPosition.x - targetPosition.x) +
+                               Math.abs(currentPosition.y - targetPosition.y) +
+                               Math.abs(currentPosition.z - targetPosition.z);
+
+                if (distance > 0.1) {
+                    requestAnimationFrame(animateCamera);
+                }
+            }
+
+            animateCamera();
+        }
+                currentPosition.x += (targetPosition.x - currentPosition.x) * lerpSpeed;
+                currentPosition.y += (targetPosition.y - currentPosition.y) * lerpSpeed;
+                currentPosition.z += (targetPosition.z - currentPosition.z) * lerpSpeed;
+
+                camera.lookAt(0, 0, 0);
+
+                const distance = Math.abs(currentPosition.x - targetPosition.x) +
+                               Math.abs(currentPosition.y - targetPosition.y) +
+                               Math.abs(currentPosition.z - targetPosition.z);
+
+                if (distance > 0.1) {
+                    requestAnimationFrame(animateCamera);
+                }
+            }
+
+            animateCamera();
+        }
+      </script>
+    </div>
+    <!-- End main-content -->
+  </body>
+</html>
