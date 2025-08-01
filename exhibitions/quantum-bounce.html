@@ -41,73 +41,7 @@
 
       <!-- Scripts -->
       <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-      <script src="../js/shared-controls.js"></script>
       <script src="../js/quantum-bounce.js"></script>
-      <script>
-        // Initialize custom controls after the page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                if (window.exhibitionControls) {
-                    // Add custom controls for this exhibition
-                    exhibitionControls.addControl(`
-                        <button class="control-button" onclick="togglePause()">⏸️ Pause/Resume</button>
-                        <button class="control-button" onclick="resetCubes()">🔄 Reset Cubes</button>
-                        <button class="control-button" onclick="focusCenter()">🎯 Focus Center</button>
-                    `);
-
-                    // Update instructions
-                    exhibitionControls.setInstructions(`
-                        🖱️ Click and drag to rotate view<br>
-                        🎯 Watch cubes change colors on collision<br>
-                        🔄 Reset to experience again
-                    `);
-                }
-            }, 100);
-        });
-
-        // Add focus center function
-        function focusCenter() {
-            // Smooth camera movement to center focus
-            const targetPosition = { x: 12, y: 12, z: 12 };
-            const currentPosition = camera.position;
-
-            function animateCamera() {
-                const lerpSpeed = 0.05;
-                currentPosition.x += (targetPosition.x - currentPosition.x) * lerpSpeed;
-                currentPosition.y += (targetPosition.y - currentPosition.y) * lerpSpeed;
-                currentPosition.z += (targetPosition.z - currentPosition.z) * lerpSpeed;
-
-                camera.lookAt(0, 0, 0);
-
-                const distance = Math.abs(currentPosition.x - targetPosition.x) +
-                               Math.abs(currentPosition.y - targetPosition.y) +
-                               Math.abs(currentPosition.z - targetPosition.z);
-
-                if (distance > 0.1) {
-                    requestAnimationFrame(animateCamera);
-                }
-            }
-
-            animateCamera();
-        }
-                currentPosition.x += (targetPosition.x - currentPosition.x) * lerpSpeed;
-                currentPosition.y += (targetPosition.y - currentPosition.y) * lerpSpeed;
-                currentPosition.z += (targetPosition.z - currentPosition.z) * lerpSpeed;
-
-                camera.lookAt(0, 0, 0);
-
-                const distance = Math.abs(currentPosition.x - targetPosition.x) +
-                               Math.abs(currentPosition.y - targetPosition.y) +
-                               Math.abs(currentPosition.z - targetPosition.z);
-
-                if (distance > 0.1) {
-                    requestAnimationFrame(animateCamera);
-                }
-            }
-
-            animateCamera();
-        }
-      </script>
     </div>
     <!-- End main-content -->
   </body>

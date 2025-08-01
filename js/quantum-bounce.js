@@ -9,9 +9,9 @@ class BouncingCubesApp {
     this.isPaused = false;
 
     // Configuration
-    this.GRID_SIZE = 8;
-    this.CUBE_SIZE = 0.8;
-    this.SPACING = 1;
+    this.GRID_SIZE = 16;
+    this.CUBE_SIZE = 1.2;
+    this.SPACING = 1.5;
 
     // Mouse controls
     this.mouseX = 0;
@@ -25,13 +25,6 @@ class BouncingCubesApp {
     this.autoRotationY = Math.random() * 0.002 - 0.001;
     this.autoRotationZ = Math.random() * 0.002 - 0.001;
 
-    // 3D Text for ASCII display - separate for each axis
-    this.textMeshX = null;
-    this.textMeshY = null;
-    this.textMeshZ = null;
-    this.textUpdateCounter = 0;
-    this.textUpdateInterval = 15; // Update every 15 frames
-
     this.init();
   }
 
@@ -40,7 +33,6 @@ class BouncingCubesApp {
     this.setupLighting();
     this.createGrid();
     this.createMovingCubes();
-    this.setup3DText();
     this.setupEventListeners();
     this.animate();
 
@@ -53,7 +45,7 @@ class BouncingCubesApp {
     // Scene setup
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(
-      75,
+      60, // Reduced FOV to make cubes appear larger
       window.innerWidth / window.innerHeight,
       0.1,
       1000
@@ -66,173 +58,8 @@ class BouncingCubesApp {
     document.getElementById("container").appendChild(this.renderer.domElement);
 
     // Camera position
-    this.camera.position.set(15, 15, 15);
+    this.camera.position.set(25, 25, 25);
     this.camera.lookAt(0, 0, 0);
-  }
-
-  setup3DText() {
-    // Create 3D text displays for X, Y, Z axes
-    this.createAxisText("X", "Initializing...", "x");
-    this.createAxisText("Y", "Initializing...", "y");
-    this.createAxisText("Z", "Initializing...", "z");
-  }
-
-  createAxisText(axis, text, axisType) {
-    // Remove existing text mesh if it exists
-    const meshName = `textMesh${axis}`;
-    if (this[meshName]) {
-      this.scene.remove(this[meshName]);
-    }
-
-    // Create text using canvas texture approach for better performance
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
-
-    // Set canvas size - very large for crisp text
-    canvas.width = 2048;
-    canvas.height = 512;
-
-    // Clear canvas with slight background for better visibility
-    context.fillStyle = "rgba(0, 0, 0, 0.4)";
-    context.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Define colors for each axis
-    let axisColor = "#ffffff";
-    switch (axisType) {
-      case "x":
-        axisColor = "#ff6b6b";
-        break; // Red for X
-      case "y":
-        axisColor = "#4ecdc4";
-        break; // Teal for Y
-      case "z":
-        axisColor = "#45b7d1";
-        break; // Blue for Z
-    }
-
-    // Draw axis label
-    context.fillStyle = axisColor;
-    context.font = 'bold 80px "Arial", sans-serif';
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    context.fillText(`${axis}-AXIS:`, canvas.width / 2, 120);
-
-    // Draw ASCII text - bigger and more prominent
-    context.fillStyle = "#ffffff";
-    context.font = 'bold 160px "Courier New", monospace';
-    context.fillText(text, canvas.width / 2, 320);
-
-    // Create texture from canvas
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.needsUpdate = true;
-
-    // Create material with better visibility
-    const material = new THREE.MeshBasicMaterial({
-      map: texture,
-      transparent: true,
-      opacity: 0.95,
-      side: THREE.DoubleSide,
-    });
-
-    // Create plane geometry - very large
-    const geometry = new THREE.PlaneGeometry(25, 6);
-
-    // Create mesh
-    const textMesh = new THREE.Mesh(geometry, material);
-
-    // Position based on axis - further out for better visibility
-    switch (axisType) {
-      case "x":
-        textMesh.position.set(18, 0, 0); // Right side for X axis
-        textMesh.rotation.y = -Math.PI / 2; // Face toward center
-        break;
-      case "y":
-        textMesh.position.set(0, 18, 0); // Top for Y axis
-        textMesh.rotation.x = Math.PI / 2; // Face down
-        break;
-      case "z":
-        textMesh.position.set(0, 0, 18); // Front for Z axis
-        // No rotation needed, faces camera
-        break;
-    }
-
-    // Add to scene (not grid group so it doesn't rotate)
-    this.scene.add(textMesh);
-    this[meshName] = textMesh;
-  }
-
-  update3DText() {
-    // Update less frequently to avoid performance issues
-    this.textUpdateCounter++;
-    if (this.textUpdateCounter >= this.textUpdateInterval) {
-      this.textUpdateCounter = 0;
-
-      // Get current ASCII characters from cubes for each axis
-      const asciiData = this.getAxisAsciiChars();
-
-      // Update each axis text display
-      if (asciiData.x) {
-        this.createAxisText("X", asciiData.x, "x");
-      }
-      if (asciiData.y) {
-        this.createAxisText("Y", asciiData.y, "y");
-      }
-      if (asciiData.z) {
-        this.createAxisText("Z", asciiData.z, "z");
-      }
-    }
-  }
-
-  getAxisAsciiChars() {
-    let xChars = "";
-    let yChars = "";
-    let zChars = "";
-
-    // Process each cube's position to generate ASCII characters for each axis
-    this.movingCubes.forEach((cube) => {
-      // Convert position to ASCII character (32-126 range for printable chars)
-      const xChar = String.fromCharCode(
-        32 + Math.floor((cube.position.x / this.GRID_SIZE) * 94)
-      );
-      const yChar = String.fromCharCode(
-        32 + Math.floor((cube.position.y / this.GRID_SIZE) * 94)
-      );
-      const zChar = String.fromCharCode(
-        32 + Math.floor((cube.position.z / this.GRID_SIZE) * 94)
-      );
-
-      xChars += xChar;
-      yChars += yChar;
-      zChars += zChar;
-    });
-
-    return {
-      x: xChars,
-      y: yChars,
-      z: zChars,
-    };
-  }
-
-  getCurrentAsciiChars() {
-    let asciiString = "";
-
-    // Process each cube's position to generate ASCII characters
-    this.movingCubes.forEach((cube) => {
-      // Convert position to ASCII character (32-126 range for printable chars)
-      const xChar = String.fromCharCode(
-        32 + Math.floor((cube.position.x / this.GRID_SIZE) * 94)
-      );
-      const yChar = String.fromCharCode(
-        32 + Math.floor((cube.position.y / this.GRID_SIZE) * 94)
-      );
-      const zChar = String.fromCharCode(
-        32 + Math.floor((cube.position.z / this.GRID_SIZE) * 94)
-      );
-
-      asciiString += xChar + yChar + zChar;
-    });
-
-    return asciiString;
   }
 
   setupLighting() {
@@ -423,9 +250,6 @@ class BouncingCubesApp {
 
     // Check for collisions
     this.checkCollisions();
-
-    // Update 3D text
-    this.update3DText();
 
     // Auto rotation of the entire grid
     if (!this.isMouseDown) {
@@ -656,22 +480,6 @@ class MovingCube {
 
 // Global variables for compatibility
 let app;
-
-function togglePause() {
-  if (app) app.togglePause();
-}
-
-function resetCubes() {
-  if (app) app.resetCubes();
-}
-
-function focusCenter() {
-  if (app && app.camera) {
-    // Reset camera to center position
-    app.camera.position.set(0, 5, 10);
-    app.camera.lookAt(0, 0, 0);
-  }
-}
 
 // Initialize when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
