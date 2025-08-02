@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GL4SS_SPH3R3S - Dancing Cube Exhibition</title>
+    <meta
+      name="description"
+      content="Interactive floating glass spheres with dynamic lighting, particles, and musical notes in an elegant 3D environment."
+    />
+
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/shared-navigation.css" />
+    <link rel="stylesheet" href="../css/glass-spheres.css" />
+  </head>
+  <body>
+    <!-- Animated background grid -->
+    <div class="background-grid"></div>
+
+    <!-- Loading indicator -->
+    <div class="loading">INITIALIZING GL4SS SPHERES...</div>
+
+    <!-- Header with title and back button -->
+    <header class="exhibition-header">
+      <h1 class="exhibition-title">GL4SS_SPH3R3S</h1>
+      <a href="../index.html" class="back-button">Back to Gallery</a>
+    </header>
+
+    <!-- Main content container -->
+    <div class="main-content">
+      <div class="scene">
+        <div class="glass-ball ball1"></div>
+        <div class="glass-ball ball2"></div>
+        <div class="glass-ball ball3"></div>
+
+        <!-- Light rays -->
+        <div
+          class="light-ray"
+          style="left: 20%; top: 10%; animation-delay: 0s"
+        ></div>
+        <div
+          class="light-ray"
+          style="right: 25%; top: 15%; animation-delay: -1s"
+        ></div>
+        <div
+          class="light-ray"
+          style="left: 60%; top: 5%; animation-delay: -2s"
+        ></div>
+        <div
+          class="light-ray"
+          style="left: 45%; bottom: 20%; animation-delay: -3s"
+        ></div>
+        <div
+          class="light-ray"
+          style="right: 45%; bottom: 30%; animation-delay: -4s"
+        ></div>
+
+        <!-- Swan reflections inside balls -->
+        <div
+          class="swan-reflection"
+          style="left: 18%; top: 25%; animation-delay: 0s"
+        ></div>
+        <div
+          class="swan-reflection"
+          style="right: 22%; top: 35%; animation-delay: -4s"
+        ></div>
+        <div
+          class="swan-reflection"
+          style="left: 52%; bottom: 30%; animation-delay: -8s"
+        ></div>
+      </div>
+
+      <!-- Scripts -->
+      <script src="../js/glass-spheres.js"></script>
+    </div>
+    <!-- End main-content -->
+  </body>
+</html>

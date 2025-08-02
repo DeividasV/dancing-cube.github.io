@@ -688,6 +688,157 @@ body {
   }
 }
 
+/* Glass Spheres Icon - Floating glass orbs */
+.icon-gradient.glass {
+  background: linear-gradient(135deg, #0a0a1a, #1a1a2e, #87ceeb);
+}
+
+.icon-gradient.glass::before {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: radial-gradient(
+    ellipse at 30% 30%,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.2) 40%,
+    rgba(135, 206, 250, 0.4) 70%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  animation: glassFloat1 4s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(135, 206, 250, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.icon-gradient.glass::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(
+    ellipse at 25% 25%,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(255, 255, 255, 0.1) 30%,
+    rgba(135, 206, 250, 0.3) 60%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  animation: glassFloat2 4s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(135, 206, 250, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transform: translate(10px, 10px);
+}
+
+@keyframes glassFloat1 {
+  0%,
+  100% {
+    transform: translate(2px, 2px) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(4px, 0px) scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes glassFloat2 {
+  0%,
+  100% {
+    transform: translate(10px, 10px) scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translate(8px, 8px) scale(0.9);
+    opacity: 1;
+  }
+}
+
+/* Axis Connect Icon - 3D axis connections */
+.icon-gradient.axis {
+  background: linear-gradient(
+    135deg,
+    #2c2c2c,
+    #1a1a1a,
+    #ff6b6b,
+    #00ff88,
+    #ffff00
+  );
+}
+
+.icon-gradient.axis::before {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 107, 107, 0.8) 0%,
+    rgba(0, 255, 136, 0.8) 50%,
+    rgba(255, 255, 0, 0.8) 100%
+  );
+  border-radius: 1px;
+  animation: axisRotate1 3s linear infinite;
+  transform-origin: center;
+  box-shadow: 0 0 4px rgba(255, 107, 107, 0.4);
+}
+
+.icon-gradient.axis::after {
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 16px;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 255, 136, 0.8) 0%,
+    rgba(255, 255, 0, 0.8) 50%,
+    rgba(255, 107, 107, 0.8) 100%
+  );
+  border-radius: 1px;
+  animation: axisRotate2 3s linear infinite;
+  transform-origin: center;
+  box-shadow: 0 0 4px rgba(0, 255, 136, 0.4);
+  transform: translate(7px, 0px);
+}
+
+@keyframes axisRotate1 {
+  0% {
+    transform: translate(0px, 7px) rotate(0deg);
+    opacity: 0.8;
+  }
+  33% {
+    transform: translate(0px, 7px) rotate(120deg);
+    opacity: 1;
+  }
+  66% {
+    transform: translate(0px, 7px) rotate(240deg);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(0px, 7px) rotate(360deg);
+    opacity: 0.8;
+  }
+}
+
+@keyframes axisRotate2 {
+  0% {
+    transform: translate(7px, 0px) rotate(90deg);
+    opacity: 0.7;
+  }
+  33% {
+    transform: translate(7px, 0px) rotate(210deg);
+    opacity: 1;
+  }
+  66% {
+    transform: translate(7px, 0px) rotate(330deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(7px, 0px) rotate(450deg);
+    opacity: 0.7;
+  }
+}
+
 @keyframes iconPulse {
   0%,
   100% {
