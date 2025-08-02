@@ -345,3 +345,16 @@ window.addEventListener("resize", () => {
 
 // Start animation
 animate();
+
+// Hide loading text once everything is initialized
+setTimeout(() => {
+  const loading = document.querySelector(".loading");
+  if (loading) {
+    loading.style.transition = "opacity 0.5s ease, visibility 0.5s ease";
+    loading.style.opacity = "0";
+    loading.style.visibility = "hidden";
+    setTimeout(() => {
+      loading.style.display = "none";
+    }, 500);
+  }
+}, 1000);
