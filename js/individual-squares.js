@@ -47,9 +47,15 @@ class IndividualSquares {
       // Give each square a unique gradient
       square.style.background = this.createGradient();
 
-      // Add slight variation to animation duration for more organic feel
-      const duration = 3 + Math.random() * 4; // 3-7 seconds
-      square.style.animationDuration = `${duration}s`;
+      // Add gradient animation with slight variation
+      const gradientDuration = 4 + Math.random() * 6; // 4-10 seconds
+      square.style.setProperty("--gradient-duration", `${gradientDuration}s`);
+
+      // Add random pulse animation
+      const pulseDuration = 2 + Math.random() * 4; // 2-6 seconds
+      const pulseDelay = Math.random() * 3; // 0-3 seconds delay
+      square.style.setProperty("--pulse-duration", `${pulseDuration}s`);
+      square.style.setProperty("--pulse-delay", `${pulseDelay}s`);
 
       // Add slight delay variation for entrance
       const delay = Math.random() * 2; // 0-2 seconds
@@ -62,6 +68,11 @@ class IndividualSquares {
 
       this.container.appendChild(square);
     }
+
+    // Start random pulsing after a short delay
+    setTimeout(() => {
+      this.startRandomPulsing();
+    }, 1000);
   }
 
   setupAnimations() {
@@ -76,6 +87,31 @@ class IndividualSquares {
         square.classList.add("entered");
       }, delay * 1000);
     });
+  }
+
+  startRandomPulsing() {
+    const squares = this.container.querySelectorAll(".square");
+
+    const pulseRandomSquare = () => {
+      // Pick a random square
+      const randomIndex = Math.floor(Math.random() * squares.length);
+      const square = squares[randomIndex];
+
+      // Add pulse class
+      square.classList.add("pulsing");
+
+      // Remove pulse class after animation
+      setTimeout(() => {
+        square.classList.remove("pulsing");
+      }, 1000);
+
+      // Schedule next pulse
+      const nextPulse = 500 + Math.random() * 2000; // 0.5-2.5 seconds
+      setTimeout(pulseRandomSquare, nextPulse);
+    };
+
+    // Start the pulsing cycle
+    pulseRandomSquare();
   }
 
   onSquareHover(square) {
