@@ -16,7 +16,6 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     />
-
     <!-- Stylesheets -->
     <link rel="stylesheet" href="../css/top-menu.css" />
     <link rel="stylesheet" href="../css/glass-spheres.css" />
@@ -24,28 +23,17 @@
   <body>
     <!-- Loading indicator -->
     <div class="loading">INITIALIZING GL4SS SPHERES...</div>
-
     <!-- Top Menu Component -->
     <div class="top-menu">
       <div class="nav-left">
         <div class="menu-title">GL4SS_SPH3R3S</div>
       </div>
       <div class="nav-right">
-        <button class="nav-button" id="prevButton" title="Previous Exhibition">
-          Previous
-        </button>
-        <button class="nav-button" id="nextButton" title="Next Exhibition">
-          Next
-        </button>
-        <a
-          href="../index.html"
-          class="nav-button home-button"
-          title="Back to Home"
-          >Home</a
-        >
+        <button class="nav-button prev-button" data-nav="prev">PREV</button>
+        <button class="nav-button next-button" data-nav="next">NEXT</button>
+        <button class="nav-button home-button" data-nav="home">HOME</button>
       </div>
     </div>
-
     <!-- Exhibition Container -->
     <div class="exhibition-container">
       <div class="exhibition-frame">
@@ -53,7 +41,6 @@
           <div class="glass-ball ball1"></div>
           <div class="glass-ball ball2"></div>
           <div class="glass-ball ball3"></div>
-
           <!-- Light rays -->
           <div
             class="light-ray"
@@ -75,7 +62,6 @@
             class="light-ray"
             style="right: 45%; bottom: 30%; animation-delay: -4s"
           ></div>
-
           <!-- Swan reflections inside balls -->
           <div
             class="swan-reflection"
@@ -92,9 +78,8 @@
         </div>
       </div>
     </div>
-
     <!-- Scripts -->
-    <script src="../js/exhibition-nav.js"></script>
+    <script src="../js/top-menu.js"></script>
     <script src="../js/glass-spheres.js"></script>
   </body>
 </html>

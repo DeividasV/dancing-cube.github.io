@@ -45,8 +45,13 @@ class BouncingCubesApp {
     // Scene setup
     this.scene = new THREE.Scene();
 
-    // Get container dimensions
+    // Get container dimensions with fallback
     const container = document.getElementById("container");
+    if (!container) {
+      console.error("Container element not found");
+      return;
+    }
+
     const containerWidth = container.offsetWidth || window.innerWidth;
     const containerHeight = container.offsetHeight || window.innerHeight;
 
@@ -499,5 +504,13 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  app = new BouncingCubesApp();
+  // Wait a bit for the top menu to create the container structure
+  setTimeout(() => {
+    const container = document.getElementById("container");
+    if (container) {
+      app = new BouncingCubesApp();
+    } else {
+      console.error("Container element not found for quantum-bounce");
+    }
+  }, 200);
 });

@@ -129,30 +129,20 @@ body {
   border-color: var(--glass-border);
 }
 
-/* Specific button styles */
-.prev-button::before {
-  content: "←";
-  font-size: 1rem;
-  transition: transform 0.3s ease;
+/* Specific button styles - No icons, clean text */
+.prev-button {
+  font-weight: 600;
+  letter-spacing: 0.05em;
 }
 
-.prev-button:hover::before {
-  transform: translateX(-2px);
+.next-button {
+  font-weight: 600;
+  letter-spacing: 0.05em;
 }
 
-.next-button::after {
-  content: "→";
-  font-size: 1rem;
-  transition: transform 0.3s ease;
-}
-
-.next-button:hover::after {
-  transform: translateX(2px);
-}
-
-.home-button::before {
-  content: "⌂";
-  font-size: 1rem;
+.home-button {
+  font-weight: 600;
+  letter-spacing: 0.05em;
 }
 
 /* Tooltip styling for navigation buttons */
@@ -332,20 +322,11 @@ body {
 
   .nav-button {
     font-size: 0.7rem;
-    padding: 0.3rem 0.4rem;
-    min-width: 50px;
+    padding: 0.3rem 0.6rem;
+    min-width: 60px;
   }
 
   .menu-title {
     font-size: 0.8rem;
-  }
-
-  /* Hide button text on very small screens, show only icons */
-  .prev-button,
-  .next-button,
-  .home-button {
-    text-indent: -9999px;
-    width: 32px;
-    min-width: 32px;
   }
 }

@@ -15,8 +15,6 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
-    />
-
     <!-- Stylesheets -->
     <link rel="stylesheet" href="../css/top-menu.css" />
     <link rel="stylesheet" href="../css/axis-connect.css" />
@@ -24,40 +22,30 @@
   <body>
     <!-- Loading indicator -->
     <div class="loading">INITIALIZING 4X1S CONNECTIONS...</div>
-
     <!-- Top Menu Component -->
     <div class="top-menu">
       <div class="nav-left">
         <div class="menu-title">4X1S_C0NN3CT</div>
       </div>
       <div class="nav-right">
-        <button class="nav-button" id="prevButton" title="Previous Exhibition">
-          Previous
-        </button>
-        <button class="nav-button" id="nextButton" title="Next Exhibition">
-          Next
-        </button>
+        <button class="nav-button prev-button" data-nav="prev">PREV</button>
+        <button class="nav-button next-button" data-nav="next">NEXT</button>
         <a
           href="../index.html"
-          class="nav-button home-button"
+          class="nav-button home-button" data-nav="home">HOME</button>
           title="Back to Home"
           >Home</a
         >
-      </div>
     </div>
-
     <!-- Exhibition Container -->
     <div class="exhibition-container">
       <div class="exhibition-frame">
         <div id="container" class="exhibition-canvas">
           <canvas id="canvas3d"></canvas>
         </div>
-      </div>
-    </div>
-
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="../js/exhibition-nav.js"></script>
+    <script src="../js/top-menu.js"></script>
     <script src="../js/axis-connect.js"></script>
   </body>
 </html>

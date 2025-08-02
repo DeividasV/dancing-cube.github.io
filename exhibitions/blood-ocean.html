@@ -23,37 +23,21 @@
       <div class="loading-spinner"></div>
       <div class="loading-text">Loading BL00D_0C34N...</div>
     </div>
-
     <!-- Top Menu Component -->
     <div class="top-menu">
       <div class="nav-left">
         <div class="menu-title">BL00D_0C34N</div>
       </div>
       <div class="nav-right">
-        <button class="nav-button" id="prevButton" title="Previous Exhibition">
-          Previous
-        </button>
-        <button class="nav-button" id="nextButton" title="Next Exhibition">
-          Next
-        </button>
-        <a
-          href="../index.html"
-          class="nav-button home-button"
-          title="Back to Home"
-          >Home</a
-        >
-      </div>
-    </div>
-
+        <button class="nav-button prev-button" data-nav="prev">PREV</button>
+        <button class="nav-button next-button" data-nav="next">NEXT</button>
+        <button class="nav-button home-button" data-nav="home">HOME</button>
     <!-- Exhibition Container -->
     <div class="exhibition-container">
       <div class="exhibition-frame">
         <canvas id="blood-canvas" class="exhibition-canvas"></canvas>
-      </div>
-    </div>
-
     <!-- Scripts -->
-    <script src="../js/exhibition-nav.js"></script>
+    <script src="../js/top-menu.js"></script>
     <script src="../js/blood-ocean.js"></script>
   </body>
 </html>
