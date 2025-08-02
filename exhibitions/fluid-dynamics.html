@@ -1,17 +1,5 @@
 <!DOCTYPE html>
-<html     <!-- Top Menu Component -->
-    <div class="top-menu">
-      <div class="nav-left">
-        <a href="#" class="nav-button prev-button">Prev</a>
-      </div>
-      <div class="nav-center">
-        <div class="menu-title">FLU1D_DYN4M1CS</div>
-      </div>
-      <div class="nav-right">
-        <a href="#" class="nav-button next-button">Next</a>
-        <a href="../index.html" class="nav-button home-button">Home</a>
-      </div>
-    </div>"en">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -52,82 +40,8 @@
     </div>
 
     <!-- Scripts -->
-    <script src="../js/fluid-dynamics.js"></script>
-  </body>
-</html>
-        <a href="../index.html" class="back-button">← GALLERY</a>
-      </div>
-    </nav>
-
-    <!-- Loading indicator -->
-    <div class="loading">INITIALIZING FLU1D SY5T3M...</div>
-
-    <!-- Main fluid container - fills remaining space -->
-    <div id="container"></div>
-
-    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="../js/exhibition-nav.js"></script>
-    <script src="../js/shared-controls.js"></script>
     <script src="../js/fluid-dynamics.js"></script>
-    <script>
-      // Global variables for fluid simulation control
-      let isSimulationPaused = false;
-
-      // Initialize after page loads
-      document.addEventListener("DOMContentLoaded", () => {
-        setTimeout(() => {
-          // Hide loading indicator
-          const loading = document.querySelector(".loading");
-          if (loading) {
-            loading.style.display = "none";
-          }
-        }, 2000);
-      });
-
-      // Function to toggle simulation
-      function toggleSimulation() {
-        isSimulationPaused = !isSimulationPaused;
-        const statusEl = document.getElementById("fluidStatus");
-        const pauseBtn = document.querySelector(".menu-button");
-
-        if (isSimulationPaused) {
-          statusEl.textContent = "PAUSED";
-          pauseBtn.innerHTML = "▶️ RESUME";
-        } else {
-          statusEl.textContent = "ACTIVE";
-          pauseBtn.innerHTML = "⏸️ PAUSE";
-        }
-
-        // Call the actual fluid simulation toggle if it exists
-        if (window.toggleFluidSimulation) {
-          window.toggleFluidSimulation();
-        }
-      }
-
-      // Function to reset fluid
-      function resetFluid() {
-        if (window.resetFluidSimulation) {
-          window.resetFluidSimulation();
-        }
-        const statusEl = document.getElementById("fluidStatus");
-        statusEl.textContent = "RESET";
-        setTimeout(() => {
-          statusEl.textContent = isSimulationPaused ? "PAUSED" : "ACTIVE";
-        }, 1000);
-      }
-
-      // Function to add turbulence
-      function addTurbulence() {
-        if (window.addFluidTurbulence) {
-          window.addFluidTurbulence();
-        }
-        const statusEl = document.getElementById("fluidStatus");
-        statusEl.textContent = "TURBULENT";
-        setTimeout(() => {
-          statusEl.textContent = isSimulationPaused ? "PAUSED" : "ACTIVE";
-        }, 2000);
-      }
-    </script>
   </body>
 </html>

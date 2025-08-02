@@ -20,9 +20,7 @@ class FluidDynamicsApp {
     this.mouseForce = 100.0;
 
     // Performance monitoring
-    this.frameCount = 0;
     this.lastTime = 0;
-    this.fps = 0;
 
     this.init();
   }
@@ -33,35 +31,64 @@ class FluidDynamicsApp {
     this.createFluidSystem();
     this.createParticles();
     this.setupEventListeners();
-    this.setupUI();
     this.animate();
 
     // Hide loading indicator
+    const loadingContainer = document.querySelector(".loading-container");
     const loading = document.querySelector(".loading");
+    if (loadingContainer) loadingContainer.style.display = "none";
     if (loading) loading.style.display = "none";
   }
 
   setupScene() {
+    console.log("Setting up scene...");
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
+
+    // Get the exhibition container dimensions
+    const container = document.querySelector(".exhibition-frame");
+    const canvas = document.getElementById("fluid-canvas");
+
+    console.log("Container:", container);
+    console.log("Canvas:", canvas);
+
+    if (!container || !canvas) {
+      console.error("Exhibition container or canvas not found");
+      console.log("Available elements:", {
+        exhibitionFrame: document.querySelector(".exhibition-frame"),
+        fluidCanvas: document.getElementById("fluid-canvas"),
+        topMenu: document.querySelector(".top-menu"),
+        exhibitionContainer: document.querySelector(".exhibition-container"),
+      });
+      return;
+    }
+
+    let width = container.offsetWidth;
+    let height = container.offsetHeight;
+
+    // Fallback to window dimensions if container dimensions are zero
+    if (width === 0 || height === 0) {
+      width = window.innerWidth;
+      height = window.innerHeight - 60; // Account for top menu
+      console.log("Using fallback dimensions:", width, height);
+    } else {
+      console.log("Container dimensions:", width, height);
+    }
+
+    this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+
     this.renderer = new THREE.WebGLRenderer({
+      canvas: canvas,
       antialias: true,
       alpha: true,
       powerPreference: "high-performance",
     });
 
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setSize(width, height);
     this.renderer.setClearColor(0x000000, 0.0);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    document.getElementById("container").appendChild(this.renderer.domElement);
-
     this.camera.position.set(0, 0, 50);
+    console.log("Scene setup complete");
   }
 
   setupLighting() {
@@ -78,10 +105,20 @@ class FluidDynamicsApp {
   }
 
   createFluidSystem() {
-    // Create fluid visualization plane
+    // Get container dimensions to scale fluid plane appropriately
+    const container = document.querySelector(".exhibition-frame");
+    let containerWidth = 100;
+    let containerHeight = 100;
+
+    if (container) {
+      containerWidth = Math.max(container.offsetWidth * 0.1, 100);
+      containerHeight = Math.max(container.offsetHeight * 0.1, 100);
+    }
+
+    // Create fluid visualization plane that scales with container
     const fluidGeometry = new THREE.PlaneGeometry(
-      80,
-      80,
+      containerWidth,
+      containerHeight,
       this.gridSize - 1,
       this.gridSize - 1
     );
@@ -168,13 +205,23 @@ class FluidDynamicsApp {
     const velocities = new Float32Array(this.particleCount * 3);
     const colors = new Float32Array(this.particleCount * 3);
 
+    // Get container dimensions for particle bounds
+    const container = document.querySelector(".exhibition-frame");
+    let containerWidth = 80;
+    let containerHeight = 80;
+
+    if (container) {
+      containerWidth = Math.max(container.offsetWidth * 0.1, 80);
+      containerHeight = Math.max(container.offsetHeight * 0.1, 80);
+    }
+
     // Initialize particles randomly
     for (let i = 0; i < this.particleCount; i++) {
       const i3 = i * 3;
 
-      // Random positions within the fluid area
-      positions[i3] = (Math.random() - 0.5) * 80;
-      positions[i3 + 1] = (Math.random() - 0.5) * 80;
+      // Random positions within the fluid area (scaled to container)
+      positions[i3] = (Math.random() - 0.5) * containerWidth;
+      positions[i3 + 1] = (Math.random() - 0.5) * containerHeight;
       positions[i3 + 2] = (Math.random() - 0.5) * 10;
 
       // Initial velocities
@@ -334,18 +381,6 @@ class FluidDynamicsApp {
     }
   }
 
-  setupUI() {
-    // Create fluid info display
-    const infoDiv = document.createElement("div");
-    infoDiv.className = "fluid-info";
-    infoDiv.innerHTML = `
-            <div>PARTICLES: <span class="value">${this.particleCount}</span></div>
-            <div>VISCOSITY: <span class="value">${this.viscosity}</span></div>
-            <div>FPS: <span class="value" id="fps">0</span></div>
-        `;
-    document.body.appendChild(infoDiv);
-  }
-
   updateParticles(deltaTime) {
     if (!this.isRunning) return;
 
@@ -403,14 +438,6 @@ class FluidDynamicsApp {
     const deltaTime = (currentTime - this.lastTime) * 0.001;
     this.lastTime = currentTime;
 
-    // Update FPS counter
-    this.frameCount++;
-    if (this.frameCount % 60 === 0) {
-      this.fps = Math.round(1 / deltaTime);
-      const fpsElement = document.getElementById("fps");
-      if (fpsElement) fpsElement.textContent = this.fps;
-    }
-
     // Update fluid system
     if (this.fluidSystem && this.fluidSystem.material.uniforms) {
       this.fluidSystem.material.uniforms.time.value = currentTime * 0.001;
@@ -466,11 +493,6 @@ class FluidDynamicsApp {
 
   updateViscosity(value) {
     this.viscosity = parseFloat(value);
-    const infoElement = document.querySelector(".fluid-info .value");
-    if (infoElement) {
-      infoElement.nextElementSibling.querySelector(".value").textContent =
-        this.viscosity;
-    }
   }
 
   updateParticleCount(value) {
@@ -482,19 +504,19 @@ class FluidDynamicsApp {
       // Update count and recreate
       this.particleCount = newCount;
       this.createParticles();
-
-      // Update UI
-      const infoElement = document.querySelector(".fluid-info");
-      if (infoElement) {
-        infoElement.querySelector(".value").textContent = this.particleCount;
-      }
     }
   }
 
   onWindowResize() {
-    this.camera.aspect = window.innerWidth / window.innerHeight;
+    const container = document.querySelector(".exhibition-frame");
+    if (!container) return;
+
+    const width = container.offsetWidth;
+    const height = container.offsetHeight;
+
+    this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setSize(width, height);
   }
 }
 
@@ -529,5 +551,9 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  app = new FluidDynamicsApp();
+  // Add a delay to ensure all elements are rendered and CSS is applied
+  setTimeout(() => {
+    console.log("Initializing FluidDynamicsApp...");
+    app = new FluidDynamicsApp();
+  }, 500);
 });
