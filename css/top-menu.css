@@ -46,6 +46,19 @@ body {
   user-select: none;
 }
 
+/* Navigation Left - Title */
+.nav-left {
+  display: flex;
+  align-items: center;
+}
+
+/* Navigation Right - Buttons Group */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .top-menu::before {
   content: "";
   position: absolute;
@@ -73,40 +86,109 @@ body {
   z-index: 1;
 }
 
-/* Back Button */
-.back-button {
+/* Navigation Buttons */
+.nav-button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   color: var(--text-primary);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.75rem;
   border: 1px solid var(--glass-border);
-  border-radius: 8px;
+  border-radius: 6px;
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
   position: relative;
   z-index: 1;
+  min-width: 80px;
+  justify-content: center;
 }
 
-.back-button:hover {
+.nav-button:hover {
   background: rgba(0, 255, 136, 0.1);
   border-color: var(--accent-color);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 255, 136, 0.2);
 }
 
-.back-button::before {
+.nav-button:disabled,
+.nav-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.nav-button:disabled:hover,
+.nav-button.disabled:hover {
+  transform: none;
+  box-shadow: none;
+  background: rgba(255, 255, 255, 0.02);
+  border-color: var(--glass-border);
+}
+
+/* Specific button styles */
+.prev-button::before {
   content: "←";
-  font-size: 1.1rem;
+  font-size: 1rem;
   transition: transform 0.3s ease;
 }
 
-.back-button:hover::before {
+.prev-button:hover::before {
   transform: translateX(-2px);
+}
+
+.next-button::after {
+  content: "→";
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.next-button:hover::after {
+  transform: translateX(2px);
+}
+
+.home-button::before {
+  content: "⌂";
+  font-size: 1rem;
+}
+
+/* Tooltip styling for navigation buttons */
+.nav-button[title] {
+  position: relative;
+}
+
+.nav-button[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  z-index: 1001;
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+}
+
+.nav-button[title]:hover::before {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 8px solid rgba(0, 0, 0, 0.9);
+  z-index: 1001;
 }
 
 /* Exhibition Container */
@@ -222,6 +304,16 @@ body {
     height: 50px;
   }
 
+  .nav-right {
+    gap: 0.5rem;
+  }
+
+  .nav-button {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.6rem;
+    min-width: 60px;
+  }
+
   .exhibition-container {
     top: 50px;
     height: calc(100vh - 50px);
@@ -229,11 +321,31 @@ body {
   }
 
   .menu-title {
-    font-size: 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-menu {
+    padding: 0 0.5rem;
   }
 
-  .back-button {
+  .nav-button {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.4rem;
+    min-width: 50px;
+  }
+
+  .menu-title {
     font-size: 0.8rem;
-    padding: 0.4rem 0.8rem;
+  }
+
+  /* Hide button text on very small screens, show only icons */
+  .prev-button,
+  .next-button,
+  .home-button {
+    text-indent: -9999px;
+    width: 32px;
+    min-width: 32px;
   }
 }
