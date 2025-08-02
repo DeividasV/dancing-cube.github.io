@@ -18,39 +18,39 @@
     />
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="../css/shared-navigation.css" />
+    <link rel="stylesheet" href="../css/top-menu.css" />
     <link rel="stylesheet" href="../css/mirror-pyramid.css" />
   </head>
   <body>
-    <!-- Animated background grid -->
-    <div class="background-grid"></div>
-
     <!-- Loading indicator -->
     <div class="loading">INITIALIZING M1RR0R PYRAMID...</div>
 
-    <!-- Header with title and back button -->
-    <header class="exhibition-header">
-      <h1 class="exhibition-title">M1RR0R_PYR4M1D</h1>
-      <a href="../index.html" class="back-button">Back to Gallery</a>
-    </header>
-
-    <!-- Main content container -->
-    <div class="main-content">
-      <!-- 3D Container -->
-      <div id="container"></div>
-
-      <!-- Info panel -->
-      <div id="info">
-        Pyramid of Four Mirrored Spheres<br />
-        2048 total mirror balls (512 per sphere)<br />
-        Magenta & yellow color switching on collision<br />
-        Smooth pyramid rotation - Maximum screen coverage
-      </div>
-
-      <!-- Scripts -->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-      <script src="../js/mirror-pyramid.js"></script>
+    <!-- Top Menu Component -->
+    <div class="top-menu">
+      <div class="menu-title">M1RR0R_PYR4M1D</div>
+      <a href="../index.html" class="back-button">Back</a>
     </div>
-    <!-- End main-content -->
+
+    <!-- Exhibition Container -->
+    <div class="exhibition-container">
+      <div class="exhibition-frame">
+        <!-- 3D Container -->
+        <div id="container" class="exhibition-canvas"></div>
+
+        <!-- Info panel -->
+        <div id="info">
+          Pyramid of Four Mirrored Spheres<br />
+          2048 total mirror balls (512 per sphere)<br />
+          Magenta & yellow color switching on collision<br />
+          Smooth pyramid rotation - Maximum screen coverage
+        </div>
+
+        <!-- Scripts -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/mirror-pyramid.js"></script>
   </body>
 </html>

@@ -10,7 +10,7 @@
     />
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="../css/shared-navigation.css" />
+    <link rel="stylesheet" href="../css/top-menu.css" />
     <link rel="stylesheet" href="../css/infinite-knot.css" />
   </head>
   <body>
@@ -20,19 +20,18 @@
       <div class="loading-text">Loading 1NF1N1T3_KN0T...</div>
     </div>
 
-    <!-- Exhibition Header -->
-    <header class="exhibition-header">
-      <h1 class="exhibition-title">1NF1N1T3_KN0T</h1>
-      <nav class="exhibition-nav">
-        <a href="../index.html" class="back-link">← Gallery</a>
-        <a href="#info" class="nav-link">Info</a>
-      </nav>
-    </header>
+    <!-- Top Menu Component -->
+    <div class="top-menu">
+      <div class="menu-title">1NF1N1T3_KN0T</div>
+      <a href="../index.html" class="back-button">Back</a>
+    </div>
 
-    <!-- Main Container -->
-    <div class="container">
-      <div class="knot-container">
-        <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+    <!-- Exhibition Container -->
+    <div class="exhibition-container">
+      <div class="exhibition-frame">
+        <div class="container exhibition-canvas">
+          <div class="knot-container">
+            <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <!-- Gradients -->
             <linearGradient id="redGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -541,8 +540,10 @@
                     
                     M650,300 Q600,450 450,400 Q300,350 350,200 Q400,50 550,100 Q700,150 650,300 Q600,250 450,300 Q300,350 350,500 Q400,650 550,600 Q700,550 650,300"
           />
-        </path>
-      </svg>
+        </svg>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>

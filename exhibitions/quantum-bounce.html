@@ -6,42 +6,38 @@
     <title>QU4NTUM_B0UNC3 - Dancing Cube Exhibition</title>
     <meta
       name="description"
-      content="Interactive 3D physics simulation with bouncing cubes in a wireframe grid environment."
-    />
-
-    <!-- Preload fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
+      content="Interactive 3D physics simulation with bouncing cubes"
     />
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="../css/shared-navigation.css" />
+    <link rel="stylesheet" href="../css/top-menu.css" />
     <link rel="stylesheet" href="../css/quantum-bounce.css" />
   </head>
   <body>
-    <!-- Animated background grid -->
-    <div class="background-grid"></div>
+    <!-- Loading Animation -->
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading QU4NTUM_B0UNC3...</div>
+    </div>
 
-    <!-- Loading indicator -->
-    <div class="loading">INITIALIZING QU4NTUM SPACE...</div>
+    <!-- Top Menu Component -->
+    <div class="top-menu">
+      <div class="menu-title">QU4NTUM_B0UNC3</div>
+      <a href="../index.html" class="back-button">Back</a>
+    </div>
 
-    <!-- Header with title and back button -->
-    <header class="exhibition-header">
-      <h1 class="exhibition-title">QU4NTUM_B0UNC3</h1>
-      <a href="../index.html" class="back-button">Back to Gallery</a>
-    </header>
+    <!-- Exhibition Container -->
+    <div class="exhibition-container">
+      <div class="exhibition-frame">
+        <canvas id="quantum-canvas" class="exhibition-canvas"></canvas>
+      </div>
+    </div>
 
-    <!-- Main content container -->
-    <div class="main-content">
-      <!-- 3D Container -->
-      <div id="container"></div>
-
-      <!-- Scripts -->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-      <script src="../js/quantum-bounce.js"></script>
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="../js/quantum-bounce.js"></script>
+  </body>
+</html>
     </div>
     <!-- End main-content -->
   </body>

@@ -6,28 +6,36 @@
     <title>BL00D_0C34N - Dancing Cube Exhibition</title>
     <meta
       name="description"
-      content="Interactive 3D blood red ocean simulation with ripple effects and reflective surfaces."
-    />
-
-    <!-- Preload fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
+      content="Interactive 3D blood red ocean simulation"
     />
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="../css/shared-navigation.css" />
+    <link rel="stylesheet" href="../css/top-menu.css" />
     <style>
-      body,
-      html {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
+      .exhibition-canvas {
         background: #1a0000;
-        height: 100vh;
-        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading Animation -->
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading BL00D_0C34N...</div>
+    </div>
+
+    <!-- Top Menu Component -->
+    <div class="top-menu">
+      <div class="menu-title">BL00D_0C34N</div>
+      <a href="../index.html" class="back-button">Back</a>
+    </div>
+
+    <!-- Exhibition Container -->
+    <div class="exhibition-container">
+      <div class="exhibition-frame">
+        <canvas id="blood-canvas" class="exhibition-canvas"></canvas>
+      </div>
+    </div>
       }
 
       canvas {
@@ -51,24 +59,19 @@
     </style>
   </head>
   <body>
-    <!-- Animated background grid -->
-    <div class="background-grid"></div>
-
     <!-- Loading indicator -->
     <div class="loading">INITIALIZING BL00D_0C34N...</div>
 
-    <!-- Header with title and back button -->
-    <header class="exhibition-header">
-      <h1 class="exhibition-title">BL00D_0C34N</h1>
-      <a href="../index.html" class="back-button">Back to Gallery</a>
-    </header>
+    <!-- Top Menu Component -->
+    <div class="top-menu">
+      <div class="menu-title">BL00D_0C34N</div>
+      <a href="../index.html" class="back-button">Back</a>
+    </div>
 
-    <!-- Main content container -->
-    <div class="main-content">
-      <div class="info">
-        Click to create ripples • Reflective 3D blood ocean simulation
-      </div>
-      <canvas id="ocean"></canvas>
+    <!-- Exhibition Container -->
+    <div class="exhibition-container">
+      <div class="exhibition-frame">
+        <canvas id="ocean" class="exhibition-canvas"></canvas>
 
       <script>
         const canvas = document.getElementById("ocean");
@@ -659,21 +662,42 @@
                   `);
             }
           }, 100);
-        });
-
-        // Additional control functions
-        function clearOcean() {
-          ripples.length = 0;
-          drops.length = 0;
-        }
-
-        function addBloodDrop() {
-          const x = (Math.random() - 0.5) * canvas.width;
-          const y = (Math.random() - 0.5) * canvas.height;
-          drops.push(new BloodDrop3D(x, y));
-        }
-      </script>
+    <!-- Exhibition Container -->
+    <div class="exhibition-container">
+      <div class="exhibition-frame">
+        <canvas id="blood-canvas" class="exhibition-canvas"></canvas>
+      </div>
     </div>
-    <!-- End main-content -->
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+      // Blood Ocean 3D simulation code will be here
+      // This is a simplified version for the framed layout
+      const canvas = document.getElementById('blood-canvas');
+      const ctx = canvas.getContext('2d');
+      
+      function resizeCanvas() {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+      }
+      
+      function animate() {
+        ctx.fillStyle = '#1a0000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Simple blood ocean animation
+        ctx.fillStyle = '#8B0000';
+        ctx.fillText('BL00D_0C34N Loading...', canvas.width/2 - 50, canvas.height/2);
+        
+        requestAnimationFrame(animate);
+      }
+      
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      animate();
+    </script>
+      </div>
+    </div>
   </body>
 </html>

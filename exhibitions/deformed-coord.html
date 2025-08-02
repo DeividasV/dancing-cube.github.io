@@ -6,11 +6,11 @@
     <title>D3F0RM3D_C00RD - Dancing Cube Exhibition</title>
     <meta
       name="description"
-      content="Interactive deformed sinusoidal coordinate system visualization with dynamic grid transformation"
+      content="Interactive deformed sinusoidal coordinate system visualization"
     />
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="../css/shared-navigation.css" />
+    <link rel="stylesheet" href="../css/top-menu.css" />
     <link rel="stylesheet" href="../css/deformed-coord.css" />
   </head>
   <body>
@@ -20,14 +20,23 @@
       <div class="loading-text">Loading D3F0RM3D_C00RD...</div>
     </div>
 
-    <!-- Exhibition Header -->
-    <header class="exhibition-header">
-      <h1 class="exhibition-title">D3F0RM3D_C00RD</h1>
-      <nav class="exhibition-nav">
-        <a href="../index.html" class="back-link">← Gallery</a>
-        <a href="#info" class="nav-link">Info</a>
-      </nav>
-    </header>
+    <!-- Top Menu Component -->
+    <div class="top-menu">
+      <div class="menu-title">D3F0RM3D_C00RD</div>
+      <a href="../index.html" class="back-button">Back</a>
+    </div>
+
+    <!-- Exhibition Container -->
+    <div class="exhibition-container">
+      <div class="exhibition-frame">
+        <canvas id="deformed-canvas" class="exhibition-canvas"></canvas>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/deformed-coord.js"></script>
+  </body>
+</html>
 
     <!-- Main Container -->
     <div class="container">

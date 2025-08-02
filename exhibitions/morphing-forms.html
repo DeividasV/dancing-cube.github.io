@@ -18,8 +18,7 @@
     />
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="../css/shared-navigation.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="../css/top-menu.css" />
     <style>
       body {
         margin: 0;
@@ -48,23 +47,25 @@
     </style>
   </head>
   <body>
-    <!-- Animated background grid -->
-    <div class="background-grid"></div>
-
     <!-- Loading indicator -->
     <div class="loading">INITIALIZING M0RPH SY5T3M...</div>
 
-    <!-- Header with title and back button -->
-    <header class="exhibition-header">
-      <h1 class="exhibition-title">M0RPH1N_F0RMS</h1>
-      <a href="../index.html" class="back-button">Back to Gallery</a>
-    </header>
+    <!-- Top Menu Component -->
+    <div class="top-menu">
+      <div class="menu-title">M0RPH1N_F0RMS</div>
+      <a href="../index.html" class="back-button">Back</a>
+    </div>
 
-    <!-- Main content container -->
-    <div class="main-content">
-      <div class="info">Morphing 3D Shapes • Space Environment</div>
+    <!-- Exhibition Container -->
+    <div class="exhibition-container">
+      <div class="exhibition-frame">
+        <canvas class="exhibition-canvas"></canvas>
+      </div>
+    </div>
 
-      <script>
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
         // Scene setup
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(

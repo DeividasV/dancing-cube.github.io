@@ -18,33 +18,27 @@
     />
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="../css/shared-navigation.css" />
+    <link rel="stylesheet" href="../css/top-menu.css" />
     <link rel="stylesheet" href="../css/axis-connect.css" />
   </head>
   <body>
-    <!-- Animated background grid -->
-    <div class="background-grid"></div>
-
     <!-- Loading indicator -->
     <div class="loading">INITIALIZING 4X1S CONNECTIONS...</div>
 
-    <!-- Header with title and back button -->
-    <header class="exhibition-header">
-      <h1 class="exhibition-title">4X1S_C0NN3CT</h1>
-      <a href="../index.html" class="back-button">Back to Gallery</a>
-    </header>
+    <!-- Top Menu Component -->
+    <div class="top-menu">
+      <div class="menu-title">4X1S_C0NN3CT</div>
+      <a href="../index.html" class="back-button">Back</a>
+    </div>
 
-    <!-- Main content container -->
-    <div class="main-content">
-      <div id="container">
-        <div class="info">
-          Click to randomize • 3D Axis Connections<br />
-          <span style="color: #ff6b6b">■</span> X-Y Plane
-          <span style="color: #00ff88">■</span> X-Z Plane
-          <span style="color: #ffff00">■</span> Y-Z Plane
+    <!-- Exhibition Container -->
+    <div class="exhibition-container">
+      <div class="exhibition-frame">
+        <div id="container" class="exhibition-canvas">
+          <canvas id="canvas3d"></canvas>
         </div>
-        <canvas id="canvas3d"></canvas>
       </div>
+    </div>
 
       <!-- Scripts -->
       <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

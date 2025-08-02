@@ -1,0 +1,239 @@
+/* Dancing Cube - Top Menu Component */
+
+/* CSS Custom Properties */
+:root {
+  --primary-bg: #0a0a0a;
+  --text-primary: #ffffff;
+  --accent-color: #00ff88;
+  --glass-bg: rgba(0, 0, 0, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  background: var(--primary-bg);
+  color: var(--text-primary);
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+}
+
+/* Top Menu Component */
+.top-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  z-index: 1000;
+  user-select: none;
+}
+
+.top-menu::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 255, 136, 0.05) 0%,
+    transparent 50%,
+    rgba(0, 204, 255, 0.05) 100%
+  );
+  pointer-events: none;
+}
+
+/* Exhibition Title */
+.menu-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+
+/* Back Button */
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.back-button:hover {
+  background: rgba(0, 255, 136, 0.1);
+  border-color: var(--accent-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 255, 136, 0.2);
+}
+
+.back-button::before {
+  content: "←";
+  font-size: 1.1rem;
+  transition: transform 0.3s ease;
+}
+
+.back-button:hover::before {
+  transform: translateX(-2px);
+}
+
+/* Exhibition Container */
+.exhibition-container {
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: calc(100vh - 60px);
+  background: var(--primary-bg);
+  overflow: hidden;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Exhibition Frame */
+.exhibition-frame {
+  width: 100%;
+  height: 100%;
+  max-width: calc(100vw - 40px);
+  max-height: calc(100vh - 100px);
+  border: 2px solid var(--glass-border);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.exhibition-frame::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    transparent 25%,
+    transparent 75%,
+    rgba(0, 255, 136, 0.03) 100%
+  );
+  pointer-events: none;
+}
+
+/* Canvas/Content inside frame */
+.exhibition-canvas {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  display: block;
+  background: transparent;
+}
+
+/* Loading styles */
+.loading-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.loading-container.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid var(--accent-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.loading-text {
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .top-menu {
+    padding: 0 1rem;
+    height: 50px;
+  }
+
+  .exhibition-container {
+    top: 50px;
+    height: calc(100vh - 50px);
+    padding: 10px;
+  }
+
+  .menu-title {
+    font-size: 1rem;
+  }
+
+  .back-button {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+}

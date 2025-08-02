@@ -10,7 +10,7 @@
     />
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="../css/shared-navigation.css" />
+    <link rel="stylesheet" href="../css/top-menu.css" />
     <link rel="stylesheet" href="../css/infinite-knot.css" />
   </head>
   <body>
@@ -20,19 +20,18 @@
       <div class="loading-text">Loading 1NF1N1T3_KN0T...</div>
     </div>
 
-    <!-- Exhibition Header -->
-    <header class="exhibition-header">
-      <h1 class="exhibition-title">1NF1N1T3_KN0T</h1>
-      <nav class="exhibition-nav">
-        <a href="../index.html" class="back-link">← Gallery</a>
-        <a href="#info" class="nav-link">Info</a>
-      </nav>
-    </header>
+    <!-- Top Menu Component -->
+    <div class="top-menu">
+      <div class="menu-title">1NF1N1T3_KN0T</div>
+      <a href="../index.html" class="back-button">Back</a>
+    </div>
 
-    <!-- Main Container -->
-    <div class="container">
-      <div class="knot-container">
-        <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+    <!-- Exhibition Container -->
+    <div class="exhibition-container">
+      <div class="exhibition-frame">
+        <div class="container exhibition-canvas">
+          <div class="knot-container">
+            <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <!-- Gradients -->
             <linearGradient
@@ -268,8 +267,12 @@
       </div>
     </div>
 
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- JavaScript -->
-    <script src="../js/shared-controls.js"></script>
     <script src="../js/infinite-knot.js"></script>
   </body>
 </html>

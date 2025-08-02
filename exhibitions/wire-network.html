@@ -6,11 +6,11 @@
     <title>W1R3_N3TW0RK - Dancing Cube Exhibition</title>
     <meta
       name="description"
-      content="Interactive wire pulse network system with electromagnetic effects and node connections"
+      content="Interactive wire pulse network system with electromagnetic effects"
     />
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="../css/shared-navigation.css" />
+    <link rel="stylesheet" href="../css/top-menu.css" />
     <link rel="stylesheet" href="../css/wire-network.css" />
   </head>
   <body>
@@ -20,19 +20,16 @@
       <div class="loading-text">Loading W1R3_N3TW0RK...</div>
     </div>
 
-    <!-- Exhibition Header -->
-    <header class="exhibition-header">
-      <h1 class="exhibition-title">W1R3_N3TW0RK</h1>
-      <nav class="exhibition-nav">
-        <a href="../index.html" class="back-link">← Gallery</a>
-        <a href="#info" class="nav-link">Info</a>
-      </nav>
-    </header>
+    <!-- Top Menu Component -->
+    <div class="top-menu">
+      <div class="menu-title">W1R3_N3TW0RK</div>
+      <a href="../index.html" class="back-button">Back</a>
+    </div>
 
-    <!-- Main Container -->
-    <div class="container">
-      <div class="exhibition-main-title">WIRE NETWORK PULSE SYSTEM</div>
-      <div class="wire-network">
+    <!-- Exhibition Container -->
+    <div class="exhibition-container">
+      <div class="exhibition-frame">
+        <div class="wire-network exhibition-canvas">
         <!-- Horizontal wires with pulses -->
         <div class="wire wire-h1">
           <div class="pulse pulse-h" style="animation-delay: 0s"></div>
@@ -500,7 +497,11 @@
         <div class="node node3"></div>
         <div class="node node4"></div>
         <div class="node node5"></div>
+        </div>
       </div>
     </div>
+
+    <!-- JavaScript -->
+    <script src="../js/wire-network.js"></script>
   </body>
 </html>
