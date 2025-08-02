@@ -27,8 +27,23 @@
 
     <!-- Top Menu Component -->
     <div class="top-menu">
-      <div class="menu-title">M1RR0R_PYR4M1D</div>
-      <a href="../index.html" class="back-button">Back</a>
+      <div class="nav-left">
+        <div class="menu-title">M1RR0R_PYR4M1D</div>
+      </div>
+      <div class="nav-right">
+        <button class="nav-button" id="prevButton" title="Previous Exhibition">
+          Previous
+        </button>
+        <button class="nav-button" id="nextButton" title="Next Exhibition">
+          Next
+        </button>
+        <a
+          href="../index.html"
+          class="nav-button home-button"
+          title="Back to Home"
+          >Home</a
+        >
+      </div>
     </div>
 
     <!-- Exhibition Container -->
@@ -37,20 +52,13 @@
         <!-- 3D Container -->
         <div id="container" class="exhibition-canvas"></div>
 
-        <!-- Info panel -->
-        <div id="info">
-          Pyramid of Four Mirrored Spheres<br />
-          2048 total mirror balls (512 per sphere)<br />
-          Magenta & yellow color switching on collision<br />
-          Smooth pyramid rotation - Maximum screen coverage
-        </div>
-
         <!-- Scripts -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
       </div>
     </div>
 
     <!-- Scripts -->
+    <script src="../js/exhibition-nav.js"></script>
     <script src="../js/mirror-pyramid.js"></script>
   </body>
 </html>
