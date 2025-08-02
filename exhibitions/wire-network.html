@@ -3,7 +3,105 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wire Pulse Animation</title>
+    <title>W1R3_N3TW0RK - Dancing Cube Exhibition</title>
+    <meta
+      name="description"
+      content="Interactive wire pulse network system with electromagnetic effects and node connections"
+    />
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/shared-navigation.css" />
+    <link rel="stylesheet" href="../css/wire-network.css" />
+  </head>
+  <body>
+    <!-- Loading Animation -->
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading W1R3_N3TW0RK...</div>
+    </div>
+
+    <!-- Exhibition Header -->
+    <header class="exhibition-header">
+      <h1 class="exhibition-title">W1R3_N3TW0RK</h1>
+      <nav class="exhibition-nav">
+        <a href="../index.html" class="back-link">← Gallery</a>
+        <a href="#info" class="nav-link">Info</a>
+      </nav>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+      <div class="exhibition-main-title">WIRE NETWORK PULSE SYSTEM</div>
+      <div class="wire-network">
+        <!-- Horizontal wires with pulses -->
+        <div class="wire wire-h1">
+          <div class="pulse pulse-h" style="animation-delay: 0s"></div>
+          <div class="pulse pulse-h" style="animation-delay: 1.5s"></div>
+        </div>
+        <div class="wire wire-h2">
+          <div class="pulse pulse-h" style="animation-delay: 0.5s"></div>
+          <div class="pulse pulse-h" style="animation-delay: 2s"></div>
+        </div>
+        <div class="wire wire-h3">
+          <div class="pulse pulse-h" style="animation-delay: 1s"></div>
+          <div class="pulse pulse-h" style="animation-delay: 2.5s"></div>
+        </div>
+        <div class="wire wire-h4">
+          <div class="pulse pulse-h" style="animation-delay: 0.3s"></div>
+          <div class="pulse pulse-h" style="animation-delay: 1.8s"></div>
+        </div>
+        <div class="wire wire-h5">
+          <div class="pulse pulse-h" style="animation-delay: 0.8s"></div>
+          <div class="pulse pulse-h" style="animation-delay: 2.3s"></div>
+        </div>
+
+        <!-- Vertical wires with pulses -->
+        <div class="wire wire-v1">
+          <div class="pulse pulse-v" style="animation-delay: 0.2s"></div>
+          <div class="pulse pulse-v" style="animation-delay: 1.7s"></div>
+        </div>
+        <div class="wire wire-v2">
+          <div class="pulse pulse-v" style="animation-delay: 0.7s"></div>
+          <div class="pulse pulse-v" style="animation-delay: 2.2s"></div>
+        </div>
+        <div class="wire wire-v3">
+          <div class="pulse pulse-v" style="animation-delay: 1.2s"></div>
+        </div>
+        <div class="wire wire-v4">
+          <div class="pulse pulse-v" style="animation-delay: 0.4s"></div>
+          <div class="pulse pulse-v" style="animation-delay: 1.9s"></div>
+        </div>
+        <div class="wire wire-v5">
+          <div class="pulse pulse-v" style="animation-delay: 0.9s"></div>
+        </div>
+
+        <!-- Diagonal wires with pulses -->
+        <div class="wire wire-d1">
+          <div class="pulse pulse-d1" style="animation-delay: 0.6s"></div>
+          <div class="pulse pulse-d1" style="animation-delay: 2.6s"></div>
+        </div>
+        <div class="wire wire-d2">
+          <div class="pulse pulse-d2" style="animation-delay: 1.1s"></div>
+        </div>
+        <div class="wire wire-d3">
+          <div class="pulse pulse-d3" style="animation-delay: 0.1s"></div>
+          <div class="pulse pulse-d3" style="animation-delay: 2.1s"></div>
+        </div>
+
+        <!-- Connection nodes -->
+        <div class="node node1"></div>
+        <div class="node node2"></div>
+        <div class="node node3"></div>
+        <div class="node node4"></div>
+        <div class="node node5"></div>
+      </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../js/shared-controls.js"></script>
+    <script src="../js/wire-network.js"></script>
+  </body>
+</html>
     <style>
       body {
         margin: 0;

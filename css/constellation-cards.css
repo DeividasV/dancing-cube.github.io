@@ -1005,3 +1005,329 @@ body {
     font-size: 0.9rem;
   }
 }
+
+/* Deformed Coordinate Icon Gradient */
+.icon-gradient.deformed {
+  background: radial-gradient(
+      circle at 30% 70%,
+      rgba(255, 100, 100, 0.9) 0%,
+      rgba(255, 50, 50, 0.7) 30%,
+      transparent 60%
+    ),
+    linear-gradient(135deg, #ff6666, #cc0000);
+}
+
+.icon-gradient.deformed::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+  background: radial-gradient(
+    ellipse at 20% 20%,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(255, 255, 255, 0.1) 30%,
+    rgba(255, 100, 100, 0.3) 60%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  animation: deformedPulse1 3.5s ease-in-out infinite;
+}
+
+.icon-gradient.deformed::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  background: radial-gradient(
+    ellipse at 80% 80%,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(255, 255, 255, 0.1) 30%,
+    rgba(255, 150, 150, 0.3) 60%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  animation: deformedPulse2 4s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(255, 100, 100, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes deformedPulse1 {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+@keyframes deformedPulse2 {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(0.9) rotate(-180deg);
+    opacity: 1;
+  }
+}
+
+/* Individual Squares Icon Gradient */
+.icon-gradient.squares {
+  background: linear-gradient(
+    45deg,
+    #ff6b6b 0%,
+    #4ecdc4 25%,
+    #45b7d1 50%,
+    #96ceb4 75%,
+    #ffd93d 100%
+  );
+  background-size: 300% 300%;
+  animation: squaresFlow 5s ease-in-out infinite;
+}
+
+.icon-gradient.squares::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+  background: radial-gradient(
+    circle at 25% 25%,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.1) 30%,
+    transparent 60%
+  );
+  border-radius: 50%;
+  animation: squaresPulse1 3s ease-in-out infinite;
+}
+
+.icon-gradient.squares::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.7) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.7) 100%
+  );
+  border-radius: 50%;
+  animation: squaresPulse2 2.5s linear infinite;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+@keyframes squaresFlow {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+@keyframes squaresPulse1 {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+@keyframes squaresPulse2 {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Infinite Knot Icon Gradient */
+.icon-gradient.knot {
+  background: conic-gradient(
+    from 45deg,
+    #ff6666 0deg,
+    #6666ff 120deg,
+    #ff6666 240deg,
+    #6666ff 360deg
+  );
+  animation: knotRotate 4s linear infinite;
+}
+
+.icon-gradient.knot::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+  background: radial-gradient(
+    ellipse at 40% 40%,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.1) 30%,
+    rgba(255, 102, 102, 0.3) 60%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  animation: knotWeave1 3s ease-in-out infinite;
+}
+
+.icon-gradient.knot::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  background: radial-gradient(
+    ellipse at 60% 60%,
+    rgba(102, 102, 255, 0.7) 0%,
+    rgba(102, 102, 255, 0.1) 30%,
+    transparent 60%
+  );
+  border-radius: 50%;
+  animation: knotWeave2 3.5s ease-in-out infinite reverse;
+  box-shadow: 0 0 10px rgba(102, 102, 255, 0.3);
+}
+
+@keyframes knotRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes knotWeave1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.8;
+  }
+  33% {
+    transform: translate(2px, -2px) scale(1.1);
+    opacity: 1;
+  }
+  66% {
+    transform: translate(-2px, 2px) scale(0.9);
+    opacity: 0.9;
+  }
+}
+
+@keyframes knotWeave2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.7;
+  }
+  33% {
+    transform: translate(-2px, 2px) scale(1.1);
+    opacity: 1;
+  }
+  66% {
+    transform: translate(2px, -2px) scale(0.9);
+    opacity: 0.8;
+  }
+}
+
+/* Wire Network Icon Gradient */
+.icon-gradient.wire {
+  background: linear-gradient(90deg, #ffd700 0%, #00ffff 50%, #ffd700 100%);
+  background-size: 200% 100%;
+  animation: wireFlow 3s linear infinite;
+}
+
+.icon-gradient.wire::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(100% - 4px);
+  height: calc(100% - 4px);
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.1) 30%,
+    rgba(255, 215, 0, 0.3) 60%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  animation: wirePulse1 2s ease-in-out infinite;
+}
+
+.icon-gradient.wire::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  background: radial-gradient(
+    circle at 70% 70%,
+    rgba(0, 255, 255, 0.8) 0%,
+    rgba(0, 255, 255, 0.1) 30%,
+    transparent 60%
+  );
+  border-radius: 50%;
+  animation: wirePulse2 2.5s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+@keyframes wireFlow {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes wirePulse1 {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+}
+
+@keyframes wirePulse2 {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+}

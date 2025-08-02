@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>D3F0RM3D_C00RD - Dancing Cube Exhibition</title>
+    <meta
+      name="description"
+      content="Interactive deformed sinusoidal coordinate system visualization with dynamic grid transformation"
+    />
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/shared-navigation.css" />
+    <link rel="stylesheet" href="../css/deformed-coord.css" />
+  </head>
+  <body>
+    <!-- Loading Animation -->
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading D3F0RM3D_C00RD...</div>
+    </div>
+
+    <!-- Exhibition Header -->
+    <header class="exhibition-header">
+      <h1 class="exhibition-title">D3F0RM3D_C00RD</h1>
+      <nav class="exhibition-nav">
+        <a href="../index.html" class="back-link">← Gallery</a>
+        <a href="#info" class="nav-link">Info</a>
+      </nav>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+      <h1 class="exhibition-canvas-title">
+        Deformed Sinusoidal Coordinate System
+      </h1>
+      <canvas id="canvas" width="760" height="600"></canvas>
+      <div class="controls">
+        <button class="control-button" onclick="regenerateAxes()">
+          Generate New Random Axes
+        </button>
+        <button class="control-button" onclick="toggleAnimation()">
+          Toggle Animation
+        </button>
+      </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../js/shared-controls.js"></script>
+    <script src="../js/deformed-coord.js"></script>
+  </body>
+</html>

@@ -1,0 +1,301 @@
+/* Infinite Knot Exhibition Styles */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+
+/* Exhibition Layout */
+body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+  font-family: "Inter", sans-serif;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Background grid */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(rgba(0, 255, 136, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 136, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  z-index: -1;
+  animation: gridPulse 4s ease-in-out infinite;
+}
+
+@keyframes gridPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* Exhibition Header */
+.exhibition-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(15, 15, 15, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+  z-index: 1000;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.exhibition-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #00ff88;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.exhibition-nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.nav-link,
+.back-link {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+
+.nav-link:hover,
+.back-link:hover {
+  color: #00ff88;
+  border-color: rgba(0, 255, 136, 0.3);
+  background: rgba(0, 255, 136, 0.1);
+}
+
+/* Loading Animation */
+.loading-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.loading-container.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 3px solid rgba(0, 255, 136, 0.3);
+  border-top: 3px solid #00ff88;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+.loading-text {
+  color: #00ff88;
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Main Container */
+.container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0a0a0a, #1a1a2e);
+}
+
+.knot-container {
+  position: relative;
+  width: 800px;
+  height: 600px;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  padding: 20px;
+}
+
+/* SVG Styling */
+svg {
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+}
+
+/* Rope Styles */
+.red-rope {
+  fill: none;
+  stroke: url(#redGradient);
+  stroke-width: 12;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: url(#glow);
+}
+
+.blue-rope {
+  fill: none;
+  stroke: url(#blueGradient);
+  stroke-width: 12;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: url(#glow);
+}
+
+.red-rope-shadow {
+  fill: none;
+  stroke: #330000;
+  stroke-width: 16;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.3;
+}
+
+.blue-rope-shadow {
+  fill: none;
+  stroke: #000033;
+  stroke-width: 16;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.3;
+}
+
+.red-highlight {
+  fill: none;
+  stroke: url(#redHighlight);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.blue-highlight {
+  fill: none;
+  stroke: url(#blueHighlight);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Knot Animation */
+@keyframes knotTightening {
+  0% {
+    stroke-dasharray: 0 2000;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 1000 1000;
+    stroke-dashoffset: -500;
+  }
+  100% {
+    stroke-dasharray: 2000 0;
+    stroke-dashoffset: -2000;
+  }
+}
+
+.animated-path {
+  animation: knotTightening 8s infinite ease-in-out;
+}
+
+/* Enhanced glow effects */
+@keyframes pulseGlow {
+  0%,
+  100% {
+    filter: url(#glow) brightness(1);
+  }
+  50% {
+    filter: url(#glow) brightness(1.3);
+  }
+}
+
+.red-rope,
+.blue-rope {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+.red-rope {
+  animation-delay: 0s;
+}
+
+.blue-rope {
+  animation-delay: 1.5s;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .exhibition-header {
+    padding: 10px 20px;
+  }
+
+  .exhibition-title {
+    font-size: 1.2rem;
+  }
+
+  .knot-container {
+    width: 95vw;
+    height: 70vh;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .knot-container {
+    height: 60vh;
+    padding: 10px;
+  }
+}
+
+/* Container entrance animation */
+@keyframes containerAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.knot-container {
+  animation: containerAppear 0.8s ease-out;
+}
