@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>M1RR0R_PYR4M1D - Dancing Cube Exhibition</title>
+    <meta
+      name="description"
+      content="Interactive 3D pyramid of four mirrored spheres with collision-based color switching balls in a physics simulation."
+    />
+
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/shared-navigation.css" />
+    <link rel="stylesheet" href="../css/mirror-pyramid.css" />
+  </head>
+  <body>
+    <!-- Animated background grid -->
+    <div class="background-grid"></div>
+
+    <!-- Loading indicator -->
+    <div class="loading">INITIALIZING M1RR0R PYRAMID...</div>
+
+    <!-- Header with title and back button -->
+    <header class="exhibition-header">
+      <h1 class="exhibition-title">M1RR0R_PYR4M1D</h1>
+      <a href="../index.html" class="back-button">Back to Gallery</a>
+    </header>
+
+    <!-- Main content container -->
+    <div class="main-content">
+      <!-- 3D Container -->
+      <div id="container"></div>
+
+      <!-- Info panel -->
+      <div id="info">
+        Pyramid of Four Mirrored Spheres<br />
+        2048 total mirror balls (512 per sphere)<br />
+        Magenta & yellow color switching on collision<br />
+        Smooth pyramid rotation - Maximum screen coverage
+      </div>
+
+      <!-- Scripts -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+      <script src="../js/mirror-pyramid.js"></script>
+    </div>
+    <!-- End main-content -->
+  </body>
+</html>
