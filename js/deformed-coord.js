@@ -5,20 +5,35 @@
 
 class DeformedCoordinateSystem {
   constructor() {
-    this.canvas = document.getElementById("canvas");
+    this.canvas = document.getElementById("deformed-canvas");
     this.ctx = this.canvas.getContext("2d");
-    this.width = this.canvas.width;
-    this.height = this.canvas.height;
+
+    // Get container dimensions for responsive sizing
+    const container = this.canvas.parentElement;
+    this.width = container.clientWidth;
+    this.height = container.clientHeight;
+
+    // Set canvas size
+    this.canvas.width = this.width;
+    this.canvas.height = this.height;
+
     this.centerX = this.width / 2;
     this.centerY = this.height / 2;
 
     this.animationId = null;
-    this.isAnimating = false;
+    this.isAnimating = true; // Start with animation enabled
     this.time = 0;
 
     this.initializeParameters();
     this.setupEventListeners();
     this.draw();
+    this.animate(); // Start animation immediately
+
+    // Hide loading text once initialized
+    const loadingElement = document.querySelector(".loading");
+    if (loadingElement) {
+      loadingElement.style.display = "none";
+    }
   }
 
   initializeParameters() {
@@ -50,6 +65,18 @@ class DeformedCoordinateSystem {
     // Set up global functions for buttons
     window.regenerateAxes = this.regenerateAxes;
     window.toggleAnimation = this.toggleAnimation;
+
+    // Handle window resize
+    window.addEventListener("resize", () => {
+      const container = this.canvas.parentElement;
+      this.width = container.clientWidth;
+      this.height = container.clientHeight;
+      this.canvas.width = this.width;
+      this.canvas.height = this.height;
+      this.centerX = this.width / 2;
+      this.centerY = this.height / 2;
+      this.draw();
+    });
   }
 
   deformPoint(x, y, t = 0) {

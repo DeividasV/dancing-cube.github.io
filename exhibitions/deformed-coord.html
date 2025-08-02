@@ -9,53 +9,60 @@
       content="Interactive deformed sinusoidal coordinate system visualization"
     />
 
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- Stylesheets -->
     <link rel="stylesheet" href="../css/top-menu.css" />
     <link rel="stylesheet" href="../css/deformed-coord.css" />
   </head>
   <body>
-    <!-- Loading Animation -->
-    <div class="loading-container">
-      <div class="loading-spinner"></div>
-      <div class="loading-text">Loading D3F0RM3D_C00RD...</div>
-    </div>
+    <!-- Loading indicator -->
+    <div class="loading">INITIALIZING D3F0RM3D_C00RD...</div>
 
     <!-- Top Menu Component -->
     <div class="top-menu">
-      <div class="menu-title">D3F0RM3D_C00RD</div>
-      <a href="../index.html" class="back-button">Back</a>
+      <div class="nav-left">
+        <div class="menu-title">D3F0RM3D_C00RD</div>
+      </div>
+      <div class="nav-right">
+        <button class="nav-button" id="prevButton" title="Previous Exhibition">
+          Previous
+        </button>
+        <button class="nav-button" id="nextButton" title="Next Exhibition">
+          Next
+        </button>
+        <a
+          href="../index.html"
+          class="nav-button home-button"
+          title="Back to Home"
+          >Home</a
+        >
+      </div>
     </div>
 
     <!-- Exhibition Container -->
     <div class="exhibition-container">
       <div class="exhibition-frame">
         <canvas id="deformed-canvas" class="exhibition-canvas"></canvas>
+        <div class="controls">
+          <button class="control-button" onclick="regenerateAxes()">
+            Generate New Random Axes
+          </button>
+          <button class="control-button" onclick="toggleAnimation()">
+            Toggle Animation
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- Scripts -->
-    <script src="../js/deformed-coord.js"></script>
-  </body>
-</html>
-
-    <!-- Main Container -->
-    <div class="container">
-      <h1 class="exhibition-canvas-title">
-        Deformed Sinusoidal Coordinate System
-      </h1>
-      <canvas id="canvas" width="760" height="600"></canvas>
-      <div class="controls">
-        <button class="control-button" onclick="regenerateAxes()">
-          Generate New Random Axes
-        </button>
-        <button class="control-button" onclick="toggleAnimation()">
-          Toggle Animation
-        </button>
-      </div>
-    </div>
-
-    <!-- JavaScript -->
-    <script src="../js/shared-controls.js"></script>
+    <script src="../js/exhibition-nav.js"></script>
     <script src="../js/deformed-coord.js"></script>
   </body>
 </html>
