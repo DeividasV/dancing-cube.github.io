@@ -27,8 +27,23 @@
 
     <!-- Top Menu Component -->
     <div class="top-menu">
-      <div class="menu-title">GL4SS_SPH3R3S</div>
-      <a href="../index.html" class="back-button">Back</a>
+      <div class="nav-left">
+        <div class="menu-title">GL4SS_SPH3R3S</div>
+      </div>
+      <div class="nav-right">
+        <button class="nav-button" id="prevButton" title="Previous Exhibition">
+          Previous
+        </button>
+        <button class="nav-button" id="nextButton" title="Next Exhibition">
+          Next
+        </button>
+        <a
+          href="../index.html"
+          class="nav-button home-button"
+          title="Back to Home"
+          >Home</a
+        >
+      </div>
     </div>
 
     <!-- Exhibition Container -->
@@ -79,6 +94,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="../js/exhibition-nav.js"></script>
     <script src="../js/glass-spheres.js"></script>
   </body>
 </html>
