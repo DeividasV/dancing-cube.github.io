@@ -3,7 +3,6 @@ class ExhibitionNavigator {
   constructor() {
     // Define exhibition order
     this.exhibitions = [
-      "quantum-bounce.html",
       "fluid-dynamics.html",
       "wire-network.html",
       "individual-squares.html",
@@ -15,7 +14,7 @@ class ExhibitionNavigator {
       "axis-connect.html",
       "deformed-coord.html",
       "infinite-knot.html",
-      "infinite-kont.html",
+      "quantum-bounce.html",
     ];
 
     this.currentExhibition = this.getCurrentExhibition();

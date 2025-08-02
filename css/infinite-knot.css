@@ -1,4 +1,4 @@
-/* Infinite Knot Exhibition Styles */
+/* Infinite Knot 3D Exhibition Styles */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
 
 /* Exhibition Layout */
@@ -298,4 +298,31 @@ svg {
 
 .knot-container {
   animation: containerAppear 0.8s ease-out;
+}
+
+/* 3D Canvas Styles */
+.exhibition-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+}
+
+.exhibition-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.exhibition-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.exhibition-canvas:active {
+  cursor: grabbing;
 }

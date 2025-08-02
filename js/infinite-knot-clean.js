@@ -10,9 +10,9 @@ class InfiniteKnot3D {
     this.knots = [];
     this.knotCount = 3;
 
-    // Animation parameters - slower for smoother movement
+    // Animation parameters
     this.time = 0;
-    this.animationSpeed = 0.005; // Reduced from 0.01 to 0.005
+    this.animationSpeed = 0.01;
 
     this.initialize();
     this.hideLoading();
@@ -57,57 +57,28 @@ class InfiniteKnot3D {
   }
 
   setupLights() {
-    // Ambient light for general illumination
-    const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+    // Ambient light
+    const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
     this.scene.add(ambientLight);
 
-    // Main directional light for metallic reflections
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    // Main directional light
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
     directionalLight.position.set(10, 10, 5);
     directionalLight.castShadow = true;
     this.scene.add(directionalLight);
 
-    // Additional lights for better metallic reflections
-    const light1 = new THREE.PointLight(0x8b5cf6, 0.8, 40);
-    light1.position.set(-15, 8, 5);
+    // Colored accent lights
+    const light1 = new THREE.PointLight(0x8b5cf6, 1.0, 30);
+    light1.position.set(-10, 5, 0);
     this.scene.add(light1);
 
-    const light2 = new THREE.PointLight(0x14b8a6, 0.8, 40);
-    light2.position.set(15, -8, 5);
+    const light2 = new THREE.PointLight(0x14b8a6, 1.0, 30);
+    light2.position.set(10, -5, 0);
     this.scene.add(light2);
 
-    const light3 = new THREE.PointLight(0xf97316, 0.8, 40);
-    light3.position.set(5, 8, -15);
+    const light3 = new THREE.PointLight(0xf97316, 1.0, 30);
+    light3.position.set(0, 5, -10);
     this.scene.add(light3);
-
-    // Rim light for edge highlighting
-    const rimLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    rimLight.position.set(-10, -10, -5);
-    this.scene.add(rimLight);
-
-    // Create environment map for reflections
-    this.createEnvironmentMap();
-  }
-
-  createEnvironmentMap() {
-    // Create a simple cube environment for reflections
-    const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(256);
-    const cubeCamera = new THREE.CubeCamera(1, 1000, cubeRenderTarget);
-
-    // Simple gradient environment
-    const envScene = new THREE.Scene();
-    const envGeometry = new THREE.SphereGeometry(500, 32, 32);
-    const envMaterial = new THREE.MeshBasicMaterial({
-      color: 0x222244,
-      side: THREE.BackSide,
-    });
-    const envMesh = new THREE.Mesh(envGeometry, envMaterial);
-    envScene.add(envMesh);
-
-    cubeCamera.update(this.renderer, envScene);
-
-    // Apply environment map to all knot materials
-    this.environmentMap = cubeRenderTarget.texture;
   }
 
   setupControls() {
@@ -158,33 +129,30 @@ class InfiniteKnot3D {
   createRandomKnot(colorScheme, index) {
     const group = new THREE.Group();
 
-    // Random knot parameters - different for each knot, slower speeds
+    // Random knot parameters - different for each knot
     const params = {
       p: 2 + index, // Different knot types: 2, 3, 4
       q: 3 + index * 2, // Different windings: 3, 5, 7
-      speed: 0.2 + Math.random() * 0.3, // Much slower: 0.2-0.5 instead of 0.5-1.5
+      speed: 0.5 + Math.random() * 1.0,
       offset: Math.random() * Math.PI * 2,
     };
 
-    // Create knot using TorusKnotGeometry with high segment count for smoothness
+    // Create knot using TorusKnotGeometry - this is reliable and visible
     const knotGeometry = new THREE.TorusKnotGeometry(
       3, // radius
       1, // tube radius
-      200, // radial segments (increased from 100 to 200)
-      32, // tubular segments (increased from 16 to 32)
+      100, // radial segments
+      16, // tubular segments
       params.p, // p parameter
       params.q // q parameter
     );
 
-    // Metallic reflective material
-    const mainMaterial = new THREE.MeshStandardMaterial({
+    // Main knot material
+    const mainMaterial = new THREE.MeshPhongMaterial({
       color: colorScheme.main,
-      metalness: 0.9,
-      roughness: 0.1,
-      envMap: this.environmentMap,
-      envMapIntensity: 1.5,
-      transparent: false,
-      opacity: 1.0,
+      shininess: 100,
+      transparent: true,
+      opacity: 0.9,
     });
 
     // Create main mesh
@@ -216,7 +184,7 @@ class InfiniteKnot3D {
       mainMesh,
       initialPosition: group.position.clone(),
       orbitRadius: distance,
-      orbitSpeed: params.speed * 0.02, // Even slower orbit: 0.02 instead of 0.05
+      orbitSpeed: params.speed * 0.05,
       orbitOffset: params.offset,
     };
   }
@@ -232,31 +200,31 @@ class InfiniteKnot3D {
 
   updateKnots() {
     this.knots.forEach((knot, index) => {
-      // Smooth orbit motion around the center
+      // Orbit motion around the center
       const orbitAngle = this.time * knot.orbitSpeed + knot.orbitOffset;
       const x = Math.cos(orbitAngle) * knot.orbitRadius;
       const z = Math.sin(orbitAngle) * knot.orbitRadius;
-      const y = Math.sin(this.time * 0.2 + index) * 2; // Slower, gentler vertical oscillation
+      const y = Math.sin(this.time * 0.5 + index) * 3; // Vertical oscillation
 
       knot.group.position.set(x, y, z);
 
-      // Much slower self rotation for smooth movement
-      knot.group.rotation.x += 0.003 * knot.params.speed; // Reduced from 0.008
-      knot.group.rotation.y += 0.005 * knot.params.speed; // Reduced from 0.012
-      knot.group.rotation.z += 0.002 * knot.params.speed; // Reduced from 0.006
+      // Self rotation
+      knot.group.rotation.x += 0.008 * knot.params.speed;
+      knot.group.rotation.y += 0.012 * knot.params.speed;
+      knot.group.rotation.z += 0.006 * knot.params.speed;
 
-      // Very subtle scaling animation
-      const scale = 1 + Math.sin(this.time * 1 + index) * 0.08; // Slower and less pronounced
+      // Subtle scaling animation
+      const scale = 1 + Math.sin(this.time * 2 + index) * 0.15;
       knot.group.scale.setScalar(scale);
     });
   }
 
   updateCamera() {
-    // Very smooth camera rotation interpolation
+    // Smooth camera rotation interpolation
     this.controls.currentRotationX +=
-      (this.controls.targetRotationX - this.controls.currentRotationX) * 0.03;
+      (this.controls.targetRotationX - this.controls.currentRotationX) * 0.05;
     this.controls.currentRotationY +=
-      (this.controls.targetRotationY - this.controls.currentRotationY) * 0.03;
+      (this.controls.targetRotationY - this.controls.currentRotationY) * 0.05;
 
     // Apply rotation to camera
     const distance = this.controls.zoom;
@@ -370,30 +338,7 @@ class InfiniteKnot3D {
   }
 }
 
-// Initialize when both DOM and THREE.js are loaded
-function initializeKnots() {
-  if (typeof THREE !== "undefined" && THREE.Scene) {
-    console.log("THREE.js loaded successfully, initializing knots...");
-    window.knotInstance = new InfiniteKnot3D();
-  } else {
-    console.log("Waiting for THREE.js to load...");
-    // If THREE.js isn't loaded yet, wait a bit and try again
-    setTimeout(initializeKnots, 100);
-  }
-}
-
-// Try multiple initialization methods to ensure it works
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initializeKnots);
-} else {
-  // DOM is already loaded
-  initializeKnots();
-}
-
-// Also try window.onload as backup
-window.addEventListener("load", () => {
-  if (!window.knotInstance) {
-    console.log("Backup initialization attempt...");
-    initializeKnots();
-  }
+// Initialize when DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+  window.knotInstance = new InfiniteKnot3D();
 });
