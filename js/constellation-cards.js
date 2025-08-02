@@ -96,12 +96,192 @@ class ConstellationCards {
       card.addEventListener("mouseleave", () => {
         this.onCardHover(cardData, false);
       });
+    });
 
-      // Add click ripple effect
+    // Setup drag functionality
+    this.setupDragFunctionality();
+  }
+
+  setupDragFunctionality() {
+    this.isDragging = false;
+    this.draggedCard = null;
+    this.dragOffset = { x: 0, y: 0 };
+    this.movedCards = new Set(); // Track which cards have been moved
+    this.dragStartTime = 0;
+    this.dragStartPos = { x: 0, y: 0 };
+
+    this.cards.forEach((cardData) => {
+      const card = cardData.element;
+
+      // Mouse events
+      card.addEventListener("mousedown", (e) => {
+        if (e.target.closest("a")) return;
+        e.preventDefault();
+        this.handleStart(cardData, e.clientX, e.clientY);
+      });
+
+      // Touch events for mobile
+      card.addEventListener("touchstart", (e) => {
+        if (e.target.closest("a")) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        this.handleStart(cardData, touch.clientX, touch.clientY);
+      });
+
+      // Click handler for ripple effect
       card.addEventListener("click", (e) => {
-        this.createRippleEffect(e, card);
+        if (!this.isDragging && this.potentialDragCard) {
+          this.createRippleEffect(e, card);
+        }
       });
     });
+
+    // Global mouse and touch events
+    document.addEventListener("mousemove", (e) => {
+      this.handleMove(e.clientX, e.clientY);
+    });
+
+    document.addEventListener("touchmove", (e) => {
+      if (this.isDragging || this.potentialDragCard) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        this.handleMove(touch.clientX, touch.clientY);
+      }
+    });
+
+    document.addEventListener("mouseup", () => {
+      this.handleEnd();
+    });
+
+    document.addEventListener("touchend", () => {
+      this.handleEnd();
+    });
+
+    // Prevent text selection during drag
+    document.addEventListener("selectstart", (e) => {
+      if (this.isDragging) {
+        e.preventDefault();
+      }
+    });
+  }
+
+  handleStart(cardData, clientX, clientY) {
+    this.dragStartTime = Date.now();
+    this.dragStartPos.x = clientX;
+    this.dragStartPos.y = clientY;
+    this.potentialDragCard = cardData;
+
+    // Add a small delay before starting drag to distinguish from click
+    this.dragTimeout = setTimeout(() => {
+      this.startDrag(cardData, { clientX, clientY });
+    }, 150);
+  }
+
+  handleMove(clientX, clientY) {
+    // If we moved significantly before drag timeout, start drag immediately
+    if (this.potentialDragCard && !this.isDragging) {
+      const distance = Math.sqrt(
+        Math.pow(clientX - this.dragStartPos.x, 2) +
+          Math.pow(clientY - this.dragStartPos.y, 2)
+      );
+
+      if (distance > 5) {
+        clearTimeout(this.dragTimeout);
+        this.startDrag(this.potentialDragCard, { clientX, clientY });
+      }
+    }
+
+    if (this.isDragging) {
+      this.drag({ clientX, clientY });
+    }
+  }
+
+  handleEnd() {
+    clearTimeout(this.dragTimeout);
+
+    if (this.isDragging) {
+      this.endDrag();
+    }
+
+    this.potentialDragCard = null;
+  }
+
+  startDrag(cardData, event) {
+    this.isDragging = true;
+    this.draggedCard = cardData;
+
+    const card = cardData.element;
+    const rect = card.getBoundingClientRect();
+    const container = document.querySelector(".constellation-container");
+    const containerRect = container.getBoundingClientRect();
+
+    // Calculate drag offset
+    this.dragOffset.x = event.clientX - rect.left;
+    this.dragOffset.y = event.clientY - rect.top;
+
+    // Add dragging class
+    card.classList.add("dragging");
+
+    // Disable any ongoing animations
+    card.style.animation = "none";
+    card.style.transition = "none";
+  }
+
+  drag(event) {
+    if (!this.isDragging || !this.draggedCard) return;
+
+    const container = document.querySelector(".constellation-container");
+    const containerRect = container.getBoundingClientRect();
+    const card = this.draggedCard.element;
+
+    // Calculate new position
+    const x = event.clientX - containerRect.left - this.dragOffset.x;
+    const y = event.clientY - containerRect.top - this.dragOffset.y;
+
+    // Convert to percentage for responsive positioning
+    const xPercent = (x / containerRect.width) * 100;
+    const yPercent = (y / containerRect.height) * 100;
+
+    // Clamp to container bounds
+    const clampedX = Math.max(
+      0,
+      Math.min(100 - (280 / containerRect.width) * 100, xPercent)
+    );
+    const clampedY = Math.max(
+      0,
+      Math.min(100 - (200 / containerRect.height) * 100, yPercent)
+    );
+
+    // Update position
+    card.style.left = clampedX + "%";
+    card.style.top = clampedY + "%";
+
+    // Update card data
+    this.draggedCard.currentPosition.x = clampedX;
+    this.draggedCard.currentPosition.y = clampedY;
+  }
+
+  endDrag() {
+    if (!this.isDragging || !this.draggedCard) return;
+
+    const card = this.draggedCard.element;
+
+    // Remove dragging class
+    card.classList.remove("dragging");
+
+    // Add moved class to keep it on top
+    card.classList.add("moved");
+    this.movedCards.add(this.draggedCard);
+
+    // Re-enable transitions
+    setTimeout(() => {
+      card.style.transition = "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)";
+    }, 100);
+
+    // Reset drag state
+    this.isDragging = false;
+    this.draggedCard = null;
+    this.dragOffset = { x: 0, y: 0 };
   }
 
   onCardHover(cardData, isHovering) {

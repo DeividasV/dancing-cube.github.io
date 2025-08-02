@@ -159,9 +159,25 @@ body {
   border-radius: 16px;
   padding: 1.5rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
+  cursor: grab;
   overflow: hidden;
   animation: cardFloat 6s ease-in-out infinite;
+  user-select: none;
+  z-index: 1;
+}
+
+/* Dragging states */
+.glass-card.dragging {
+  cursor: grabbing;
+  z-index: 1000;
+  transform: scale(1.05) rotate(2deg);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 255, 136, 0.4);
+  animation: none;
+}
+
+.glass-card.moved {
+  z-index: 100;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 255, 136, 0.2);
 }
 
 .glass-card::before {
@@ -1305,6 +1321,18 @@ body {
   }
   100% {
     background-position: 200% 0;
+  }
+}
+
+/* Ripple effect animation */
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
   }
 }
 
