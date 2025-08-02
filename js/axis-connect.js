@@ -3,18 +3,30 @@
 class AxisVisualizer {
   constructor() {
     this.initScene();
+    // Set up scene
+    this.setupScene();
     this.createConnections();
-    this.setupAnimation();
-    this.bindEvents();
+    this.setupControls();
     this.animate();
+
+    // Remove loading text once initialized
+    const loadingElement = document.querySelector(".loading");
+    if (loadingElement) {
+      loadingElement.style.display = "none";
+    }
   }
 
   initScene() {
+    // Get container dimensions
+    const container = document.getElementById("container");
+    const width = container.offsetWidth;
+    const height = container.offsetHeight;
+
     // Scene setup
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(
-      60,
-      window.innerWidth / window.innerHeight,
+      45, // Reduced FOV for better zoom
+      width / height,
       0.1,
       2000
     );
@@ -25,8 +37,8 @@ class AxisVisualizer {
       alpha: true,
     });
 
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.renderer.setClearColor(0x2a2a2a, 1);
+    this.renderer.setSize(width, height);
+    this.renderer.setClearColor(0x000000, 0); // Transparent background
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -34,12 +46,25 @@ class AxisVisualizer {
     this.connectionGroup = new THREE.Group();
     this.scene.add(this.connectionGroup);
 
-    // Camera position
-    this.camera.position.set(80, 60, 100);
+    // Camera position - closer for better zoom and space usage
+    this.camera.position.set(50, 40, 60);
     this.camera.lookAt(0, 0, 0);
 
-    // Scale factor
-    this.scale = 24;
+    // Scale factor - larger for better space usage
+    this.scale = 32;
+
+    // Handle resize
+    window.addEventListener("resize", () => this.handleResize());
+  }
+
+  handleResize() {
+    const container = document.getElementById("container");
+    const width = container.offsetWidth;
+    const height = container.offsetHeight;
+
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(width, height);
   }
 
   createConnections() {
