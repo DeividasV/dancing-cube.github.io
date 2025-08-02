@@ -1,554 +1,279 @@
-/**
- * Wire Network Visualization
- * Creates an interactive wire pulse system with network connections
- */
-
-class WireNetwork {
+// Wire Network Random Generation
+class WireNetworkGenerator {
   constructor() {
-    this.container = document.querySelector(".wire-network");
+    this.container = null;
     this.wires = [];
     this.nodes = [];
-    this.pulses = [];
-
-    this.initialize();
+    this.init();
   }
 
-  initialize() {
-    this.collectElements();
-    this.setupInteractions();
-    this.setupDynamicEffects();
-  }
-
-  collectElements() {
-    this.wires = Array.from(this.container.querySelectorAll(".wire"));
-    this.nodes = Array.from(this.container.querySelectorAll(".node"));
-    this.pulses = Array.from(this.container.querySelectorAll(".pulse"));
-  }
-
-  setupInteractions() {
-    // Wire interactions
-    this.wires.forEach((wire, index) => {
-      wire.addEventListener("mouseenter", () => this.onWireHover(wire, index));
-      wire.addEventListener("mouseleave", () => this.onWireLeave(wire, index));
-      wire.addEventListener("click", () => this.onWireClick(wire, index));
-    });
-
-    // Node interactions
-    this.nodes.forEach((node, index) => {
-      node.addEventListener("mouseenter", () => this.onNodeHover(node, index));
-      node.addEventListener("mouseleave", () => this.onNodeLeave(node, index));
-      node.addEventListener("click", () => this.onNodeClick(node, index));
-    });
-
-    // Container interactions
-    this.container.addEventListener("mousemove", (e) => this.onMouseMove(e));
-    this.container.addEventListener("click", (e) => this.onContainerClick(e));
-  }
-
-  setupDynamicEffects() {
-    // Add random variations to pulse animations
-    this.pulses.forEach((pulse) => {
-      const baseDuration = parseFloat(
-        getComputedStyle(pulse).animationDuration
-      );
-      const variation = 0.8 + Math.random() * 0.4; // 0.8x to 1.2x speed
-      pulse.style.animationDuration = `${baseDuration * variation}s`;
-
-      // Random delay
-      const delay = Math.random() * 2;
-      pulse.style.animationDelay = `${delay}s`;
-    });
-
-    // Add subtle wire glow variations
-    this.wires.forEach((wire) => {
-      const glowDuration = 1.5 + Math.random() * 1; // 1.5-2.5 seconds
-      wire.style.setProperty("--glow-duration", `${glowDuration}s`);
-    });
-  }
-
-  onWireHover(wire, index) {
-    // Enhance wire glow
-    wire.style.boxShadow = "0 0 25px #ffd700, 0 0 50px rgba(255, 215, 0, 0.5)";
-    wire.style.background = "#ffed4e";
-
-    // Create electrical spark effect
-    this.createSparkEffect(wire);
-
-    // Highlight connected nodes
-    this.highlightConnectedNodes(wire);
-
-    // Speed up pulses on this wire
-    const wirePulses = wire.querySelectorAll(".pulse");
-    wirePulses.forEach((pulse) => {
-      const currentDuration = parseFloat(
-        getComputedStyle(pulse).animationDuration
-      );
-      pulse.style.animationDuration = `${currentDuration * 0.5}s`;
-    });
-  }
-
-  onWireLeave(wire, index) {
-    // Reset wire appearance
-    wire.style.boxShadow = "";
-    wire.style.background = "";
-
-    // Reset pulse speeds
-    const wirePulses = wire.querySelectorAll(".pulse");
-    wirePulses.forEach((pulse) => {
-      pulse.style.animationDuration = "";
-    });
-
-    // Reset connected nodes
-    this.resetConnectedNodes();
-  }
-
-  onWireClick(wire, index) {
-    // Create electrical burst
-    this.createElectricalBurst(wire);
-
-    // Temporarily disable and re-enable wire
-    this.resetWire(wire);
-
-    // Send pulse wave through connected wires
-    this.sendPulseWave(wire);
-  }
-
-  onNodeHover(node, index) {
-    // Create expanding ring effect
-    this.createNodeRing(node);
-
-    // Highlight connected wires
-    this.highlightConnectedWires(node);
-  }
-
-  onNodeLeave(node, index) {
-    // Reset connected wires
-    this.resetConnectedWires();
-  }
-
-  onNodeClick(node, index) {
-    // Create node explosion effect
-    this.createNodeExplosion(node);
-
-    // Send signal through all connected wires
-    this.sendNodeSignal(node);
-  }
-
-  onMouseMove(e) {
-    const rect = this.container.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    // Create subtle electromagnetic field effect
-    this.createFieldEffect(x, y);
-  }
-
-  onContainerClick(e) {
-    const rect = this.container.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    // Create electromagnetic pulse
-    this.createEMPEffect(x, y);
-  }
-
-  createSparkEffect(wire) {
-    const rect = wire.getBoundingClientRect();
-    const containerRect = this.container.getBoundingClientRect();
-
-    for (let i = 0; i < 3; i++) {
-      const spark = document.createElement("div");
-      spark.style.cssText = `
-        position: absolute;
-        width: 2px;
-        height: 2px;
-        background: #00ffff;
-        border-radius: 50%;
-        pointer-events: none;
-        left: ${Math.random() * wire.offsetWidth}px;
-        top: ${wire.offsetTop + Math.random() * wire.offsetHeight}px;
-        box-shadow: 0 0 10px #00ffff;
-      `;
-
-      this.container.appendChild(spark);
-
-      spark
-        .animate(
-          [
-            {
-              opacity: 1,
-              transform: "scale(1)",
-            },
-            {
-              opacity: 0,
-              transform: "scale(0)",
-            },
-          ],
-          {
-            duration: 300 + Math.random() * 200,
-            easing: "ease-out",
-          }
-        )
-        .addEventListener("finish", () => {
-          if (spark.parentNode) {
-            this.container.removeChild(spark);
-          }
-        });
+  init() {
+    // Wait for DOM to be fully loaded
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => this.setup());
+    } else {
+      this.setup();
     }
   }
 
-  createElectricalBurst(wire) {
-    const rect = wire.getBoundingClientRect();
-    const containerRect = this.container.getBoundingClientRect();
-    const centerX = wire.offsetLeft + wire.offsetWidth / 2;
-    const centerY = wire.offsetTop + wire.offsetHeight / 2;
-
-    for (let i = 0; i < 8; i++) {
-      const burst = document.createElement("div");
-      burst.style.cssText = `
-        position: absolute;
-        width: 4px;
-        height: 4px;
-        background: #ffd700;
-        border-radius: 50%;
-        pointer-events: none;
-        left: ${centerX}px;
-        top: ${centerY}px;
-        box-shadow: 0 0 15px #ffd700;
-      `;
-
-      this.container.appendChild(burst);
-
-      const angle = (i * 45 * Math.PI) / 180;
-      const distance = 30 + Math.random() * 20;
-
-      burst
-        .animate(
-          [
-            {
-              opacity: 1,
-              transform: "translate(-50%, -50%) scale(1)",
-            },
-            {
-              opacity: 0,
-              transform: `translate(-50%, -50%) translate(${
-                Math.cos(angle) * distance
-              }px, ${Math.sin(angle) * distance}px) scale(0)`,
-            },
-          ],
-          {
-            duration: 500,
-            easing: "ease-out",
-          }
-        )
-        .addEventListener("finish", () => {
-          if (burst.parentNode) {
-            this.container.removeChild(burst);
-          }
-        });
+  setup() {
+    console.log("Setting up wire network...");
+    this.container = document.getElementById("wire-container");
+    if (!this.container) {
+      console.error("Wire container not found");
+      return;
     }
-  }
+    console.log("Wire container found:", this.container);
 
-  createNodeRing(node) {
-    const ring = document.createElement("div");
-    ring.style.cssText = `
-      position: absolute;
-      left: ${node.offsetLeft + node.offsetWidth / 2}px;
-      top: ${node.offsetTop + node.offsetHeight / 2}px;
-      width: 0px;
-      height: 0px;
-      border: 2px solid rgba(255, 107, 53, 0.6);
-      border-radius: 50%;
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-    `;
-
-    this.container.appendChild(ring);
-
-    ring
-      .animate(
-        [
-          {
-            width: "0px",
-            height: "0px",
-            opacity: 0.8,
-          },
-          {
-            width: "60px",
-            height: "60px",
-            opacity: 0,
-          },
-        ],
-        {
-          duration: 800,
-          easing: "ease-out",
-        }
-      )
-      .addEventListener("finish", () => {
-        if (ring.parentNode) {
-          this.container.removeChild(ring);
-        }
-      });
-  }
-
-  createNodeExplosion(node) {
-    const centerX = node.offsetLeft + node.offsetWidth / 2;
-    const centerY = node.offsetTop + node.offsetHeight / 2;
-
-    for (let i = 0; i < 12; i++) {
-      const particle = document.createElement("div");
-      particle.style.cssText = `
-        position: absolute;
-        width: 3px;
-        height: 3px;
-        background: #ff6b35;
-        border-radius: 50%;
-        pointer-events: none;
-        left: ${centerX}px;
-        top: ${centerY}px;
-        box-shadow: 0 0 8px #ff6b35;
-      `;
-
-      this.container.appendChild(particle);
-
-      const angle = (i * 30 * Math.PI) / 180;
-      const distance = 40 + Math.random() * 30;
-
-      particle
-        .animate(
-          [
-            {
-              opacity: 1,
-              transform: "translate(-50%, -50%) scale(1)",
-            },
-            {
-              opacity: 0,
-              transform: `translate(-50%, -50%) translate(${
-                Math.cos(angle) * distance
-              }px, ${Math.sin(angle) * distance}px) scale(0)`,
-            },
-          ],
-          {
-            duration: 600 + Math.random() * 200,
-            easing: "ease-out",
-          }
-        )
-        .addEventListener("finish", () => {
-          if (particle.parentNode) {
-            this.container.removeChild(particle);
-          }
-        });
-    }
-  }
-
-  createFieldEffect(x, y) {
-    // Create subtle field distortion
-    if (Math.random() < 0.1) {
-      // Only occasionally create effect
-      const field = document.createElement("div");
-      field.style.cssText = `
-        position: absolute;
-        left: ${x}px;
-        top: ${y}px;
-        width: 20px;
-        height: 20px;
-        border: 1px solid rgba(0, 255, 255, 0.3);
-        border-radius: 50%;
-        pointer-events: none;
-        transform: translate(-50%, -50%);
-      `;
-
-      this.container.appendChild(field);
-
-      field
-        .animate(
-          [
-            {
-              width: "20px",
-              height: "20px",
-              opacity: 0.3,
-            },
-            {
-              width: "40px",
-              height: "40px",
-              opacity: 0,
-            },
-          ],
-          {
-            duration: 400,
-            easing: "ease-out",
-          }
-        )
-        .addEventListener("finish", () => {
-          if (field.parentNode) {
-            this.container.removeChild(field);
-          }
-        });
-    }
-  }
-
-  createEMPEffect(x, y) {
-    // Create electromagnetic pulse effect
-    const emp = document.createElement("div");
-    emp.style.cssText = `
-      position: absolute;
-      left: ${x}px;
-      top: ${y}px;
-      width: 10px;
-      height: 10px;
-      border: 3px solid rgba(0, 255, 136, 0.8);
-      border-radius: 50%;
-      pointer-events: none;
-      transform: translate(-50%, -50%);
-    `;
-
-    this.container.appendChild(emp);
-
-    emp
-      .animate(
-        [
-          {
-            width: "10px",
-            height: "10px",
-            opacity: 0.8,
-            borderWidth: "3px",
-          },
-          {
-            width: "200px",
-            height: "200px",
-            opacity: 0,
-            borderWidth: "1px",
-          },
-        ],
-        {
-          duration: 1000,
-          easing: "ease-out",
-        }
-      )
-      .addEventListener("finish", () => {
-        if (emp.parentNode) {
-          this.container.removeChild(emp);
-        }
-      });
-
-    // Temporarily affect all pulses
-    this.pulses.forEach((pulse) => {
-      pulse.style.animationDuration = "0.5s";
-    });
-
-    setTimeout(() => {
-      this.pulses.forEach((pulse) => {
-        pulse.style.animationDuration = "";
-      });
-    }, 1000);
-  }
-
-  highlightConnectedNodes(wire) {
-    // Simple implementation - could be enhanced with actual connection mapping
-    this.nodes.forEach((node) => {
-      node.style.boxShadow =
-        "0 0 25px #ff6b35, 0 0 50px rgba(255, 107, 53, 0.3)";
-    });
-  }
-
-  resetConnectedNodes() {
-    this.nodes.forEach((node) => {
-      node.style.boxShadow = "";
-    });
-  }
-
-  highlightConnectedWires(node) {
-    // Simple implementation - highlight nearby wires
-    this.wires.forEach((wire) => {
-      wire.style.boxShadow = "0 0 15px #ffd700";
-    });
-  }
-
-  resetConnectedWires() {
-    this.wires.forEach((wire) => {
-      wire.style.boxShadow = "";
-    });
-  }
-
-  resetWire(wire) {
-    wire.style.opacity = "0.3";
-    setTimeout(() => {
-      wire.style.opacity = "";
-    }, 200);
-  }
-
-  sendPulseWave(wire) {
-    // Create a wave effect across all wires
-    this.wires.forEach((w, index) => {
-      setTimeout(() => {
-        w.style.boxShadow = "0 0 30px #ffd700";
-        setTimeout(() => {
-          w.style.boxShadow = "";
-        }, 200);
-      }, index * 100);
-    });
-  }
-
-  sendNodeSignal(node) {
-    // Send signal from node through network
-    this.wires.forEach((wire, index) => {
-      setTimeout(() => {
-        const wirePulses = wire.querySelectorAll(".pulse");
-        wirePulses.forEach((pulse) => {
-          pulse.style.animationDuration = "0.5s";
-        });
-
-        setTimeout(() => {
-          wirePulses.forEach((pulse) => {
-            pulse.style.animationDuration = "";
-          });
-        }, 1000);
-      }, index * 50);
-    });
-  }
-}
-
-// Global functions for controls
-function resetNetwork() {
-  if (window.networkInstance) {
-    // Reset all animations and effects
-    const allElements = document.querySelectorAll(".wire, .node, .pulse");
-    allElements.forEach((element) => {
-      element.style.animation = "none";
-      element.offsetHeight; // Trigger reflow
-      element.style.animation = null;
-      element.style.boxShadow = "";
-      element.style.background = "";
-      element.style.opacity = "";
-    });
-  }
-}
-
-function pulseAll() {
-  if (window.networkInstance) {
-    const pulses = document.querySelectorAll(".pulse");
-    pulses.forEach((pulse) => {
-      pulse.style.animationDuration = "0.5s";
-    });
-
-    setTimeout(() => {
-      pulses.forEach((pulse) => {
-        pulse.style.animationDuration = "";
-      });
-    }, 2000);
-  }
-}
-
-// Initialize when DOM is loaded
-document.addEventListener("DOMContentLoaded", () => {
-  // Hide loading screen
-  setTimeout(() => {
+    // Hide loading animation
     const loadingContainer = document.querySelector(".loading-container");
     if (loadingContainer) {
-      loadingContainer.classList.add("hidden");
+      setTimeout(() => {
+        loadingContainer.style.display = "none";
+      }, 1000);
     }
-  }, 1000);
 
-  // Initialize the wire network
-  window.networkInstance = new WireNetwork();
+    this.generateRandomNetwork();
+  }
+
+  generateRandomNetwork() {
+    console.log("Generating random network...");
+    // Clear existing content
+    this.container.innerHTML = "";
+    this.wires = [];
+    this.nodes = [];
+
+    // Generate random wires
+    this.generateHorizontalWires();
+    this.generateVerticalWires();
+    this.generateDiagonalWires();
+    this.generateNodes();
+
+    console.log(
+      "Network generated with",
+      this.wires.length,
+      "wires and",
+      this.nodes.length,
+      "nodes"
+    );
+  }
+
+  generateHorizontalWires() {
+    const numWires = 4 + Math.floor(Math.random() * 3); // 4-6 wires
+
+    for (let i = 0; i < numWires; i++) {
+      const wire = document.createElement("div");
+      wire.className = `wire wire-h wire-h${i + 1}`;
+
+      // Random positioning and sizing
+      const top = 10 + Math.random() * 80; // 10-90%
+      const left = 5 + Math.random() * 30; // 5-35%
+      const width = 20 + Math.random() * 40; // 20-60%
+
+      wire.style.cssText = `
+        position: absolute;
+        top: ${top}%;
+        left: ${left}%;
+        width: ${width}%;
+        height: 4px;
+        background: #ffd700;
+        border-radius: 2px;
+        box-shadow: 0 0 10px #ffd700;
+        z-index: 2;
+      `;
+
+      // Add random pulses
+      this.addPulses(wire, "horizontal");
+      this.container.appendChild(wire);
+      this.wires.push(wire);
+    }
+  }
+
+  generateVerticalWires() {
+    const numWires = 4 + Math.floor(Math.random() * 3); // 4-6 wires
+
+    for (let i = 0; i < numWires; i++) {
+      const wire = document.createElement("div");
+      wire.className = `wire wire-v wire-v${i + 1}`;
+
+      // Random positioning and sizing
+      const top = 5 + Math.random() * 30; // 5-35%
+      const left = 10 + Math.random() * 80; // 10-90%
+      const height = 20 + Math.random() * 40; // 20-60%
+
+      wire.style.cssText = `
+        position: absolute;
+        top: ${top}%;
+        left: ${left}%;
+        width: 4px;
+        height: ${height}%;
+        background: #ffd700;
+        border-radius: 2px;
+        box-shadow: 0 0 10px #ffd700;
+        z-index: 2;
+      `;
+
+      // Add random pulses
+      this.addPulses(wire, "vertical");
+      this.container.appendChild(wire);
+      this.wires.push(wire);
+    }
+  }
+
+  generateDiagonalWires() {
+    const numWires = 2 + Math.floor(Math.random() * 3); // 2-4 wires
+
+    for (let i = 0; i < numWires; i++) {
+      const wire = document.createElement("div");
+      wire.className = `wire wire-d wire-d${i + 1}`;
+
+      // Random positioning and sizing
+      const top = 20 + Math.random() * 60; // 20-80%
+      const left = 20 + Math.random() * 60; // 20-80%
+      const width = 15 + Math.random() * 25; // 15-40%
+      const rotation = -60 + Math.random() * 120; // -60 to 60 degrees
+
+      wire.style.cssText = `
+        position: absolute;
+        top: ${top}%;
+        left: ${left}%;
+        width: ${width}%;
+        height: 4px;
+        background: #ffd700;
+        border-radius: 2px;
+        box-shadow: 0 0 10px #ffd700;
+        transform: rotate(${rotation}deg);
+        transform-origin: left center;
+        z-index: 2;
+      `;
+
+      // Add random pulses
+      this.addPulses(wire, "diagonal");
+      this.container.appendChild(wire);
+      this.wires.push(wire);
+    }
+  }
+
+  generateNodes() {
+    const numNodes = 3 + Math.floor(Math.random() * 4); // 3-6 nodes
+
+    for (let i = 0; i < numNodes; i++) {
+      const node = document.createElement("div");
+      node.className = `node node${i + 1}`;
+
+      // Random positioning
+      const top = 15 + Math.random() * 70; // 15-85%
+      const left = 15 + Math.random() * 70; // 15-85%
+
+      node.style.cssText = `
+        position: absolute;
+        top: ${top}%;
+        left: ${left}%;
+        width: 12px;
+        height: 12px;
+        background: #ff6b35;
+        border-radius: 50%;
+        box-shadow: 0 0 15px #ff6b35;
+        z-index: 10;
+        animation: nodePulse 2s ease-in-out infinite;
+      `;
+
+      this.container.appendChild(node);
+      this.nodes.push(node);
+    }
+  }
+
+  addPulses(wire, type) {
+    const numPulses = 1 + Math.floor(Math.random() * 2); // 1-2 pulses per wire
+
+    for (let i = 0; i < numPulses; i++) {
+      const pulse = document.createElement("div");
+      pulse.className = `pulse pulse-${type}`;
+
+      const delay = Math.random() * 3; // 0-3 second delay
+      const duration = 2 + Math.random() * 3; // 2-5 second duration
+
+      pulse.style.cssText = `
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        background: #00ffff;
+        border-radius: 50%;
+        box-shadow: 0 0 15px #00ffff;
+        animation: pulse${
+          type.charAt(0).toUpperCase() + type.slice(1)
+        } ${duration}s linear infinite;
+        animation-delay: ${delay}s;
+        opacity: 0.8;
+      `;
+
+      // Position pulses based on wire type
+      if (type === "horizontal") {
+        pulse.style.top = "-4px";
+        pulse.style.left = "-8px";
+      } else if (type === "vertical") {
+        pulse.style.left = "-4px";
+        pulse.style.top = "-8px";
+      } else if (type === "diagonal") {
+        pulse.style.top = "-4px";
+        pulse.style.left = "-8px";
+      }
+
+      wire.appendChild(pulse);
+    }
+  }
+}
+
+// Add CSS animations
+const style = document.createElement("style");
+style.textContent = `
+  @keyframes pulseHorizontal {
+    0% { left: -8px; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { left: 100%; opacity: 0; }
+  }
+
+  @keyframes pulseVertical {
+    0% { top: -8px; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+
+  @keyframes pulseDiagonal {
+    0% { transform: translateX(-8px) translateY(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateX(100%) translateY(50%); opacity: 0; }
+  }
+
+  @keyframes nodePulse {
+    0%, 100% { 
+      transform: scale(1);
+      box-shadow: 0 0 15px #ff6b35;
+    }
+    50% { 
+      transform: scale(1.2);
+      box-shadow: 0 0 25px #ff6b35;
+    }
+  }
+
+  .wire:hover {
+    box-shadow: 0 0 20px #ffd700, 0 0 30px rgba(255, 215, 0, 0.5);
+    background: #ffed4e;
+  }
+`;
+document.head.appendChild(style);
+
+// Initialize the wire network generator
+console.log("Initializing wire network generator...");
+new WireNetworkGenerator();
+
+// Regenerate network on spacebar press
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space") {
+    e.preventDefault();
+    new WireNetworkGenerator();
+  }
 });
