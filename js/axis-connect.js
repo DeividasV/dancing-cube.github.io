@@ -3,10 +3,9 @@
 class AxisVisualizer {
   constructor() {
     this.initScene();
-    // Set up scene
-    this.setupScene();
     this.createConnections();
-    this.setupControls();
+    this.setupAnimation();
+    this.bindEvents();
     this.animate();
 
     // Remove loading text once initialized
