@@ -9,9 +9,9 @@ class BouncingCubesApp {
     this.isPaused = false;
 
     // Configuration
-    this.GRID_SIZE = 16;
-    this.CUBE_SIZE = 1.2;
-    this.SPACING = 1.5;
+    this.GRID_SIZE = 8;
+    this.CUBE_SIZE = 2.5;
+    this.SPACING = 3.0;
 
     // Mouse controls
     this.mouseX = 0;
@@ -37,28 +37,34 @@ class BouncingCubesApp {
     this.animate();
 
     // Hide loading indicator
-    const loading = document.querySelector(".loading");
-    if (loading) loading.style.display = "none";
+    const loadingContainer = document.querySelector(".loading-container");
+    if (loadingContainer) loadingContainer.style.display = "none";
   }
 
   setupScene() {
     // Scene setup
     this.scene = new THREE.Scene();
+
+    // Get container dimensions
+    const container = document.getElementById("container");
+    const containerWidth = container.offsetWidth || window.innerWidth;
+    const containerHeight = container.offsetHeight || window.innerHeight;
+
     this.camera = new THREE.PerspectiveCamera(
       60, // Reduced FOV to make cubes appear larger
-      window.innerWidth / window.innerHeight,
+      containerWidth / containerHeight,
       0.1,
       1000
     );
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setSize(containerWidth, containerHeight);
     this.renderer.setClearColor(0x111111);
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    document.getElementById("container").appendChild(this.renderer.domElement);
+    container.appendChild(this.renderer.domElement);
 
-    // Camera position
-    this.camera.position.set(25, 25, 25);
+    // Camera position - adjusted for 8x8x8 grid with larger spacing
+    this.camera.position.set(40, 35, 40);
     this.camera.lookAt(0, 0, 0);
   }
 
@@ -147,7 +153,7 @@ class BouncingCubesApp {
   }
 
   createMovingCubes() {
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 12; i++) {
       const cube = new MovingCube(this.GRID_SIZE, this.CUBE_SIZE, this.SPACING);
       this.gridGroup.add(cube.mesh);
       this.movingCubes.push(cube);
@@ -329,9 +335,13 @@ class BouncingCubesApp {
   }
 
   onWindowResize() {
-    this.camera.aspect = window.innerWidth / window.innerHeight;
+    const container = document.getElementById("container");
+    const containerWidth = container.offsetWidth || window.innerWidth;
+    const containerHeight = container.offsetHeight || window.innerHeight;
+
+    this.camera.aspect = containerWidth / containerHeight;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setSize(containerWidth, containerHeight);
   }
 }
 
