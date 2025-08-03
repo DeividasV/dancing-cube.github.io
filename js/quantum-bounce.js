@@ -13,6 +13,11 @@ class BouncingCubesApp {
     this.CUBE_SIZE = 2.5;
     this.SPACING = 3.0;
 
+    // Sound system
+    this.audioContext = null;
+    this.soundEnabled = false; // Default to OFF
+    this.initAudioContext();
+
     // Mouse controls
     this.mouseX = 0;
     this.mouseY = 0;
@@ -26,6 +31,136 @@ class BouncingCubesApp {
     this.autoRotationZ = Math.random() * 0.002 - 0.001;
 
     this.init();
+  }
+
+  // Initialize Web Audio API
+  initAudioContext() {
+    try {
+      this.audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+    } catch (e) {
+      this.soundEnabled = false;
+    }
+  }
+
+  // Create a subtle collision sound
+  playCollisionSound(velocity = 0.1) {
+    if (!this.soundEnabled || !this.audioContext) return;
+
+    try {
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+      const filterNode = this.audioContext.createBiquadFilter();
+
+      oscillator.connect(filterNode);
+      filterNode.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+
+      const baseFrequency = 220 + Math.random() * 110;
+      oscillator.frequency.setValueAtTime(
+        baseFrequency,
+        this.audioContext.currentTime
+      );
+      oscillator.frequency.exponentialRampToValueAtTime(
+        baseFrequency * 0.5,
+        this.audioContext.currentTime + 0.1
+      );
+
+      filterNode.type = "lowpass";
+      filterNode.frequency.setValueAtTime(800, this.audioContext.currentTime);
+      filterNode.Q.setValueAtTime(1, this.audioContext.currentTime);
+
+      const volume = Math.min(0.05 + velocity * 0.1, 0.15);
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        volume,
+        this.audioContext.currentTime + 0.01
+      );
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        this.audioContext.currentTime + 0.15
+      );
+
+      oscillator.type = "sine";
+      oscillator.start(this.audioContext.currentTime);
+      oscillator.stop(this.audioContext.currentTime + 0.15);
+    } catch (e) {
+      // Silent fail
+    }
+  }
+
+  // Create a wall bounce sound (slightly different tone)
+  playWallBounceSound(velocity = 0.1) {
+    if (!this.soundEnabled || !this.audioContext) return;
+
+    try {
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+      const filterNode = this.audioContext.createBiquadFilter();
+
+      oscillator.connect(filterNode);
+      filterNode.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+
+      const baseFrequency = 330 + Math.random() * 140;
+      oscillator.frequency.setValueAtTime(
+        baseFrequency,
+        this.audioContext.currentTime
+      );
+      oscillator.frequency.exponentialRampToValueAtTime(
+        baseFrequency * 0.7,
+        this.audioContext.currentTime + 0.08
+      );
+
+      filterNode.type = "lowpass";
+      filterNode.frequency.setValueAtTime(1000, this.audioContext.currentTime);
+      filterNode.Q.setValueAtTime(0.8, this.audioContext.currentTime);
+
+      const volume = Math.min(0.04 + velocity * 0.08, 0.12);
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        volume,
+        this.audioContext.currentTime + 0.005
+      );
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        this.audioContext.currentTime + 0.12
+      );
+
+      oscillator.type = "sine";
+      oscillator.start(this.audioContext.currentTime);
+      oscillator.stop(this.audioContext.currentTime + 0.12);
+    } catch (e) {
+      // Silent fail
+    }
+  }
+
+  // Toggle sound on/off
+  toggleSound() {
+    this.soundEnabled = !this.soundEnabled;
+
+    // Update button visual state
+    const soundButton = document.querySelector(".sound-toggle-button");
+    if (soundButton) {
+      soundButton.textContent = this.soundEnabled ? "🔊" : "🔇";
+      soundButton.title = this.soundEnabled
+        ? "Sound ON - Click to mute"
+        : "Sound OFF - Click to enable";
+    }
+
+    // Resume audio context if enabling sound
+    if (
+      this.soundEnabled &&
+      this.audioContext &&
+      this.audioContext.state === "suspended"
+    ) {
+      this.audioContext.resume();
+    }
+
+    // Play a test sound when enabling
+    if (this.soundEnabled) {
+      setTimeout(() => this.playCollisionSound(0.3), 100);
+    }
   }
 
   init() {
@@ -159,7 +294,12 @@ class BouncingCubesApp {
 
   createMovingCubes() {
     for (let i = 0; i < 12; i++) {
-      const cube = new MovingCube(this.GRID_SIZE, this.CUBE_SIZE, this.SPACING);
+      const cube = new MovingCube(
+        this.GRID_SIZE,
+        this.CUBE_SIZE,
+        this.SPACING,
+        this
+      );
       this.gridGroup.add(cube.mesh);
       this.movingCubes.push(cube);
     }
@@ -179,6 +319,17 @@ class BouncingCubesApp {
 
     // Window resize
     window.addEventListener("resize", () => this.onWindowResize());
+
+    // Initialize sound button state
+    setTimeout(() => {
+      const soundButton = document.querySelector(".sound-toggle-button");
+      if (soundButton) {
+        soundButton.textContent = this.soundEnabled ? "🔊" : "🔇";
+        soundButton.title = this.soundEnabled
+          ? "Sound ON - Click to mute"
+          : "Sound OFF - Click to enable";
+      }
+    }, 100);
   }
 
   checkCollisions() {
@@ -234,6 +385,10 @@ class BouncingCubesApp {
           // Change colors on collision
           cube1.changeColor();
           cube2.changeColor();
+
+          // Play collision sound based on impact velocity
+          const impactVelocity = Math.abs(speedAlongNormal);
+          this.playCollisionSound(impactVelocity);
 
           // Separate cubes to prevent overlap
           const overlap = 1.2 - distance;
@@ -351,10 +506,11 @@ class BouncingCubesApp {
 }
 
 class MovingCube {
-  constructor(gridSize, cubeSize, spacing) {
+  constructor(gridSize, cubeSize, spacing, app) {
     this.gridSize = gridSize;
     this.cubeSize = cubeSize;
     this.spacing = spacing;
+    this.app = app; // Reference to main app for sound effects
 
     this.position = {
       x: Math.random() * (gridSize - 1),
@@ -446,6 +602,7 @@ class MovingCube {
 
     // Wall collision detection
     if (this.position.x <= 0 || this.position.x >= this.gridSize - 1) {
+      const oldVelocity = Math.abs(this.velocity.x);
       this.velocity.x = -this.velocity.x * (0.9 + Math.random() * 0.2);
       this.velocity.y += (Math.random() - 0.5) * 0.01;
       this.velocity.z += (Math.random() - 0.5) * 0.01;
@@ -454,9 +611,12 @@ class MovingCube {
         Math.min(this.gridSize - 1, this.position.x)
       );
       this.changeColor();
+      // Play wall bounce sound
+      if (this.app) this.app.playWallBounceSound(oldVelocity);
     }
 
     if (this.position.y <= 0 || this.position.y >= this.gridSize - 1) {
+      const oldVelocity = Math.abs(this.velocity.y);
       this.velocity.y = -this.velocity.y * (0.9 + Math.random() * 0.2);
       this.velocity.x += (Math.random() - 0.5) * 0.01;
       this.velocity.z += (Math.random() - 0.5) * 0.01;
@@ -465,9 +625,12 @@ class MovingCube {
         Math.min(this.gridSize - 1, this.position.y)
       );
       this.changeColor();
+      // Play wall bounce sound
+      if (this.app) this.app.playWallBounceSound(oldVelocity);
     }
 
     if (this.position.z <= 0 || this.position.z >= this.gridSize - 1) {
+      const oldVelocity = Math.abs(this.velocity.z);
       this.velocity.z = -this.velocity.z * (0.9 + Math.random() * 0.2);
       this.velocity.x += (Math.random() - 0.5) * 0.01;
       this.velocity.y += (Math.random() - 0.5) * 0.01;
@@ -476,6 +639,8 @@ class MovingCube {
         Math.min(this.gridSize - 1, this.position.z)
       );
       this.changeColor();
+      // Play wall bounce sound
+      if (this.app) this.app.playWallBounceSound(oldVelocity);
     }
 
     // Speed limiting
@@ -495,6 +660,13 @@ class MovingCube {
 
 // Global variables for compatibility
 let app;
+
+// Toggle sound function for the button
+window.toggleAppSound = function () {
+  if (app) {
+    app.toggleSound();
+  }
+};
 
 // Initialize when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {

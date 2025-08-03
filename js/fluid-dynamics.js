@@ -8,6 +8,11 @@ class FluidDynamicsApp {
     this.particles = [];
     this.isRunning = true;
 
+    // Sound system
+    this.audioContext = null;
+    this.soundEnabled = false; // Default to OFF
+    this.initAudioContext();
+
     // Fluid simulation parameters
     this.viscosity = 0.03;
     this.particleCount = 5000;
@@ -23,6 +28,184 @@ class FluidDynamicsApp {
     this.lastTime = 0;
 
     this.init();
+  }
+
+  // Initialize Web Audio API
+  initAudioContext() {
+    try {
+      this.audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+    } catch (e) {
+      this.soundEnabled = false;
+    }
+  }
+
+  // Create a subtle fluid interaction sound
+  playFluidSound(frequency = 300, velocity = 0.1) {
+    if (!this.soundEnabled || !this.audioContext) return;
+
+    try {
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+      const filterNode = this.audioContext.createBiquadFilter();
+
+      oscillator.connect(filterNode);
+      filterNode.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+
+      // Fluid-like flowing sound
+      const baseFrequency = frequency + Math.random() * 50;
+      oscillator.frequency.setValueAtTime(
+        baseFrequency,
+        this.audioContext.currentTime
+      );
+      oscillator.frequency.exponentialRampToValueAtTime(
+        baseFrequency * 0.8,
+        this.audioContext.currentTime + 0.2
+      );
+
+      // Soft low-pass filter for liquid feel
+      filterNode.type = "lowpass";
+      filterNode.frequency.setValueAtTime(
+        600 + velocity * 200,
+        this.audioContext.currentTime
+      );
+      filterNode.Q.setValueAtTime(0.5, this.audioContext.currentTime);
+
+      const volume = Math.min(0.03 + velocity * 0.05, 0.08);
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        volume,
+        this.audioContext.currentTime + 0.02
+      );
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        this.audioContext.currentTime + 0.2
+      );
+
+      oscillator.type = "sine";
+      oscillator.start(this.audioContext.currentTime);
+      oscillator.stop(this.audioContext.currentTime + 0.2);
+    } catch (e) {
+      // Silent fail
+    }
+  }
+
+  // Create a boundary collision sound
+  playBoundarySound(velocity = 0.1) {
+    if (!this.soundEnabled || !this.audioContext) return;
+
+    try {
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+      const filterNode = this.audioContext.createBiquadFilter();
+
+      oscillator.connect(filterNode);
+      filterNode.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+
+      const baseFrequency = 150 + Math.random() * 100;
+      oscillator.frequency.setValueAtTime(
+        baseFrequency,
+        this.audioContext.currentTime
+      );
+      oscillator.frequency.exponentialRampToValueAtTime(
+        baseFrequency * 0.6,
+        this.audioContext.currentTime + 0.15
+      );
+
+      filterNode.type = "lowpass";
+      filterNode.frequency.setValueAtTime(400, this.audioContext.currentTime);
+      filterNode.Q.setValueAtTime(0.3, this.audioContext.currentTime);
+
+      const volume = Math.min(0.02 + velocity * 0.04, 0.06);
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        volume,
+        this.audioContext.currentTime + 0.01
+      );
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        this.audioContext.currentTime + 0.15
+      );
+
+      oscillator.type = "sine";
+      oscillator.start(this.audioContext.currentTime);
+      oscillator.stop(this.audioContext.currentTime + 0.15);
+    } catch (e) {
+      // Silent fail
+    }
+  }
+
+  // Create a turbulence sound
+  playTurbulenceSound() {
+    if (!this.soundEnabled || !this.audioContext) return;
+
+    try {
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+      const filterNode = this.audioContext.createBiquadFilter();
+
+      oscillator.connect(filterNode);
+      filterNode.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+
+      const baseFrequency = 200 + Math.random() * 200;
+      oscillator.frequency.setValueAtTime(
+        baseFrequency,
+        this.audioContext.currentTime
+      );
+      oscillator.frequency.exponentialRampToValueAtTime(
+        baseFrequency * 1.5,
+        this.audioContext.currentTime + 0.3
+      );
+
+      filterNode.type = "lowpass";
+      filterNode.frequency.setValueAtTime(800, this.audioContext.currentTime);
+      filterNode.Q.setValueAtTime(1.2, this.audioContext.currentTime);
+
+      const volume = 0.08;
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        volume,
+        this.audioContext.currentTime + 0.05
+      );
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        this.audioContext.currentTime + 0.3
+      );
+
+      oscillator.type = "sine";
+      oscillator.start(this.audioContext.currentTime);
+      oscillator.stop(this.audioContext.currentTime + 0.3);
+    } catch (e) {
+      // Silent fail
+    }
+  }
+
+  // Toggle sound on/off
+  toggleSound() {
+    this.soundEnabled = !this.soundEnabled;
+
+    const soundButton = document.querySelector(".sound-toggle-button");
+    if (soundButton) {
+      soundButton.textContent = this.soundEnabled ? "🔊" : "🔇";
+      soundButton.title = this.soundEnabled
+        ? "Sound ON - Click to mute"
+        : "Sound OFF - Click to enable";
+    }
+
+    if (
+      this.soundEnabled &&
+      this.audioContext &&
+      this.audioContext.state === "suspended"
+    ) {
+      this.audioContext.resume();
+    }
+
+    if (this.soundEnabled) {
+      setTimeout(() => this.playFluidSound(300, 0.3), 100);
+    }
   }
 
   init() {
@@ -345,6 +528,17 @@ class FluidDynamicsApp {
 
     // Window resize
     window.addEventListener("resize", () => this.onWindowResize());
+
+    // Initialize sound button state
+    setTimeout(() => {
+      const soundButton = document.querySelector(".sound-toggle-button");
+      if (soundButton) {
+        soundButton.textContent = this.soundEnabled ? "🔊" : "🔇";
+        soundButton.title = this.soundEnabled
+          ? "Sound ON - Click to mute"
+          : "Sound OFF - Click to enable";
+      }
+    }, 100);
   }
 
   updateMousePosition(e) {
@@ -363,6 +557,9 @@ class FluidDynamicsApp {
     const forceX = (this.mouse.x - this.mouse.prevX) * this.mouseForce;
     const forceY = (this.mouse.y - this.mouse.prevY) * this.mouseForce;
 
+    let interactionStrength = 0;
+    let interactionCount = 0;
+
     // Apply force to nearby particles
     for (let i = 0; i < this.particleCount; i++) {
       const i3 = i * 3;
@@ -377,7 +574,18 @@ class FluidDynamicsApp {
         const influence = 1.0 - dist / 0.3;
         this.particleVelocities[i3] += forceX * influence * 0.1;
         this.particleVelocities[i3 + 1] += forceY * influence * 0.1;
+
+        interactionStrength += influence;
+        interactionCount++;
       }
+    }
+
+    // Play fluid interaction sound based on interaction strength
+    if (interactionCount > 0 && Math.random() < 0.1) {
+      // 10% chance to avoid too many sounds
+      const avgInfluence = interactionStrength / interactionCount;
+      const mouseSpeed = Math.sqrt(forceX * forceX + forceY * forceY) * 0.01;
+      this.playFluidSound(250 + avgInfluence * 100, mouseSpeed);
     }
   }
 
@@ -404,15 +612,27 @@ class FluidDynamicsApp {
 
       // Boundary conditions
       if (Math.abs(this.particlePositions[i3]) > bounds) {
+        const oldVel = Math.abs(this.particleVelocities[i3]);
         this.particleVelocities[i3] *= -0.5;
         this.particlePositions[i3] =
           Math.sign(this.particlePositions[i3]) * bounds;
+
+        // Play boundary sound occasionally
+        if (oldVel > 1 && Math.random() < 0.05) {
+          this.playBoundarySound(oldVel * 0.1);
+        }
       }
 
       if (Math.abs(this.particlePositions[i3 + 1]) > bounds) {
+        const oldVel = Math.abs(this.particleVelocities[i3 + 1]);
         this.particleVelocities[i3 + 1] *= -0.5;
         this.particlePositions[i3 + 1] =
           Math.sign(this.particlePositions[i3 + 1]) * bounds;
+
+        // Play boundary sound occasionally
+        if (oldVel > 1 && Math.random() < 0.05) {
+          this.playBoundarySound(oldVel * 0.1);
+        }
       }
 
       // Add some turbulence
@@ -489,6 +709,9 @@ class FluidDynamicsApp {
       this.particleVelocities[i3 + 1] += (Math.random() - 0.5) * 5;
       this.particleVelocities[i3 + 2] += (Math.random() - 0.5) * 2;
     }
+
+    // Play turbulence sound
+    this.playTurbulenceSound();
   }
 
   updateViscosity(value) {
@@ -522,6 +745,13 @@ class FluidDynamicsApp {
 
 // Global variables for compatibility
 let app;
+
+// Toggle sound function for the button
+window.toggleAppSound = function () {
+  if (app) {
+    app.toggleSound();
+  }
+};
 
 function toggleSimulation() {
   if (app) app.toggleSimulation();
