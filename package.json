@@ -1,0 +1,97 @@
+{
+  "name": "dancing-cube-exhibition",
+  "version": "2.0.0",
+  "description": "Interactive 3D Exhibition - A collection of interactive 3D visualizations and geometric art exhibitions built with Three.js",
+  "main": "index.html",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DeividasV/dancing-cube.github.io"
+  },
+  "homepage": "https://deividasv.github.io/dancing-cube.github.io/",
+  "keywords": [
+    "3d",
+    "threejs",
+    "webgl",
+    "interactive",
+    "art",
+    "exhibition",
+    "visualization",
+    "geometric"
+  ],
+  "author": "DeividasV",
+  "license": "MIT",
+  "exhibitions": [
+    {
+      "id": "quantum-bounce",
+      "name": "QU4NTUM_B0UNC3",
+      "description": "Interactive 3D physics simulation with bouncing cubes in a wireframe grid environment",
+      "featured": true
+    },
+    {
+      "id": "fluid-dynamics",
+      "name": "FLU1D_DYN4M1X",
+      "description": "Dynamic fluid dynamics simulation with particle systems"
+    },
+    {
+      "id": "blood-ocean",
+      "name": "BL00D_0C34N",
+      "description": "Atmospheric blood ocean visualization with wave effects"
+    },
+    {
+      "id": "droplets-dance",
+      "name": "DR0PL3TS_D4NC3",
+      "description": "Dancing droplets simulation with gravity and collision detection"
+    },
+    {
+      "id": "morphing-forms",
+      "name": "M0RPH1NG_F0RMS",
+      "description": "Morphing 3D shapes with dynamic transformations"
+    },
+    {
+      "id": "axis-connect",
+      "name": "4X1S_C0NN3CT",
+      "description": "Connected axis visualization with geometric patterns"
+    },
+    {
+      "id": "wire-network",
+      "name": "W1R3_N3TW0RK",
+      "description": "Interconnected wire network with dynamic connections"
+    },
+    {
+      "id": "individual-squares",
+      "name": "1ND1V1DU4L_SQU4R3S",
+      "description": "Individual animated squares with unique behaviors"
+    },
+    {
+      "id": "glass-spheres",
+      "name": "GL4SS_SPH3R3S",
+      "description": "Translucent glass spheres with light interactions"
+    },
+    {
+      "id": "infinite-knot",
+      "name": "1NF1N1T3_KN0T",
+      "description": "Infinite knot patterns in 3D space"
+    },
+    {
+      "id": "infinite-knot-3d",
+      "name": "1NF1N1T3_KN0T_3D",
+      "description": "Advanced 3D infinite knot visualization"
+    },
+    {
+      "id": "mirror-pyramid",
+      "name": "M1RR0R_PYR4M1D",
+      "description": "Reflective pyramid with mirror effects"
+    },
+    {
+      "id": "deformed-coord",
+      "name": "D3F0RM3D_C00RD",
+      "description": "Deformed coordinate system visualization"
+    }
+  ],
+  "technologies": {
+    "renderer": "Three.js",
+    "graphics": "WebGL",
+    "styling": "CSS3",
+    "markup": "HTML5"
+  }
+}

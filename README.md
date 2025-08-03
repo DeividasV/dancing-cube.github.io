@@ -17,23 +17,37 @@ https://deividasv.github.io/dancing-cube.github.io/index.html
 ## Project Structure
 
 ```
-├── index.html              # Main landing page with exhibition gallery
-├── exhibitions/            # Individual exhibition pages
+├── index.html                  # Main landing page with exhibition gallery
+├── components/                 # Reusable HTML components
+│   └── top-menu.html          # Top navigation menu component
+├── exhibitions/                # Individual exhibition pages
 │   ├── quantum-bounce.html
 │   ├── fluid-dynamics.html
 │   ├── blood-ocean.html
 │   ├── droplets-dance.html
-│   └── morphing-forms.html
-├── css/                    # Stylesheets
-│   ├── constellation-cards.css
-│   ├── shared-navigation.css
-│   ├── quantum-bounce.css
-│   └── fluid-dynamics.css
-└── js/                     # JavaScript files
-    ├── constellation-cards.js
-    ├── shared-controls.js
-    ├── quantum-bounce.js
-    └── fluid-dynamics.js
+│   ├── morphing-forms.html
+│   ├── axis-connect.html
+│   ├── deformed-coord.html
+│   ├── glass-spheres.html
+│   ├── individual-squares.html
+│   ├── infinite-knot.html
+│   ├── infinite-knot-3d.html
+│   ├── mirror-pyramid.html
+│   └── wire-network.html
+├── css/                        # Stylesheets
+│   ├── constellation-cards.css # Main page styling
+│   ├── shared-navigation.css   # Navigation component styles
+│   ├── top-menu.css           # Top menu specific styles
+│   └── [exhibition-name].css  # Individual exhibition styles
+├── js/                         # JavaScript files
+│   ├── constellation-cards.js  # Main page interactions
+│   ├── shared-controls.js      # Common control utilities
+│   ├── top-menu.js            # Navigation system
+│   └── [exhibition-name].js   # Individual exhibition logic
+└── assets/                     # Static assets
+    ├── lib/                   # External libraries
+    │   └── three.min.js       # Three.js library
+    └── images/                # Image assets (future use)
 ```
 
 ## Technologies

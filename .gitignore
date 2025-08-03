@@ -1,0 +1,20 @@
+# Development files
+*.md.backup
+*.log
+*.tmp
+*~
+
+# IDE files
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Development scripts
+*.sh
+!build.sh
+
+# Documentation drafts
+docs/drafts/
