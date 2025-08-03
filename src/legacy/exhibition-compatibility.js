@@ -46,18 +46,31 @@ if (!window.exhibitionFrameworkInitialized) {
     ];
 
     for (const component of components) {
+      // Check if class already exists globally
       if (!window[component.className]) {
-        await loadScript(component.src);
-        console.log(`Loaded ${component.className}`);
+        try {
+          await loadScript(component.src);
+          console.log(`Loaded ${component.className}`);
+        } catch (error) {
+          console.warn(`Failed to load ${component.className}:`, error);
+        }
       } else {
         console.log(`${component.className} already exists`);
       }
     }
   }
 
-  // Helper to load a single script
+  // Helper to load a single script - with duplicate prevention
   function loadScript(src) {
     return new Promise((resolve, reject) => {
+      // Check if script is already loaded by looking for existing script tags
+      const existingScript = document.querySelector(`script[src="${src}"]`);
+      if (existingScript) {
+        console.log(`Script already loaded: ${src}`);
+        resolve();
+        return;
+      }
+
       const script = document.createElement("script");
       script.src = src;
       script.onload = resolve;
