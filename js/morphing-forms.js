@@ -25,6 +25,294 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
+// ===== AUDIO SYSTEM =====
+class MorphingAudioSystem {
+  constructor() {
+    try {
+      this.audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+      this.masterGain = this.audioContext.createGain();
+      this.masterGain.connect(this.audioContext.destination);
+      this.masterGain.gain.setValueAtTime(0.15, this.audioContext.currentTime);
+
+      this.soundEnabled = false; // Default OFF
+      this.oscillators = new Set(); // Track active oscillators
+      this.ambientOscillators = [];
+      this.isAmbientPlaying = false;
+
+      console.log("🎵 Morphing Audio System initialized");
+    } catch (error) {
+      console.warn("Audio not supported:", error);
+      this.audioContext = null;
+    }
+  }
+
+  // Core tone generation with organic wave shapes
+  playTone(frequency, duration = 0.3, type = "sine", volume = 0.1) {
+    if (!this.audioContext || !this.soundEnabled) return;
+
+    try {
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(this.masterGain);
+
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(
+        frequency,
+        this.audioContext.currentTime
+      );
+
+      // Organic envelope for fluid morphing sounds
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(
+        volume,
+        this.audioContext.currentTime + 0.02
+      );
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        this.audioContext.currentTime + duration
+      );
+
+      this.oscillators.add(oscillator);
+
+      oscillator.start(this.audioContext.currentTime);
+      oscillator.stop(this.audioContext.currentTime + duration);
+
+      oscillator.onended = () => {
+        this.oscillators.delete(oscillator);
+      };
+    } catch (error) {
+      console.warn("Audio playback error:", error);
+    }
+  }
+
+  // Frequency sweep for morphing effects
+  playSweep(startFreq, endFreq, duration = 1.0, volume = 0.08) {
+    if (!this.audioContext || !this.soundEnabled) return;
+
+    try {
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(this.masterGain);
+
+      oscillator.type = "triangle"; // Organic wave shape
+      oscillator.frequency.setValueAtTime(
+        startFreq,
+        this.audioContext.currentTime
+      );
+      oscillator.frequency.exponentialRampToValueAtTime(
+        endFreq,
+        this.audioContext.currentTime + duration
+      );
+
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(
+        volume,
+        this.audioContext.currentTime + 0.05
+      );
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        this.audioContext.currentTime + duration
+      );
+
+      this.oscillators.add(oscillator);
+
+      oscillator.start(this.audioContext.currentTime);
+      oscillator.stop(this.audioContext.currentTime + duration);
+
+      oscillator.onended = () => {
+        this.oscillators.delete(oscillator);
+      };
+    } catch (error) {
+      console.warn("Sweep playback error:", error);
+    }
+  }
+
+  // Multi-layered ambient background for space morphing
+  startBackgroundAmbient() {
+    if (!this.audioContext || !this.soundEnabled || this.isAmbientPlaying)
+      return;
+
+    try {
+      this.isAmbientPlaying = true;
+
+      // Deep space drone (very low frequency)
+      const drone1 = this.audioContext.createOscillator();
+      const droneGain1 = this.audioContext.createGain();
+      drone1.connect(droneGain1);
+      droneGain1.connect(this.masterGain);
+      drone1.type = "sawtooth";
+      drone1.frequency.setValueAtTime(40, this.audioContext.currentTime);
+      droneGain1.gain.setValueAtTime(0, this.audioContext.currentTime);
+      droneGain1.gain.exponentialRampToValueAtTime(
+        0.03,
+        this.audioContext.currentTime + 2
+      );
+
+      // Morphing texture (mid frequency with slow modulation)
+      const drone2 = this.audioContext.createOscillator();
+      const droneGain2 = this.audioContext.createGain();
+      const lfo = this.audioContext.createOscillator();
+      const lfoGain = this.audioContext.createGain();
+
+      drone2.connect(droneGain2);
+      droneGain2.connect(this.masterGain);
+      lfo.connect(lfoGain);
+      lfoGain.connect(drone2.frequency);
+
+      drone2.type = "triangle";
+      drone2.frequency.setValueAtTime(120, this.audioContext.currentTime);
+      lfo.type = "sine";
+      lfo.frequency.setValueAtTime(0.3, this.audioContext.currentTime);
+      lfoGain.gain.setValueAtTime(15, this.audioContext.currentTime);
+
+      droneGain2.gain.setValueAtTime(0, this.audioContext.currentTime);
+      droneGain2.gain.exponentialRampToValueAtTime(
+        0.025,
+        this.audioContext.currentTime + 3
+      );
+
+      // High frequency sparkle layer
+      const drone3 = this.audioContext.createOscillator();
+      const droneGain3 = this.audioContext.createGain();
+      const lfo2 = this.audioContext.createOscillator();
+      const lfoGain2 = this.audioContext.createGain();
+
+      drone3.connect(droneGain3);
+      droneGain3.connect(this.masterGain);
+      lfo2.connect(lfoGain2);
+      lfoGain2.connect(droneGain3.gain);
+
+      drone3.type = "sine";
+      drone3.frequency.setValueAtTime(800, this.audioContext.currentTime);
+      lfo2.type = "sine";
+      lfo2.frequency.setValueAtTime(0.1, this.audioContext.currentTime);
+      lfoGain2.gain.setValueAtTime(0.01, this.audioContext.currentTime);
+
+      droneGain3.gain.setValueAtTime(0.015, this.audioContext.currentTime);
+
+      this.ambientOscillators = [
+        { osc: drone1, gain: droneGain1 },
+        { osc: drone2, gain: droneGain2 },
+        { osc: drone3, gain: droneGain3 },
+        { osc: lfo, gain: lfoGain },
+        { osc: lfo2, gain: lfoGain2 },
+      ];
+
+      this.ambientOscillators.forEach(({ osc }) => {
+        osc.start(this.audioContext.currentTime);
+      });
+
+      console.log("🌊 Ambient morphing soundscape started");
+    } catch (error) {
+      console.warn("Ambient audio error:", error);
+      this.isAmbientPlaying = false;
+    }
+  }
+
+  stopBackgroundAmbient() {
+    if (!this.isAmbientPlaying || !this.audioContext) return;
+
+    try {
+      this.ambientOscillators.forEach(({ osc, gain }) => {
+        gain.gain.exponentialRampToValueAtTime(
+          0.001,
+          this.audioContext.currentTime + 1
+        );
+        osc.stop(this.audioContext.currentTime + 1.1);
+      });
+
+      this.ambientOscillators = [];
+      this.isAmbientPlaying = false;
+
+      console.log("🌊 Ambient soundscape stopped");
+    } catch (error) {
+      console.warn("Error stopping ambient:", error);
+    }
+  }
+
+  // Morphing-specific sound effects
+  playMergeSound(baseSize) {
+    const frequency = 200 + baseSize * 50; // Size affects pitch
+    this.playSweep(frequency, frequency * 1.5, 0.8, 0.06);
+    console.log(`🔗 Merge sound: ${frequency.toFixed(0)}Hz`);
+  }
+
+  playSplitSound(baseSize) {
+    const frequency = 400 + baseSize * 40;
+    this.playSweep(frequency, frequency * 0.6, 0.6, 0.05);
+    console.log(`✂️ Split sound: ${frequency.toFixed(0)}Hz`);
+  }
+
+  playColorChangeSound() {
+    const frequency = 600 + Math.random() * 400;
+    this.playTone(frequency, 0.2, "triangle", 0.04);
+  }
+
+  playShapeSpawnSound() {
+    const frequency = 300 + Math.random() * 200;
+    this.playSweep(frequency, frequency * 1.8, 0.5, 0.05);
+  }
+
+  // Sound toggle functionality
+  toggleSound() {
+    if (!this.audioContext) {
+      console.warn("Audio not available");
+      return;
+    }
+
+    this.soundEnabled = !this.soundEnabled;
+
+    const button = document.querySelector(".sound-toggle-button");
+    if (button) {
+      if (this.soundEnabled) {
+        button.innerHTML = "🔊";
+        button.title = "Sound ON - Click to disable";
+
+        // Confirmation sound - organic morphing chord
+        this.playTone(440, 0.2, "triangle", 0.08);
+        setTimeout(() => this.playTone(550, 0.2, "triangle", 0.06), 100);
+        setTimeout(() => this.playTone(660, 0.3, "triangle", 0.04), 200);
+
+        // Start ambient after brief delay
+        setTimeout(() => this.startBackgroundAmbient(), 1000);
+
+        console.log("🎵 Morphing audio ENABLED");
+      } else {
+        button.innerHTML = "🔇";
+        button.title = "Sound OFF - Click to enable";
+        this.stopBackgroundAmbient();
+        console.log("🔇 Morphing audio DISABLED");
+      }
+    }
+  }
+
+  // Cleanup method
+  destroy() {
+    this.stopBackgroundAmbient();
+    this.oscillators.forEach((osc) => {
+      try {
+        osc.stop();
+      } catch (e) {}
+    });
+    this.oscillators.clear();
+
+    if (this.audioContext && this.audioContext.state !== "closed") {
+      this.audioContext.close();
+    }
+  }
+}
+
+// Initialize audio system
+const morphingAudio = new MorphingAudioSystem();
+
+// Connect to global toggle function
+window.toggleAppSound = () => morphingAudio.toggleSound();
+
 renderer.setClearColor(0x000000, 0);
 
 // Space background with stars
@@ -203,6 +491,7 @@ class MorphingShape {
     if (Math.random() < 0.0002) {
       // Very rare color changes
       this.targetColor = colors[Math.floor(Math.random() * colors.length)];
+      morphingAudio.playColorChangeSound();
     }
 
     // Gradually interpolate to target color
@@ -264,6 +553,9 @@ class MorphingShape {
   }
 
   mergeWith(other) {
+    // Play merge sound based on size
+    morphingAudio.playMergeSound(this.baseSize);
+
     // Smooth color blending
     const mergeColor = new THREE.Color().lerpColors(
       this.currentColor,
@@ -295,6 +587,9 @@ class MorphingShape {
 
   split() {
     if (this.baseSize < 1.5) return null;
+
+    // Play split sound based on size
+    morphingAudio.playSplitSound(this.baseSize);
 
     const newShape = new MorphingShape();
     newShape.position.copy(this.position);
@@ -439,6 +734,7 @@ function animate() {
   // Maintain minimum number of shapes
   if (shapes.length < 3) {
     shapes.push(new MorphingShape());
+    morphingAudio.playShapeSpawnSound();
   }
 
   // Camera movement
