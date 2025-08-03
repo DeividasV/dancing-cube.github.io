@@ -1,0 +1,39 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cubeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#ff00ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ffff00;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="faceGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00ffff;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#0080ff;stop-opacity:0.8" />
+    </linearGradient>
+    <linearGradient id="faceGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff00ff;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#8000ff;stop-opacity:0.8" />
+    </linearGradient>
+    <linearGradient id="faceGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffff00;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#ff8000;stop-opacity:0.8" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Dark background -->
+  <rect width="32" height="32" fill="#0a0a0a"/>
+  
+  <!-- 3D Cube faces -->
+  <!-- Top face -->
+  <path d="M8 12 L16 8 L24 12 L16 16 Z" fill="url(#faceGradient1)" stroke="url(#cubeGradient)" stroke-width="0.5"/>
+  
+  <!-- Left face -->
+  <path d="M8 12 L16 16 L16 24 L8 20 Z" fill="url(#faceGradient2)" stroke="url(#cubeGradient)" stroke-width="0.5"/>
+  
+  <!-- Right face -->
+  <path d="M16 16 L24 12 L24 20 L16 24 Z" fill="url(#faceGradient3)" stroke="url(#cubeGradient)" stroke-width="0.5"/>
+  
+  <!-- Glowing edge effect -->
+  <path d="M8 12 L16 8 L24 12 L16 16 Z" fill="none" stroke="#00ffff" stroke-width="1" opacity="0.6"/>
+  <path d="M8 12 L16 16 L16 24 L8 20 Z" fill="none" stroke="#ff00ff" stroke-width="1" opacity="0.6"/>
+  <path d="M16 16 L24 12 L24 20 L16 24 Z" fill="none" stroke="#ffff00" stroke-width="1" opacity="0.6"/>
+</svg>
