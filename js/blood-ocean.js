@@ -1,5 +1,239 @@
 // BL00D_0C34N - 3D Blood Ocean Simulation
 
+// Audio System for Ocean and Ambient Sounds
+class AudioSystem {
+  constructor() {
+    this.audioContext = null;
+    this.masterGain = null;
+    this.soundEnabled = false; // Default to OFF
+    this.ambientOscillators = [];
+    this.ambientTimers = [];
+    this.initAudio();
+  }
+
+  initAudio() {
+    try {
+      this.audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+      this.masterGain = this.audioContext.createGain();
+      this.masterGain.connect(this.audioContext.destination);
+      this.masterGain.gain.setValueAtTime(0.5, this.audioContext.currentTime); // Increased volume significantly
+      console.log(
+        "Blood Ocean audio context initialized, state:",
+        this.audioContext.state
+      );
+      console.log("Master gain volume set to:", this.masterGain.gain.value);
+    } catch (e) {
+      console.log("Web Audio API not supported:", e);
+      this.soundEnabled = false;
+    }
+  }
+
+  playTone(frequency, duration = 0.3, type = "sine", volume = 0.1) {
+    if (!this.soundEnabled || !this.audioContext) {
+      console.log("Sound disabled or no audio context");
+      return;
+    }
+
+    // Resume audio context if suspended
+    if (this.audioContext.state === "suspended") {
+      this.audioContext.resume();
+    }
+
+    try {
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+      const filter = this.audioContext.createBiquadFilter();
+
+      oscillator.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(this.masterGain);
+
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(
+        frequency,
+        this.audioContext.currentTime
+      );
+
+      // Ocean-like filter
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(1000, this.audioContext.currentTime);
+      filter.Q.setValueAtTime(0.5, this.audioContext.currentTime);
+
+      // Gentle envelope
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        volume,
+        this.audioContext.currentTime + 0.02
+      );
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        this.audioContext.currentTime + duration
+      );
+
+      oscillator.start(this.audioContext.currentTime);
+      oscillator.stop(this.audioContext.currentTime + duration);
+
+      console.log(
+        `Playing tone: ${frequency}Hz, ${duration}s, volume: ${volume}`
+      );
+    } catch (e) {
+      console.log("Audio playback error:", e);
+    }
+  }
+
+  toggleSound() {
+    this.soundEnabled = !this.soundEnabled;
+    console.log(
+      "Blood Ocean sound:",
+      this.soundEnabled ? "enabled" : "disabled"
+    );
+
+    const button = document.querySelector(".sound-toggle-button");
+    if (button) {
+      if (this.soundEnabled) {
+        button.textContent = "🔊";
+        button.title = "Sound ON - Click to disable";
+
+        // Resume audio context if suspended
+        if (this.audioContext && this.audioContext.state === "suspended") {
+          this.audioContext.resume();
+        }
+
+        // Play immediate TEST sound - very loud and obvious
+        console.log("Playing TEST confirmation sound...");
+        setTimeout(() => {
+          this.playTone(880, 1.0, "sine", 0.5); // High A note, very loud
+        }, 100);
+
+        setTimeout(() => {
+          this.startBackgroundAmbient();
+        }, 200);
+      } else {
+        button.textContent = "🔇";
+        button.title = "Sound OFF - Click to enable";
+        this.stopBackgroundAmbient();
+      }
+    }
+  }
+
+  startBackgroundAmbient() {
+    if (!this.soundEnabled || !this.audioContext) return;
+
+    console.log("Starting background ambient sounds...");
+    this.stopBackgroundAmbient();
+
+    // Create deep ocean drone
+    this.createOceanDrone();
+
+    // Create periodic wave sounds
+    this.createWaveSounds();
+  }
+
+  stopBackgroundAmbient() {
+    // Stop all ambient oscillators
+    this.ambientOscillators.forEach((osc) => {
+      try {
+        osc.stop();
+      } catch (e) {}
+    });
+    this.ambientOscillators = [];
+
+    // Clear all timers
+    this.ambientTimers.forEach((timer) => clearTimeout(timer));
+    this.ambientTimers = [];
+  }
+
+  createOceanDrone() {
+    if (!this.audioContext || !this.soundEnabled) return;
+
+    try {
+      const osc1 = this.audioContext.createOscillator();
+      const gain1 = this.audioContext.createGain();
+      const filter1 = this.audioContext.createBiquadFilter();
+
+      osc1.type = "sine";
+      osc1.frequency.setValueAtTime(60, this.audioContext.currentTime);
+
+      filter1.type = "lowpass";
+      filter1.frequency.setValueAtTime(120, this.audioContext.currentTime);
+      filter1.Q.setValueAtTime(1, this.audioContext.currentTime);
+
+      gain1.gain.setValueAtTime(0.2, this.audioContext.currentTime); // Increased volume significantly
+
+      osc1.connect(filter1);
+      filter1.connect(gain1);
+      gain1.connect(this.masterGain);
+
+      osc1.start();
+      this.ambientOscillators.push(osc1);
+
+      // Second layer
+      const osc2 = this.audioContext.createOscillator();
+      const gain2 = this.audioContext.createGain();
+      const filter2 = this.audioContext.createBiquadFilter();
+
+      osc2.type = "triangle";
+      osc2.frequency.setValueAtTime(90, this.audioContext.currentTime);
+
+      filter2.type = "lowpass";
+      filter2.frequency.setValueAtTime(200, this.audioContext.currentTime);
+      filter2.Q.setValueAtTime(0.5, this.audioContext.currentTime);
+
+      gain2.gain.setValueAtTime(0.15, this.audioContext.currentTime); // Increased volume significantly
+
+      osc2.connect(filter2);
+      filter2.connect(gain2);
+      gain2.connect(this.masterGain);
+
+      osc2.start();
+      this.ambientOscillators.push(osc2);
+
+      console.log("Ocean drone started successfully");
+    } catch (e) {
+      console.log("Error creating ocean drone:", e);
+    }
+  }
+
+  createWaveSounds() {
+    if (!this.soundEnabled) return;
+
+    const scheduleWave = () => {
+      if (!this.soundEnabled) return;
+
+      // Play ocean wave sound
+      const frequency = 80 + Math.random() * 60;
+      this.playTone(frequency, 1.5, "sine", 0.2); // Increased volume significantly
+
+      // Schedule next wave
+      const nextDelay = 3000 + Math.random() * 6000; // 3-9 seconds
+      const timer = setTimeout(scheduleWave, nextDelay);
+      this.ambientTimers.push(timer);
+    };
+
+    // Start wave scheduling
+    const initialDelay = 2000; // Start after 2 seconds
+    const timer = setTimeout(scheduleWave, initialDelay);
+    this.ambientTimers.push(timer);
+  }
+
+  playWaveInteraction(intensity = 1.0) {
+    if (!this.soundEnabled || !this.audioContext) return;
+
+    const frequency = 120 + intensity * 80;
+    const volume = 0.1 * intensity;
+    this.playTone(frequency, 0.5, "sine", volume);
+  }
+}
+
+// Initialize audio system
+const audioSystem = new AudioSystem();
+
+// Global function for sound toggle button
+window.toggleAppSound = function () {
+  audioSystem.toggleSound();
+};
+
 const canvas = document.getElementById("blood-canvas");
 const ctx = canvas.getContext("2d");
 
@@ -370,7 +604,9 @@ class BloodDrop3D {
   createNaturalRipples() {
     const baseIntensity = this.size / 10;
 
+    // Play drop impact sound based on drop size
     if (this.dropType === "tiny") {
+      audioSystem.playWaveInteraction(0.3);
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity * 0.6, 0, 40));
       if (Math.random() < 0.6) {
         ripples.push(
@@ -378,6 +614,7 @@ class BloodDrop3D {
         );
       }
     } else if (this.dropType === "medium") {
+      audioSystem.playWaveInteraction(0.6);
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity, 0, 80));
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity * 0.7, 0.15, 60));
       if (Math.random() < 0.7) {
@@ -386,6 +623,7 @@ class BloodDrop3D {
         );
       }
     } else {
+      audioSystem.playWaveInteraction(1.0);
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity * 1.2, 0, 120));
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity * 0.9, 0.1, 100));
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity * 0.6, 0.25, 80));
@@ -479,6 +717,9 @@ canvas.addEventListener("click", (e) => {
   ripples.push(new Ripple3D(worldX, worldZ, 0.8, 0.1, 90));
   ripples.push(new Ripple3D(worldX, worldZ, 0.5, 0.25, 60));
   ripples.push(new Ripple3D(worldX, worldZ, 0.3, 0.45, 40));
+
+  // Play wave interaction sound
+  audioSystem.playWaveInteraction(1.2);
 });
 
 function animate() {
