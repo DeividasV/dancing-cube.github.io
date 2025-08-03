@@ -9,11 +9,11 @@
       content="Interactive deformed sinusoidal coordinate system visualization"
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="../favicon.ico">
-    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="../assets/images/apple-touch-icon.png">
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="../../assets/images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../assets/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../assets/images/apple-touch-icon.png">
     />
 
     <!-- Preload fonts -->
@@ -23,7 +23,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="../css/top-menu.css" />
+    <link rel="stylesheet" href="../../src/css/exhibition-framework.css" />
     <link rel="stylesheet" href="../css/deformed-coord.css" />
   </head>
   <body>
@@ -52,8 +52,16 @@
           <button class="control-button" onclick="toggleAnimation()">
             Toggle Animation
         </div>
-    <!-- Scripts -->
-    <script src="../js/top-menu.js"></script>
-    <script src="../js/deformed-coord.js"></script>
+        <!-- Scripts -->
+    <script src="../../assets/lib/three.min.js"></script>
+    
+    <!-- Exhibition Framework -->
+    <script src="../../src/core/AudioSystem.js"></script>
+    <script src="../../src/core/ComponentManager.js"></script>
+    <script src="../../src/components/TopMenu.js"></script>
+    <script src="../../src/components/ExhibitionWindow.js"></script>
+    <script src="../../src/core/Exhibition.js"></script>
+    <script src="../../src/legacy/exhibition-compatibility.js"></script>
+    <script src="./deformed-coord.js"></script>
   </body>
 </html>

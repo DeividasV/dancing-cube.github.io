@@ -1,0 +1,594 @@
+/**
+ * Unified Exhibition Framework Styles
+ * Provides consistent styling across all exhibitions
+ */
+
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  background: #0a0a0a;
+  color: #ffffff;
+  line-height: 1.4;
+}
+
+/* Main exhibition window */
+.exhibition-window {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #0a0a0a;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Top menu styles */
+.top-menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1000;
+  position: relative;
+  min-height: 60px;
+  flex-shrink: 0;
+}
+
+.menu-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex: 1;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-decoration: none;
+  color: #00ffff;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.logo:hover {
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+}
+
+.exhibition-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.exhibition-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.05em;
+}
+
+.exhibition-description {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+}
+
+.menu-center {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+}
+
+.navigation-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.menu-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+/* Button styles */
+.nav-button,
+.audio-toggle,
+.fullscreen-toggle,
+.help-toggle,
+.menu-toggle {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-button:hover,
+.audio-toggle:hover,
+.fullscreen-toggle:hover,
+.help-toggle:hover,
+.menu-toggle:hover {
+  background: rgba(0, 255, 255, 0.1);
+  border-color: #00ffff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.nav-button:active,
+.audio-toggle:active,
+.fullscreen-toggle:active,
+.help-toggle:active {
+  transform: translateY(0);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+
+/* Audio controls */
+.audio-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.audio-toggle {
+  min-width: 50px;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  position: relative;
+}
+
+.audio-icon {
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.audio-toggle .audio-on {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.audio-toggle.enabled .audio-off {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.audio-toggle.enabled .audio-on {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.audio-toggle.enabled {
+  background: rgba(0, 255, 255, 0.15);
+  border-color: #00ffff;
+  color: #00ffff;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+}
+
+/* Fullscreen controls */
+.fullscreen-toggle {
+  min-width: 50px;
+  padding: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.fullscreen-icon {
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.fullscreen-toggle .fullscreen-exit {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.fullscreen-toggle.fullscreen .fullscreen-enter {
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.fullscreen-toggle.fullscreen .fullscreen-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Help button */
+.help-toggle {
+  min-width: 50px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Mobile menu toggle */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  gap: 3px;
+}
+
+.menu-toggle span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #ffffff;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+.menu-toggle:hover span {
+  background: #00ffff;
+}
+
+/* Exhibition content area */
+.exhibition-content {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: #0a0a0a;
+}
+
+.exhibition-content canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 10, 10, 0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 500;
+  backdrop-filter: blur(10px);
+  transition: opacity 0.5s ease;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top: 3px solid #00ffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 2rem;
+}
+
+.loading-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 0.05em;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Error overlay */
+.error-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.error-content {
+  background: rgba(40, 40, 40, 0.95);
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.error-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ff6b6b;
+  margin-bottom: 1rem;
+}
+
+.error-details {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.error-close {
+  background: #ff6b6b;
+  border: none;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.error-close:hover {
+  background: #ff5252;
+  transform: translateY(-1px);
+}
+
+/* Help overlay */
+.help-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1500;
+  backdrop-filter: blur(10px);
+}
+
+.help-content {
+  background: rgba(20, 20, 20, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.help-content h2 {
+  color: #00ffff;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.help-section {
+  margin-bottom: 1.5rem;
+}
+
+.help-section h3 {
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.help-section p {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.help-section strong {
+  color: #00ffff;
+}
+
+.help-close {
+  background: #00ffff;
+  border: none;
+  color: #000000;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: block;
+  margin: 2rem auto 0;
+}
+
+.help-close:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Fullscreen mode */
+.exhibition-window.fullscreen-mode {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+}
+
+.exhibition-window.fullscreen-mode .top-menu {
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: all 0.3s ease;
+}
+
+.exhibition-window.fullscreen-mode:hover .top-menu {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .top-menu {
+    padding: 0.75rem 1rem;
+    flex-wrap: wrap;
+    min-height: auto;
+  }
+
+  .menu-left {
+    gap: 1rem;
+    order: 1;
+    flex: 1 1 100%;
+  }
+
+  .menu-center {
+    order: 3;
+    flex: 1 1 100%;
+    margin-top: 0.5rem;
+    display: none;
+  }
+
+  .menu-right {
+    order: 2;
+    flex: none;
+  }
+
+  .menu-toggle {
+    display: flex;
+  }
+
+  .top-menu.mobile-menu-open .menu-center {
+    display: flex;
+  }
+
+  .top-menu.mobile-menu-open .menu-toggle span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+
+  .top-menu.mobile-menu-open .menu-toggle span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .top-menu.mobile-menu-open .menu-toggle span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .exhibition-title {
+    font-size: 1rem;
+  }
+
+  .exhibition-description {
+    font-size: 0.8rem;
+  }
+
+  .navigation-controls {
+    gap: 0.25rem;
+  }
+
+  .nav-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .help-content {
+    margin: 1rem;
+    padding: 1.5rem;
+    max-height: 90vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-menu {
+    padding: 0.5rem;
+  }
+
+  .menu-left {
+    gap: 0.5rem;
+  }
+
+  .logo {
+    font-size: 1rem;
+  }
+
+  .exhibition-title {
+    font-size: 0.9rem;
+  }
+
+  .exhibition-description {
+    display: none;
+  }
+
+  .menu-right {
+    gap: 0.5rem;
+  }
+
+  .nav-button,
+  .audio-toggle,
+  .fullscreen-toggle,
+  .help-toggle {
+    padding: 0.4rem;
+    font-size: 0.8rem;
+    min-width: 40px;
+  }
+}
+
+/* Dark theme enhancements */
+@media (prefers-color-scheme: dark) {
+  .exhibition-window {
+    background: #000000;
+  }
+
+  .top-menu {
+    background: rgba(0, 0, 0, 0.98);
+    border-bottom-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .exhibition-content {
+    background: #000000;
+  }
+}

@@ -9,11 +9,11 @@
       content="Morphing 3D shapes simulation in a space environment with dynamic transformations."
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="../favicon.ico">
-    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="../assets/images/apple-touch-icon.png">
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="../../assets/images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../assets/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../assets/images/apple-touch-icon.png">
     />
 
     <!-- Preload fonts -->
@@ -23,7 +23,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
       rel="stylesheet"
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="../css/top-menu.css" />
+    <link rel="stylesheet" href="../../src/css/exhibition-framework.css" />
     <style>
       body {
         margin: 0;
@@ -34,6 +34,7 @@
       }
       canvas {
         display: block;
+      }
       .info {
         position: absolute;
         bottom: 20px;
@@ -47,6 +48,7 @@
         border-radius: 8px;
         border: 1px solid rgba(0, 255, 255, 0.3);
         backdrop-filter: blur(10px);
+      }
     </style>
   </head>
   <body>
@@ -69,9 +71,13 @@
     <div class="exhibition-container">
       <div class="exhibition-frame">
         <canvas id="morphing-canvas" class="exhibition-canvas"></canvas>
+      </div>
+    </div>
     <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="../js/top-menu.js"></script>
-    <script src="../js/morphing-forms.js"></script>
+    <script src="../../assets/lib/three.min.js"></script>
+    
+    <!-- Exhibition Framework -->
+    <script src="../../src/legacy/exhibition-compatibility.js"></script>
+    <script src="./morphing-forms.js"></script>
   </body>
 </html>

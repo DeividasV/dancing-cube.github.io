@@ -13,10 +13,9 @@ class BouncingCubesApp {
     this.CUBE_SIZE = 2.5;
     this.SPACING = 3.0;
 
-    // Sound system
-    this.audioContext = null;
+    // Use framework AudioSystem if available
+    this.audioSystem = window.exhibitionAudioSystem || null;
     this.soundEnabled = false; // Default to OFF
-    this.initAudioContext();
 
     // Mouse controls
     this.mouseX = 0;
@@ -33,21 +32,26 @@ class BouncingCubesApp {
     this.init();
   }
 
-  // Initialize Web Audio API
-  initAudioContext() {
-    try {
-      this.audioContext = new (window.AudioContext ||
-        window.webkitAudioContext)();
-    } catch (e) {
-      this.soundEnabled = false;
-    }
-  }
-
   // Create a subtle collision sound
   playCollisionSound(velocity = 0.1) {
-    if (!this.soundEnabled || !this.audioContext) return;
+    if (!this.soundEnabled || !this.audioSystem) return;
 
+    // Use framework audio system if available
+    if (this.audioSystem && this.audioSystem.playTone) {
+      const frequency = 220 + Math.random() * 110;
+      const duration = 0.15;
+      const volume = Math.min(0.05 + velocity * 0.1, 0.15);
+      this.audioSystem.playTone(frequency, duration, "sine", volume);
+      return;
+    }
+
+    // Fallback to basic audio implementation
     try {
+      if (!this.audioContext) {
+        this.audioContext = new (window.AudioContext ||
+          window.webkitAudioContext)();
+      }
+
       const oscillator = this.audioContext.createOscillator();
       const gainNode = this.audioContext.createGain();
       const filterNode = this.audioContext.createBiquadFilter();
@@ -91,9 +95,23 @@ class BouncingCubesApp {
 
   // Create a wall bounce sound (slightly different tone)
   playWallBounceSound(velocity = 0.1) {
-    if (!this.soundEnabled || !this.audioContext) return;
+    if (!this.soundEnabled) return;
 
+    // Use framework audio system if available
+    if (this.audioSystem && this.audioSystem.playTone) {
+      const frequency = 330 + Math.random() * 140;
+      const duration = 0.12;
+      const volume = Math.min(0.04 + velocity * 0.08, 0.12);
+      this.audioSystem.playTone(frequency, duration, "sine", volume);
+      return;
+    }
+    // Fallback to basic audio implementation
     try {
+      if (!this.audioContext) {
+        this.audioContext = new (window.AudioContext ||
+          window.webkitAudioContext)();
+      }
+
       const oscillator = this.audioContext.createOscillator();
       const gainNode = this.audioContext.createGain();
       const filterNode = this.audioContext.createBiquadFilter();

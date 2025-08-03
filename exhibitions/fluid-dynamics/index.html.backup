@@ -10,14 +10,14 @@
     />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="../favicon.ico">
-    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="../assets/images/apple-touch-icon.png">
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="../../assets/images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../assets/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../assets/images/apple-touch-icon.png">
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="../css/top-menu.css" />
+    <link rel="stylesheet" href="../../src/css/exhibition-framework.css" />
     <link rel="stylesheet" href="../css/fluid-dynamics.css" />
   </head>
   <body>
@@ -42,9 +42,16 @@
     <div class="exhibition-container">
       <div class="exhibition-frame">
         <canvas id="fluid-canvas" class="exhibition-canvas"></canvas>
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="../js/top-menu.js"></script>
-    <script src="../js/fluid-dynamics.js"></script>
+        <!-- Scripts -->
+    <script src="../../assets/lib/three.min.js"></script>
+    
+    <!-- Exhibition Framework -->
+    <script src="../../src/core/AudioSystem.js"></script>
+    <script src="../../src/core/ComponentManager.js"></script>
+    <script src="../../src/components/TopMenu.js"></script>
+    <script src="../../src/components/ExhibitionWindow.js"></script>
+    <script src="../../src/core/Exhibition.js"></script>
+    <script src="../../src/legacy/exhibition-compatibility.js"></script>
+    <script src="./fluid-dynamics.js"></script>
   </body>
 </html>

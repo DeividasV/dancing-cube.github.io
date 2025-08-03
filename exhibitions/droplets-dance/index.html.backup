@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DR0PL3TS_D4NC3 - Dancing Cube Exhibition</title>
+    <meta
+      name="description"
+      content="Dynamic water droplets system with physics simulation and tension effects."
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="../../assets/images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../assets/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../assets/images/apple-touch-icon.png">
+    />
+
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../../src/css/exhibition-framework.css" />
+    <link rel="stylesheet" href="../css/droplets-dance.css" />
+  </head>
+  <body>
+    <!-- Loading indicator -->
+    <div class="loading">INITIALIZING DR0PL3T SY5T3M...</div>
+    <!-- Top Menu Component -->
+    <div class="top-menu">
+      <div class="nav-left">
+        <div class="menu-title">DR0PL3TS_D4NC3</div>
+      </div>
+      <div class="nav-right">
+        <button class="nav-button sound-toggle-button" onclick="window.toggleAppSound()" title="Sound OFF - Click to enable">🔇</button>
+        <button class="nav-button prev-button" data-nav="prev">PREV</button>
+        <button class="nav-button next-button" data-nav="next">NEXT</button>
+        <button class="nav-button home-button" data-nav="home">HOME</button>
+      </div>
+    </div>
+    </div>
+    <!-- Exhibition Container -->
+    <div class="exhibition-container">
+      <div class="exhibition-frame">
+        <canvas id="canvas" class="exhibition-canvas"></canvas>
+        <!-- Scripts -->
+    <script src="../../assets/lib/three.min.js"></script>
+    
+    <!-- Exhibition Framework -->
+    <script src="../../src/core/AudioSystem.js"></script>
+    <script src="../../src/core/ComponentManager.js"></script>
+    <script src="../../src/components/TopMenu.js"></script>
+    <script src="../../src/components/ExhibitionWindow.js"></script>
+    <script src="../../src/core/Exhibition.js"></script>
+    <script src="../../src/legacy/exhibition-compatibility.js"></script>
+    <script src="./droplets-dance.js"></script>
+  </body>
+</html>
