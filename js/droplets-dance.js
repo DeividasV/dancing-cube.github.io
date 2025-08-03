@@ -1,5 +1,273 @@
 // DR0PL3TS_D4NC3 - Three.js Water Droplets System
 
+// Audio System
+class AudioSystem {
+  constructor() {
+    this.audioContext = null;
+    this.masterGain = null;
+    this.soundEnabled = false; // Default to OFF
+    this.ambientOscillators = [];
+    this.ambientTimers = [];
+    this.initAudio();
+  }
+
+  initAudio() {
+    try {
+      this.audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+      this.masterGain = this.audioContext.createGain();
+      this.masterGain.connect(this.audioContext.destination);
+      this.masterGain.gain.setValueAtTime(0.2, this.audioContext.currentTime);
+      console.log("Droplets audio context initialized");
+    } catch (e) {
+      console.log("Web Audio API not supported:", e);
+      this.soundEnabled = false;
+    }
+  }
+
+  playTone(frequency, duration = 0.3, type = "sine", volume = 0.1) {
+    if (!this.soundEnabled || !this.audioContext) return;
+
+    if (this.audioContext.state === "suspended") {
+      this.audioContext.resume();
+    }
+
+    try {
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+      const filter = this.audioContext.createBiquadFilter();
+
+      oscillator.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(this.masterGain);
+
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(
+        frequency,
+        this.audioContext.currentTime
+      );
+
+      // Water-like filter
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(2000, this.audioContext.currentTime);
+      filter.Q.setValueAtTime(1, this.audioContext.currentTime);
+
+      // Gentle envelope
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        volume,
+        this.audioContext.currentTime + 0.03
+      );
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        this.audioContext.currentTime + duration
+      );
+
+      oscillator.start(this.audioContext.currentTime);
+      oscillator.stop(this.audioContext.currentTime + duration);
+    } catch (e) {
+      console.log("Audio playback error:", e);
+    }
+  }
+
+  playWaterDropSound(intensity = 1.0) {
+    const frequencies = [400, 600, 800, 1000];
+    const baseFreq =
+      frequencies[Math.floor(Math.random() * frequencies.length)];
+    this.playTone(baseFreq * intensity, 0.2, "sine", 0.03 * intensity);
+  }
+
+  playTensionSound(tension) {
+    const frequency = 200 + tension * 300;
+    this.playTone(frequency, 0.15, "triangle", 0.02);
+  }
+
+  toggleSound() {
+    this.soundEnabled = !this.soundEnabled;
+    console.log("Droplets sound toggled:", this.soundEnabled ? "ON" : "OFF");
+
+    const soundButton = document.querySelector(".sound-toggle-button");
+    if (soundButton) {
+      soundButton.textContent = this.soundEnabled ? "🔊" : "🔇";
+      soundButton.title = this.soundEnabled
+        ? "Sound ON - Click to mute"
+        : "Sound OFF - Click to enable";
+    }
+
+    if (
+      this.soundEnabled &&
+      this.audioContext &&
+      this.audioContext.state === "suspended"
+    ) {
+      this.audioContext.resume();
+    }
+
+    if (this.soundEnabled) {
+      setTimeout(() => {
+        this.playTone(440, 0.3, "sine", 0.1);
+      }, 100);
+      this.startAmbientSounds();
+    } else {
+      this.stopAmbientSounds();
+    }
+  }
+
+  startAmbientSounds() {
+    if (!this.soundEnabled || !this.audioContext) return;
+
+    this.stopAmbientSounds();
+    this.createWaterAmbient();
+    this.createBubbleEffects();
+  }
+
+  stopAmbientSounds() {
+    this.ambientOscillators.forEach((osc) => {
+      try {
+        osc.stop();
+      } catch (e) {}
+    });
+    this.ambientOscillators = [];
+
+    this.ambientTimers.forEach((timer) => clearTimeout(timer));
+    this.ambientTimers = [];
+  }
+
+  createWaterAmbient() {
+    if (!this.audioContext) return;
+
+    try {
+      // Deep, calm water drone
+      const droneOsc = this.audioContext.createOscillator();
+      const droneGain = this.audioContext.createGain();
+      const droneFilter = this.audioContext.createBiquadFilter();
+
+      droneOsc.type = "sine";
+      droneOsc.frequency.setValueAtTime(60, this.audioContext.currentTime); // Much lower frequency
+
+      droneFilter.type = "lowpass";
+      droneFilter.frequency.setValueAtTime(120, this.audioContext.currentTime); // Very low filter
+      droneFilter.Q.setValueAtTime(0.5, this.audioContext.currentTime);
+
+      droneGain.gain.setValueAtTime(0.008, this.audioContext.currentTime); // Much quieter
+
+      droneOsc.connect(droneFilter);
+      droneFilter.connect(droneGain);
+      droneGain.connect(this.masterGain);
+
+      droneOsc.start();
+      this.ambientOscillators.push(droneOsc);
+
+      // Gentle water texture
+      const textureOsc = this.audioContext.createOscillator();
+      const textureGain = this.audioContext.createGain();
+      const textureFilter = this.audioContext.createBiquadFilter();
+      const lfo = this.audioContext.createOscillator();
+      const lfoGain = this.audioContext.createGain();
+
+      textureOsc.type = "triangle";
+      textureOsc.frequency.setValueAtTime(180, this.audioContext.currentTime); // Lower frequency
+
+      lfo.type = "sine";
+      lfo.frequency.setValueAtTime(0.1, this.audioContext.currentTime); // Slower modulation
+
+      lfoGain.gain.setValueAtTime(8, this.audioContext.currentTime); // Less modulation
+
+      lfo.connect(lfoGain);
+      lfoGain.connect(textureOsc.frequency);
+
+      textureFilter.type = "lowpass";
+      textureFilter.frequency.setValueAtTime(
+        400,
+        this.audioContext.currentTime
+      ); // Lower filter
+      textureFilter.Q.setValueAtTime(0.3, this.audioContext.currentTime);
+
+      textureGain.gain.setValueAtTime(0.005, this.audioContext.currentTime); // Much quieter
+
+      textureOsc.connect(textureFilter);
+      textureFilter.connect(textureGain);
+      textureGain.connect(this.masterGain);
+
+      lfo.start();
+      textureOsc.start();
+      this.ambientOscillators.push(textureOsc);
+      this.ambientOscillators.push(lfo);
+    } catch (e) {
+      console.log("Error creating water ambient:", e);
+    }
+  }
+
+  createBubbleEffects() {
+    if (!this.audioContext) return;
+
+    const createBubble = () => {
+      if (!this.soundEnabled) return;
+
+      try {
+        const bubbleOsc = this.audioContext.createOscillator();
+        const bubbleGain = this.audioContext.createGain();
+        const bubbleFilter = this.audioContext.createBiquadFilter();
+
+        bubbleOsc.type = "sine";
+        const frequency = 200 + Math.random() * 200; // Lower frequency range
+        bubbleOsc.frequency.setValueAtTime(
+          frequency,
+          this.audioContext.currentTime
+        );
+        bubbleOsc.frequency.exponentialRampToValueAtTime(
+          frequency * 0.8,
+          this.audioContext.currentTime + 0.3
+        );
+
+        bubbleFilter.type = "lowpass"; // Change to lowpass for softer sound
+        bubbleFilter.frequency.setValueAtTime(
+          400,
+          this.audioContext.currentTime
+        );
+
+        bubbleGain.gain.setValueAtTime(0, this.audioContext.currentTime);
+        bubbleGain.gain.linearRampToValueAtTime(
+          0.003,
+          this.audioContext.currentTime + 0.02
+        ); // Much quieter
+        bubbleGain.gain.exponentialRampToValueAtTime(
+          0.0001,
+          this.audioContext.currentTime + 0.5
+        );
+
+        bubbleOsc.connect(bubbleFilter);
+        bubbleFilter.connect(bubbleGain);
+        bubbleGain.connect(this.masterGain);
+
+        bubbleOsc.start();
+        bubbleOsc.stop(this.audioContext.currentTime + 0.5);
+      } catch (e) {
+        console.log("Error creating bubble:", e);
+      }
+    };
+
+    const scheduleBubbles = () => {
+      if (this.soundEnabled) {
+        createBubble();
+        // Less frequent bubbles for calmer atmosphere
+        const nextBubble = 3000 + Math.random() * 7000; // 3-10 seconds apart
+        const timer = setTimeout(scheduleBubbles, nextBubble);
+        this.ambientTimers.push(timer);
+      }
+    };
+
+    scheduleBubbles();
+  }
+}
+
+// Initialize audio system
+const audioSystem = new AudioSystem();
+
+// Global function for sound toggle button
+window.toggleAppSound = function () {
+  audioSystem.toggleSound();
+};
+
 // Scene setup
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -16,6 +284,13 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x001122);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+// Mouse tracking
+const mouse = { x: 0, y: 0 };
+window.addEventListener("mousemove", (event) => {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+});
 
 // Lighting
 const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
@@ -139,12 +414,26 @@ class WaterDroplet {
     this.position.add(this.velocity.clone().multiplyScalar(0.016));
 
     // Update tension and radius based on forces
+    const previousTension = this.tension;
     this.tension = totalTension;
     this.targetRadius = this.baseRadius * (1 + this.tension * 0.3);
     this.currentRadius += (this.targetRadius - this.currentRadius) * 0.1;
 
-    // Deform droplet based on velocity and tension
+    // Play tension sound when tension changes significantly (less frequent)
+    if (
+      Math.abs(this.tension - previousTension) > 0.15 &&
+      Math.random() < 0.1
+    ) {
+      audioSystem.playTensionSound(this.tension);
+    }
+
+    // Play movement sound based on velocity (less frequent)
     const velocityMagnitude = this.velocity.length();
+    if (velocityMagnitude > 0.08 && Math.random() < 0.05) {
+      audioSystem.playWaterDropSound(Math.min(velocityMagnitude * 8, 1.5));
+    }
+
+    // Deform droplet based on velocity and tension
     const stretchFactor = 1 + velocityMagnitude * 2;
     const squeezeFactor = 1 / Math.sqrt(stretchFactor);
 
@@ -189,7 +478,18 @@ class WaterString {
 
   update(time) {
     // Update vibration
+    const previousPhase = this.vibrationPhase;
     this.vibrationPhase += this.vibrationSpeed * 0.016;
+
+    // Play string vibration sound occasionally (less frequent and quieter)
+    if (
+      Math.sin(this.vibrationPhase) > 0.99 &&
+      Math.sin(previousPhase) <= 0.99 &&
+      Math.random() < 0.2
+    ) {
+      const stringFreq = 120 + this.vibrationSpeed * 20;
+      audioSystem.playTone(stringFreq, 0.08, "triangle", 0.008);
+    }
 
     // Create curved path between droplets with vibration
     const start = this.droplet1.position;
@@ -315,9 +615,33 @@ const cameraController = new CameraController();
 
 // Animation loop
 let time = 0;
+let previousMouseMagnitude = 0;
+let previousCameraPosition = new THREE.Vector3();
+
 function animate() {
   requestAnimationFrame(animate);
   time += 0.016;
+
+  // Capture mouse for audio feedback
+  const mouseMagnitude = Math.sqrt(mouse.x * mouse.x + mouse.y * mouse.y);
+
+  // Play subtle sound for mouse movement (less frequent and quieter)
+  if (
+    Math.abs(mouseMagnitude - previousMouseMagnitude) > 0.1 &&
+    Math.random() < 0.05
+  ) {
+    const mouseFreq = 80 + mouseMagnitude * 60;
+    audioSystem.playTone(mouseFreq, 0.03, "sine", 0.005);
+  }
+  previousMouseMagnitude = mouseMagnitude;
+
+  // Camera movement sound feedback (less frequent and quieter)
+  const cameraMovement = camera.position.distanceTo(previousCameraPosition);
+  if (cameraMovement > 0.02 && Math.random() < 0.1) {
+    const cameraFreq = 60 + cameraMovement * 200;
+    audioSystem.playTone(cameraFreq, 0.05, "sine", 0.003);
+  }
+  previousCameraPosition.copy(camera.position);
 
   // Update droplets
   droplets.forEach((droplet) => droplet.update(time, droplets));
