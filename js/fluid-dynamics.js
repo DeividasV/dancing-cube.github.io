@@ -27,6 +27,12 @@ class FluidDynamicsApp {
     // Performance monitoring
     this.lastTime = 0;
 
+    // View-related sound tracking
+    this.lastCameraPosition = { x: 0, y: 0, z: 50 };
+    this.cameraMovementTimer = 0;
+    this.visualIntensityTimer = 0;
+    this.depthSoundTimer = 0;
+
     this.init();
   }
 
@@ -178,6 +184,175 @@ class FluidDynamicsApp {
       oscillator.type = "sine";
       oscillator.start(this.audioContext.currentTime);
       oscillator.stop(this.audioContext.currentTime + 0.3);
+    } catch (e) {
+      // Silent fail
+    }
+  }
+
+  // Create ambient camera movement sound
+  playCameraMovementSound(intensity = 0.1) {
+    if (!this.soundEnabled || !this.audioContext) return;
+
+    try {
+      const oscillator1 = this.audioContext.createOscillator();
+      const oscillator2 = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+      const filterNode = this.audioContext.createBiquadFilter();
+
+      oscillator1.connect(filterNode);
+      oscillator2.connect(filterNode);
+      filterNode.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+
+      // Ethereal dual-tone for camera drift
+      const baseFreq = 220 + intensity * 80;
+      oscillator1.frequency.setValueAtTime(
+        baseFreq,
+        this.audioContext.currentTime
+      );
+      oscillator2.frequency.setValueAtTime(
+        baseFreq * 1.618,
+        this.audioContext.currentTime
+      ); // Golden ratio
+
+      oscillator1.frequency.exponentialRampToValueAtTime(
+        baseFreq * 0.9,
+        this.audioContext.currentTime + 1.5
+      );
+      oscillator2.frequency.exponentialRampToValueAtTime(
+        baseFreq * 1.618 * 0.9,
+        this.audioContext.currentTime + 1.5
+      );
+
+      filterNode.type = "lowpass";
+      filterNode.frequency.setValueAtTime(
+        400 + intensity * 200,
+        this.audioContext.currentTime
+      );
+      filterNode.Q.setValueAtTime(0.3, this.audioContext.currentTime);
+
+      const volume = Math.min(0.01 + intensity * 0.02, 0.03);
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        volume,
+        this.audioContext.currentTime + 0.3
+      );
+      gainNode.gain.linearRampToValueAtTime(
+        0.001,
+        this.audioContext.currentTime + 1.5
+      );
+
+      oscillator1.type = "sine";
+      oscillator2.type = "sine";
+      oscillator1.start(this.audioContext.currentTime);
+      oscillator2.start(this.audioContext.currentTime);
+      oscillator1.stop(this.audioContext.currentTime + 1.5);
+      oscillator2.stop(this.audioContext.currentTime + 1.5);
+    } catch (e) {
+      // Silent fail
+    }
+  }
+
+  // Create depth perception sound for zoom
+  playDepthSound(depth = 0.5) {
+    if (!this.soundEnabled || !this.audioContext) return;
+
+    try {
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+      const filterNode = this.audioContext.createBiquadFilter();
+      const delayNode = this.audioContext.createDelay();
+
+      oscillator.connect(filterNode);
+      filterNode.connect(delayNode);
+      delayNode.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+
+      // Lower frequency for depth sensation
+      const frequency = 100 + depth * 150;
+      oscillator.frequency.setValueAtTime(
+        frequency,
+        this.audioContext.currentTime
+      );
+      oscillator.frequency.exponentialRampToValueAtTime(
+        frequency * 0.8,
+        this.audioContext.currentTime + 0.8
+      );
+
+      // Add subtle delay for spatial depth
+      delayNode.delayTime.setValueAtTime(
+        0.01 + depth * 0.02,
+        this.audioContext.currentTime
+      );
+
+      filterNode.type = "highpass";
+      filterNode.frequency.setValueAtTime(80, this.audioContext.currentTime);
+      filterNode.Q.setValueAtTime(0.5, this.audioContext.currentTime);
+
+      const volume = Math.min(0.008 + depth * 0.015, 0.025);
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        volume,
+        this.audioContext.currentTime + 0.1
+      );
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        this.audioContext.currentTime + 0.8
+      );
+
+      oscillator.type = "triangle";
+      oscillator.start(this.audioContext.currentTime);
+      oscillator.stop(this.audioContext.currentTime + 0.8);
+    } catch (e) {
+      // Silent fail
+    }
+  }
+
+  // Create visual intensity sound based on particle density
+  playVisualIntensitySound(intensity = 0.5) {
+    if (!this.soundEnabled || !this.audioContext) return;
+
+    try {
+      const oscillator = this.audioContext.createOscillator();
+      const gainNode = this.audioContext.createGain();
+      const filterNode = this.audioContext.createBiquadFilter();
+
+      oscillator.connect(filterNode);
+      filterNode.connect(gainNode);
+      gainNode.connect(this.audioContext.destination);
+
+      // Crystalline sound for visual complexity
+      const frequency = 800 + intensity * 400;
+      oscillator.frequency.setValueAtTime(
+        frequency,
+        this.audioContext.currentTime
+      );
+      oscillator.frequency.exponentialRampToValueAtTime(
+        frequency * 1.2,
+        this.audioContext.currentTime + 0.4
+      );
+
+      filterNode.type = "bandpass";
+      filterNode.frequency.setValueAtTime(
+        frequency * 0.8,
+        this.audioContext.currentTime
+      );
+      filterNode.Q.setValueAtTime(2.0, this.audioContext.currentTime);
+
+      const volume = Math.min(0.005 + intensity * 0.01, 0.015);
+      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        volume,
+        this.audioContext.currentTime + 0.05
+      );
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        this.audioContext.currentTime + 0.4
+      );
+
+      oscillator.type = "sine";
+      oscillator.start(this.audioContext.currentTime);
+      oscillator.stop(this.audioContext.currentTime + 0.4);
     } catch (e) {
       // Silent fail
     }
@@ -671,10 +846,58 @@ class FluidDynamicsApp {
 
     this.updateParticles(deltaTime);
 
+    // Calculate camera movement for ambient sounds
+    const newCameraX = Math.sin(currentTime * 0.0005) * 5;
+    const newCameraY = Math.cos(currentTime * 0.0007) * 3;
+
+    // Track camera movement intensity
+    const cameraMovement = Math.sqrt(
+      (newCameraX - this.lastCameraPosition.x) ** 2 +
+        (newCameraY - this.lastCameraPosition.y) ** 2
+    );
+
+    this.lastCameraPosition.x = newCameraX;
+    this.lastCameraPosition.y = newCameraY;
+
     // Rotate camera slightly for dynamic view
-    this.camera.position.x = Math.sin(currentTime * 0.0005) * 5;
-    this.camera.position.y = Math.cos(currentTime * 0.0007) * 3;
+    this.camera.position.x = newCameraX;
+    this.camera.position.y = newCameraY;
     this.camera.lookAt(0, 0, 0);
+
+    // Trigger view-related sounds at intervals
+    this.cameraMovementTimer += deltaTime;
+    this.visualIntensityTimer += deltaTime;
+    this.depthSoundTimer += deltaTime;
+
+    // Ambient camera movement sound (every 8-12 seconds)
+    if (this.cameraMovementTimer > 8 + Math.random() * 4) {
+      this.playCameraMovementSound(cameraMovement * 20);
+      this.cameraMovementTimer = 0;
+    }
+
+    // Visual intensity sound based on particle activity (every 6-10 seconds)
+    if (this.visualIntensityTimer > 6 + Math.random() * 4) {
+      // Calculate average particle velocity for intensity
+      let totalVelocity = 0;
+      for (let i = 0; i < this.particleCount; i++) {
+        const i3 = i * 3;
+        totalVelocity += Math.sqrt(
+          this.particleVelocities[i3] ** 2 +
+            this.particleVelocities[i3 + 1] ** 2
+        );
+      }
+      const avgVelocity = totalVelocity / this.particleCount;
+      this.playVisualIntensitySound(Math.min(avgVelocity * 0.1, 1.0));
+      this.visualIntensityTimer = 0;
+    }
+
+    // Depth perception sound (every 10-15 seconds)
+    if (this.depthSoundTimer > 10 + Math.random() * 5) {
+      // Use camera z-distance relative to origin for depth perception
+      const depth = Math.abs(this.camera.position.z - 50) / 20;
+      this.playDepthSound(Math.min(depth, 1.0));
+      this.depthSoundTimer = 0;
+    }
 
     this.renderer.render(this.scene, this.camera);
   }
