@@ -311,7 +311,7 @@ class BouncingCubesApp {
   }
 
   createMovingCubes() {
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 8; i++) {
       const cube = new MovingCube(
         this.GRID_SIZE,
         this.CUBE_SIZE,
@@ -557,7 +557,11 @@ class MovingCube {
         this.currentColor.s,
         this.currentColor.l
       ),
-      shininess: 100,
+      shininess: 300,
+      specular: 0xffffff,
+      reflectivity: 0.9,
+      transparent: true,
+      opacity: 0.8,
     });
     this.mesh = new THREE.Mesh(geometry, material);
     this.updateMeshPosition();
