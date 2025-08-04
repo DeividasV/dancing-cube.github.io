@@ -359,11 +359,7 @@ body {
 .icon-gradient {
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    135deg,
-    var(--gradient-start),
-    var(--gradient-end)
-  );
+  background: transparent;
   position: relative;
   display: flex;
   align-items: center;
@@ -371,32 +367,38 @@ body {
   animation: iconPulse 4s ease-in-out infinite;
 }
 
-/* Quantum Bounce Icon - Geometric particles */
-.icon-gradient:not(.fluid):not(.blood):not(.water):not(.morph) {
-  background: linear-gradient(135deg, #00ff88, #00ccff);
+/* Quantum Bounce Icon - Carved atom symbol */
+.icon-gradient:not(.fluid):not(.blood):not(.water):not(.morph):not(.mirror):not(
+    .glass
+  ):not(.axis):not(.deformed):not(.squares):not(.knot):not(.wire) {
+  background: transparent;
 }
 
-.icon-gradient:not(.fluid):not(.blood):not(.water):not(.morph)::before {
+.icon-gradient:not(.fluid):not(.blood):not(.water):not(.morph):not(.mirror):not(
+    .glass
+  ):not(.axis):not(.deformed):not(.squares):not(.knot):not(.wire)::before {
   content: "";
   position: absolute;
-  width: 8px;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  animation: quantumBounce 2s ease-in-out infinite;
-  box-shadow: 12px 0 0 rgba(255, 255, 255, 0.7),
-    6px 10px 0 rgba(255, 255, 255, 0.5), -6px 10px 0 rgba(255, 255, 255, 0.6),
-    -12px 0 0 rgba(255, 255, 255, 0.4);
-}
-
-.icon-gradient:not(.fluid):not(.blood):not(.water):not(.morph)::after {
-  content: "";
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.6);
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
   border-radius: 50%;
   animation: quantumOrbit 3s linear infinite;
+}
+
+.icon-gradient:not(.fluid):not(.blood):not(.water):not(.morph):not(.mirror):not(
+    .glass
+  ):not(.axis):not(.deformed):not(.squares):not(.knot):not(.wire)::after {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  box-shadow: 8px 0 0 rgba(255, 255, 255, 0.15),
+    -8px 0 0 rgba(255, 255, 255, 0.15), 0 8px 0 rgba(255, 255, 255, 0.15),
+    0 -8px 0 rgba(255, 255, 255, 0.15);
+  animation: quantumBounce 2s ease-in-out infinite;
 }
 
 @keyframes quantumBounce {
@@ -424,39 +426,34 @@ body {
   }
 }
 
-/* Fluid Dynamics Icon - Wave patterns */
+/* Fluid Dynamics Icon - Carved wave pattern */
 .icon-gradient.fluid {
-  background: linear-gradient(135deg, #00ccff, #0099ff);
-  overflow: visible;
+  background: transparent;
 }
 
 .icon-gradient.fluid::before {
   content: "";
   position: absolute;
-  width: 100%;
+  width: 28px;
   height: 3px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.8),
-    transparent
-  );
-  top: 30%;
+  border-top: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0 0 12px 12px;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
   animation: fluidWave1 2s ease-in-out infinite;
 }
 
 .icon-gradient.fluid::after {
   content: "";
   position: absolute;
-  width: 80%;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.6),
-    transparent
-  );
+  width: 20px;
+  height: 3px;
+  border-top: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0 0 8px 8px;
   top: 60%;
+  left: 50%;
+  transform: translateX(-50%);
   animation: fluidWave2 2.5s ease-in-out infinite;
 }
 
@@ -484,9 +481,9 @@ body {
   }
 }
 
-/* Blood Ocean Icon - Droplet effects */
+/* Blood Ocean Icon - Carved droplet */
 .icon-gradient.blood {
-  background: radial-gradient(circle at 30% 30%, #ff6b7a, #ff4757, #ff3742);
+  background: transparent;
 }
 
 .icon-gradient.blood::before {
@@ -494,10 +491,11 @@ body {
   position: absolute;
   width: 12px;
   height: 16px;
-  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.15);
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  top: 20%;
-  left: 35%;
+  top: 25%;
+  left: 50%;
+  transform: translateX(-50%);
   animation: bloodDrop1 3s ease-in-out infinite;
 }
 
@@ -505,11 +503,12 @@ body {
   content: "";
   position: absolute;
   width: 8px;
-  height: 12px;
-  background: rgba(255, 255, 255, 0.7);
-  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  top: 45%;
-  right: 30%;
+  height: 3px;
+  border-top: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50px;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
   animation: bloodDrop2 2.5s ease-in-out infinite 0.5s;
 }
 
@@ -537,36 +536,36 @@ body {
   }
 }
 
-/* Water Droplets Icon - Multiple droplets */
+/* Water Droplets Icon - Carved multiple drops */
 .icon-gradient.water {
-  background: linear-gradient(135deg, #74b9ff, #0984e3);
+  background: transparent;
 }
 
 .icon-gradient.water::before {
   content: "";
   position: absolute;
-  width: 10px;
-  height: 10px;
-  background: rgba(255, 255, 255, 0.8);
+  width: 6px;
+  height: 6px;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
   border-radius: 50%;
-  top: 25%;
-  left: 25%;
+  top: 30%;
+  left: 30%;
   animation: waterDrop 2s ease-in-out infinite;
-  box-shadow: 20px 5px 0 -2px rgba(255, 255, 255, 0.6),
-    10px 25px 0 -3px rgba(255, 255, 255, 0.7),
-    25px 20px 0 -1px rgba(255, 255, 255, 0.5);
+  box-shadow: 12px 2px 0 -1.5px rgba(255, 255, 255, 0.12),
+    6px 15px 0 -1.5px rgba(255, 255, 255, 0.14),
+    18px 12px 0 -1.5px rgba(255, 255, 255, 0.1);
 }
 
 .icon-gradient.water::after {
   content: "";
   position: absolute;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(
-    circle at 50% 80%,
-    rgba(255, 255, 255, 0.2) 0%,
-    transparent 50%
-  );
+  width: 20px;
+  height: 2px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  bottom: 25%;
+  left: 50%;
+  transform: translateX(-50%);
   animation: waterRipple 3s ease-in-out infinite;
 }
 
@@ -594,9 +593,9 @@ body {
   }
 }
 
-/* Morphing Forms Icon - Shape transformation */
+/* Morphing Forms Icon - Carved transforming shape */
 .icon-gradient.morph {
-  background: linear-gradient(135deg, #fd79a8, #fdcb6e);
+  background: transparent;
 }
 
 .icon-gradient.morph::before {
@@ -604,8 +603,7 @@ body {
   position: absolute;
   width: 16px;
   height: 16px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.15);
   animation: morphShape 4s ease-in-out infinite;
   transform-origin: center;
 }
@@ -613,10 +611,9 @@ body {
 .icon-gradient.morph::after {
   content: "";
   position: absolute;
-  width: 12px;
-  height: 12px;
-  background: rgba(255, 255, 255, 0.6);
-  border-radius: 20%;
+  width: 8px;
+  height: 8px;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
   animation: morphShadow 4s ease-in-out infinite;
   transform-origin: center;
 }
@@ -672,40 +669,36 @@ body {
   }
 }
 
-/* Mirror Pyramid Icon - Reflective spheres */
+/* Mirror Pyramid Icon - Carved pyramid */
 .icon-gradient.mirror {
-  background: linear-gradient(135deg, #b19cd9, #ff6b6b, #feca57);
+  background: transparent;
 }
 
 .icon-gradient.mirror::before {
   content: "";
   position: absolute;
-  width: 14px;
-  height: 14px;
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.9) 30%,
-    rgba(255, 0, 255, 0.7) 70%
-  );
-  border-radius: 50%;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 16px solid rgba(255, 255, 255, 0.15);
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
   animation: mirrorSphere1 3s ease-in-out infinite;
-  box-shadow: 0 0 8px rgba(255, 0, 255, 0.4);
 }
 
 .icon-gradient.mirror::after {
   content: "";
   position: absolute;
-  width: 10px;
-  height: 10px;
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.8) 20%,
-    rgba(255, 255, 0, 0.6) 80%
-  );
-  border-radius: 50%;
+  width: 18px;
+  height: 2px;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50px;
+  bottom: 25%;
+  left: 50%;
+  transform: translateX(-50%);
   animation: mirrorSphere2 3s ease-in-out infinite;
-  box-shadow: 0 0 6px rgba(255, 255, 0, 0.3);
-  transform: translate(8px, 8px);
 }
 
 @keyframes mirrorSphere1 {
@@ -732,9 +725,9 @@ body {
   }
 }
 
-/* Glass Spheres Icon - Floating glass orbs */
+/* Glass Spheres Icon - Carved floating circles */
 .icon-gradient.glass {
-  background: linear-gradient(135deg, #0a0a1a, #1a1a2e, #87ceeb);
+  background: transparent;
 }
 
 .icon-gradient.glass::before {
@@ -742,17 +735,11 @@ body {
   position: absolute;
   width: 16px;
   height: 16px;
-  background: radial-gradient(
-    ellipse at 30% 30%,
-    rgba(255, 255, 255, 0.8) 0%,
-    rgba(255, 255, 255, 0.2) 40%,
-    rgba(135, 206, 250, 0.4) 70%,
-    transparent 100%
-  );
+  border: 2px solid rgba(255, 255, 255, 0.15);
   border-radius: 50%;
+  top: 20%;
+  left: 20%;
   animation: glassFloat1 4s ease-in-out infinite;
-  box-shadow: 0 0 8px rgba(135, 206, 250, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .icon-gradient.glass::after {
@@ -760,18 +747,11 @@ body {
   position: absolute;
   width: 12px;
   height: 12px;
-  background: radial-gradient(
-    ellipse at 25% 25%,
-    rgba(255, 255, 255, 0.7) 0%,
-    rgba(255, 255, 255, 0.1) 30%,
-    rgba(135, 206, 250, 0.3) 60%,
-    transparent 100%
-  );
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
   border-radius: 50%;
+  top: 40%;
+  right: 20%;
   animation: glassFloat2 4s ease-in-out infinite;
-  box-shadow: 0 0 6px rgba(135, 206, 250, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transform: translate(10px, 10px);
 }
 
 @keyframes glassFloat1 {
@@ -798,87 +778,71 @@ body {
   }
 }
 
-/* Axis Connect Icon - 3D axis connections */
+/* Axis Connect Icon - Carved coordinate axes */
 .icon-gradient.axis {
-  background: linear-gradient(
-    135deg,
-    #2c2c2c,
-    #1a1a1a,
-    #ff6b6b,
-    #00ff88,
-    #ffff00
-  );
+  background: transparent;
 }
 
 .icon-gradient.axis::before {
   content: "";
   position: absolute;
-  width: 16px;
+  width: 20px;
   height: 2px;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 107, 107, 0.8) 0%,
-    rgba(0, 255, 136, 0.8) 50%,
-    rgba(255, 255, 0, 0.8) 100%
-  );
-  border-radius: 1px;
+  border-top: 1.5px solid rgba(255, 255, 255, 0.15);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   animation: axisRotate1 3s linear infinite;
   transform-origin: center;
-  box-shadow: 0 0 4px rgba(255, 107, 107, 0.4);
 }
 
 .icon-gradient.axis::after {
   content: "";
   position: absolute;
   width: 2px;
-  height: 16px;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 255, 136, 0.8) 0%,
-    rgba(255, 255, 0, 0.8) 50%,
-    rgba(255, 107, 107, 0.8) 100%
-  );
-  border-radius: 1px;
+  height: 20px;
+  border-left: 1.5px solid rgba(255, 255, 255, 0.15);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   animation: axisRotate2 3s linear infinite;
   transform-origin: center;
-  box-shadow: 0 0 4px rgba(0, 255, 136, 0.4);
-  transform: translate(7px, 0px);
 }
 
 @keyframes axisRotate1 {
   0% {
-    transform: translate(0px, 7px) rotate(0deg);
+    transform: translate(-50%, -50%) rotate(0deg);
     opacity: 0.8;
   }
   33% {
-    transform: translate(0px, 7px) rotate(120deg);
+    transform: translate(-50%, -50%) rotate(120deg);
     opacity: 1;
   }
   66% {
-    transform: translate(0px, 7px) rotate(240deg);
+    transform: translate(-50%, -50%) rotate(240deg);
     opacity: 0.9;
   }
   100% {
-    transform: translate(0px, 7px) rotate(360deg);
+    transform: translate(-50%, -50%) rotate(360deg);
     opacity: 0.8;
   }
 }
 
 @keyframes axisRotate2 {
   0% {
-    transform: translate(7px, 0px) rotate(90deg);
+    transform: translate(-50%, -50%) rotate(90deg);
     opacity: 0.7;
   }
   33% {
-    transform: translate(7px, 0px) rotate(210deg);
+    transform: translate(-50%, -50%) rotate(210deg);
     opacity: 1;
   }
   66% {
-    transform: translate(7px, 0px) rotate(330deg);
+    transform: translate(-50%, -50%) rotate(330deg);
     opacity: 0.8;
   }
   100% {
-    transform: translate(7px, 0px) rotate(450deg);
+    transform: translate(-50%, -50%) rotate(450deg);
     opacity: 0.7;
   }
 }
@@ -1030,53 +994,29 @@ body {
   }
 }
 
-/* Deformed Coordinate Icon Gradient */
+/* Deformed Coordinate Icon - Carved distorted grid */
 .icon-gradient.deformed {
-  background: radial-gradient(
-      circle at 30% 70%,
-      rgba(255, 100, 100, 0.9) 0%,
-      rgba(255, 50, 50, 0.7) 30%,
-      transparent 60%
-    ),
-    linear-gradient(135deg, #ff6666, #cc0000);
+  background: transparent;
 }
 
 .icon-gradient.deformed::before {
   content: "";
   position: absolute;
-  top: 2px;
-  left: 2px;
-  width: calc(100% - 4px);
-  height: calc(100% - 4px);
-  background: radial-gradient(
-    ellipse at 20% 20%,
-    rgba(255, 255, 255, 0.6) 0%,
-    rgba(255, 255, 255, 0.1) 30%,
-    rgba(255, 100, 100, 0.3) 60%,
-    transparent 100%
-  );
-  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
   animation: deformedPulse1 3.5s ease-in-out infinite;
 }
 
 .icon-gradient.deformed::after {
   content: "";
   position: absolute;
-  top: 6px;
-  left: 6px;
-  width: calc(100% - 12px);
-  height: calc(100% - 12px);
-  background: radial-gradient(
-    ellipse at 80% 80%,
-    rgba(255, 255, 255, 0.7) 0%,
-    rgba(255, 255, 255, 0.1) 30%,
-    rgba(255, 150, 150, 0.3) 60%,
-    transparent 100%
-  );
-  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%;
   animation: deformedPulse2 4s ease-in-out infinite;
-  box-shadow: 0 0 6px rgba(255, 100, 100, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 @keyframes deformedPulse1 {
@@ -1103,65 +1043,35 @@ body {
   }
 }
 
-/* Individual Squares Icon Gradient */
+/* Individual Squares Icon - Carved square pattern */
 .icon-gradient.squares {
-  background: linear-gradient(
-    45deg,
-    #ff6b6b 0%,
-    #4ecdc4 25%,
-    #45b7d1 50%,
-    #96ceb4 75%,
-    #ffd93d 100%
-  );
-  background-size: 300% 300%;
-  animation: squaresFlow 5s ease-in-out infinite;
+  background: transparent;
 }
 
 .icon-gradient.squares::before {
   content: "";
   position: absolute;
-  top: 2px;
-  left: 2px;
-  width: calc(100% - 4px);
-  height: calc(100% - 4px);
-  background: radial-gradient(
-    circle at 25% 25%,
-    rgba(255, 255, 255, 0.8) 0%,
-    rgba(255, 255, 255, 0.1) 30%,
-    transparent 60%
-  );
-  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  top: 25%;
+  left: 25%;
   animation: squaresPulse1 3s ease-in-out infinite;
+  box-shadow: 12px 0 0 -1.5px rgba(255, 255, 255, 0.12),
+    0 12px 0 -1.5px rgba(255, 255, 255, 0.14),
+    12px 12px 0 -1.5px rgba(255, 255, 255, 0.1);
 }
 
 .icon-gradient.squares::after {
   content: "";
   position: absolute;
-  top: 6px;
-  left: 6px;
-  width: calc(100% - 12px);
-  height: calc(100% - 12px);
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.7) 0%,
-    rgba(255, 255, 255, 0.2) 50%,
-    rgba(255, 255, 255, 0.7) 100%
-  );
-  border-radius: 50%;
+  width: 16px;
+  height: 1px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  top: 70%;
+  left: 50%;
+  transform: translateX(-50%);
   animation: squaresPulse2 2.5s linear infinite;
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
-}
-
-@keyframes squaresFlow {
-  0% {
-    background-position: 0% 0%;
-  }
-  50% {
-    background-position: 100% 100%;
-  }
-  100% {
-    background-position: 0% 0%;
-  }
 }
 
 @keyframes squaresPulse1 {
@@ -1190,52 +1100,35 @@ body {
   }
 }
 
-/* Infinite Knot Icon Gradient */
+/* Infinite Knot Icon - Carved infinity symbol */
 .icon-gradient.knot {
-  background: conic-gradient(
-    from 45deg,
-    #ff6666 0deg,
-    #6666ff 120deg,
-    #ff6666 240deg,
-    #6666ff 360deg
-  );
-  animation: knotRotate 4s linear infinite;
+  background: transparent;
 }
 
 .icon-gradient.knot::before {
-  content: "";
+  content: "∞";
   position: absolute;
-  top: 2px;
-  left: 2px;
-  width: calc(100% - 4px);
-  height: calc(100% - 4px);
-  background: radial-gradient(
-    ellipse at 40% 40%,
-    rgba(255, 255, 255, 0.8) 0%,
-    rgba(255, 255, 255, 0.1) 30%,
-    rgba(255, 102, 102, 0.3) 60%,
-    transparent 100%
-  );
-  border-radius: 50%;
-  animation: knotWeave1 3s ease-in-out infinite;
+  font-size: 20px;
+  font-weight: 300;
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.15);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: knotRotate 4s linear infinite;
 }
 
 .icon-gradient.knot::after {
   content: "";
   position: absolute;
-  top: 6px;
-  left: 6px;
-  width: calc(100% - 12px);
-  height: calc(100% - 12px);
-  background: radial-gradient(
-    ellipse at 60% 60%,
-    rgba(102, 102, 255, 0.7) 0%,
-    rgba(102, 102, 255, 0.1) 30%,
-    transparent 60%
-  );
+  width: 6px;
+  height: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 50%;
-  animation: knotWeave2 3.5s ease-in-out infinite reverse;
-  box-shadow: 0 0 10px rgba(102, 102, 255, 0.3);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: knotWeave1 3s ease-in-out infinite;
 }
 
 @keyframes knotRotate {
@@ -1263,73 +1156,37 @@ body {
   }
 }
 
-@keyframes knotWeave2 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-    opacity: 0.7;
-  }
-  33% {
-    transform: translate(-2px, 2px) scale(1.1);
-    opacity: 1;
-  }
-  66% {
-    transform: translate(2px, -2px) scale(0.9);
-    opacity: 0.8;
-  }
-}
-
-/* Wire Network Icon Gradient */
+/* Wire Network Icon - Carved network nodes */
 .icon-gradient.wire {
-  background: linear-gradient(90deg, #ffd700 0%, #00ffff 50%, #ffd700 100%);
-  background-size: 200% 100%;
-  animation: wireFlow 3s linear infinite;
+  background: transparent;
 }
 
 .icon-gradient.wire::before {
   content: "";
   position: absolute;
-  top: 2px;
-  left: 2px;
-  width: calc(100% - 4px);
-  height: calc(100% - 4px);
-  background: radial-gradient(
-    circle at 30% 30%,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(255, 255, 255, 0.1) 30%,
-    rgba(255, 215, 0, 0.3) 60%,
-    transparent 100%
-  );
+  width: 4px;
+  height: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 50%;
+  top: 30%;
+  left: 30%;
   animation: wirePulse1 2s ease-in-out infinite;
+  box-shadow: 12px 0 0 -1px rgba(255, 255, 255, 0.12),
+    6px 12px 0 -1px rgba(255, 255, 255, 0.14),
+    0 12px 0 -1px rgba(255, 255, 255, 0.1);
 }
 
 .icon-gradient.wire::after {
   content: "";
   position: absolute;
-  top: 6px;
-  left: 6px;
-  width: calc(100% - 12px);
-  height: calc(100% - 12px);
-  background: radial-gradient(
-    circle at 70% 70%,
-    rgba(0, 255, 255, 0.8) 0%,
-    rgba(0, 255, 255, 0.1) 30%,
-    transparent 60%
-  );
-  border-radius: 50%;
+  width: 16px;
+  height: 1px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  top: 35%;
+  left: 30%;
+  transform: rotate(45deg);
   animation: wirePulse2 2.5s ease-in-out infinite;
-  box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
-  border: 1px solid rgba(255, 215, 0, 0.3);
-}
-
-@keyframes wireFlow {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+  transform-origin: left center;
 }
 
 /* Ripple effect animation */
