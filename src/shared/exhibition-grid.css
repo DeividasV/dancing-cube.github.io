@@ -898,10 +898,18 @@ body {
   font-weight: 600;
   letter-spacing: 0.1em;
   margin: 0;
-  background: linear-gradient(135deg, var(--text-primary), var(--accent-color));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  /* Carved/hollow effect with darker border matching glass cards */
+  color: transparent;
+  background: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.15);
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.3), 0 2px 4px rgba(0, 0, 0, 0.8),
+    0 -1px 1px rgba(255, 255, 255, 0.1);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+  /* Fallback for browsers that don't support text-stroke */
+  @supports not (-webkit-text-stroke: 1px white) {
+    color: rgba(255, 255, 255, 0.6);
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.4), 0 2px 4px rgba(0, 0, 0, 0.7);
+  }
 }
 
 /* Responsive Design */
