@@ -4,13 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>1NF1N1T3_KN0T - Dancing Cube Exhibition</title>
-    <meta
-      name="description"
-      content="3D Infinite knot animation with dynamic generation and camera controls"
-      <!--
-      Favicon
-      --
-    />
+    <meta name="description" content="Infinite knot mathematical visualization" />
+
+    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="../../favicon.ico" />
     <link
       rel="icon"
@@ -34,44 +30,69 @@
       sizes="180x180"
       href="../../assets/images/apple-touch-icon.png"
     />
-    />
 
-    <!-- Preload fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
     <!-- Stylesheets -->
     <link rel="stylesheet" href="../../src/css/exhibition-framework.css" />
   </head>
   <body>
-    <!-- Loading indicator -->
-    <div class="loading">INITIALIZING 3D KNOTS...</div>
-    <!-- Top Menu Component -->
-    <div class="top-menu">
-      <div class="nav-left">
-        <div class="menu-title">1NF1N1T3_KN0T</div>
-      </div>
-      <div class="nav-right">
-        <button class="nav-button prev-button" data-nav="prev">PREV</button>
-        <button class="nav-button next-button" data-nav="next">NEXT</button>
-        <button class="nav-button home-button" data-nav="home">HOME</button>
+    <!-- App Container -->
+    <div id="app" class="app-container">
+      <!-- Top Menu -->
+      <nav class="top-menu">
+        <div class="nav-left">
+          <a
+            href="../../index.html"
+            class="logo"
+            title="Return to Exhibition Gallery"
+          >
+            D4NC1NG_CUB3S
+          </a>
+          <div class="menu-title">1NF1N1T3_KN0T</div>
+        </div>
+        <div class="nav-right">
+          <button
+            class="nav-button sound-toggle-button"
+            onclick="window.toggleAppSound()"
+            title="Sound OFF - Click to enable"
+          >
+            🔇
+          </button>
+          <button class="nav-button prev-button" data-nav="prev">PREV</button>
+          <button class="nav-button next-button" data-nav="next">NEXT</button>
+          <button class="nav-button home-button" data-nav="home">HOME</button>
+        </div>
+      </nav>
+
+      <!-- Exhibition Window -->
+      <div class="exhibition-window">
+        <!-- Loading Animation -->
+        <div class="loading-container">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">Loading 1NF1N1T3_KN0T...</div>
+        </div>
+
+        <!-- Exhibition Content Area -->
+        <div class="exhibition-container">
+          <div class="exhibition-frame">
+            <div id="container" class="exhibition-canvas"></div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Exhibition Container -->
-    <div class="exhibition-container">
-      <div class="exhibition-frame">
-        <canvas id="knotCanvas" class="exhibition-canvas"></canvas>
-      </div>
-    </div>
-    <!-- Scripts -->
+    <!-- Core Scripts -->
     <script src="../../assets/lib/three.min.js"></script>
+
+    <!-- Framework Components -->
+    <script src="../../src/components/TopMenu.js"></script>
+    <script src="../../src/components/ExhibitionWindow.js"></script>
+    <script src="../../src/core/ComponentManager.js"></script>
+    <script src="../../src/core/AudioSystem.js"></script>
 
     <!-- Exhibition Framework -->
     <script src="../../src/legacy/exhibition-compatibility.js"></script>
+
+    <!-- Exhibition Script (will be replaced per exhibition) -->
     <script src="./infinite-knot.js"></script>
   </body>
 </html>

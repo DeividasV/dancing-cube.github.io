@@ -4,52 +4,95 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>W1R3_N3TW0RK - Dancing Cube Exhibition</title>
-    <meta
-      name="description"
-      content="Interactive wire pulse network system with electromagnetic effects"
+    <meta name="description" content="Interactive wire pulse network system with electromagnetic effects" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
-    <link rel="icon" type="image/svg+xml" href="../../assets/images/favicon.svg">
-    <link rel="icon" type="image/png" sizes="32x32" href="../../assets/images/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="../../assets/images/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="../../assets/images/apple-touch-icon.png">
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="../../assets/images/favicon.svg"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="../../assets/images/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="../../assets/images/favicon-16x16.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="../../assets/images/apple-touch-icon.png"
     />
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="../../src/css/exhibition-framework.css" />
   </head>
   <body>
-    <!-- Loading Animation -->
-    <div class="loading-container">
-      <div class="loading-spinner"></div>
-      <div class="loading-text">Loading W1R3_N3TW0RK...</div>
-    </div>
-    <!-- Top Menu Component -->
-    <div class="top-menu">
-      <div class="nav-left">
-        <div class="menu-title">W1R3_N3TW0RK</div>
-      </div>
-      <div class="nav-right">
-        <button class="nav-button sound-toggle-button" onclick="window.toggleAppSound()" title="Sound OFF - Click to enable">🔇</button>
-        <button class="nav-button prev-button" data-nav="prev">PREV</button>
-        <button class="nav-button next-button" data-nav="next">NEXT</button>
-        <button class="nav-button home-button" data-nav="home">HOME</button>
-      </div>
-    </div>
-    <!-- Exhibition Container -->
-    <div class="exhibition-container">
-      <div class="exhibition-frame">
-        <div class="wire-network exhibition-canvas">
-          <div class="wire-container" id="wire-container">
-            <!-- Wires will be generated here by JavaScript -->
+    <!-- App Container -->
+    <div id="app" class="app-container">
+      <!-- Top Menu -->
+      <nav class="top-menu">
+        <div class="nav-left">
+          <a
+            href="../../index.html"
+            class="logo"
+            title="Return to Exhibition Gallery"
+          >
+            D4NC1NG_CUB3S
+          </a>
+          <div class="menu-title">W1R3_N3TW0RK</div>
+        </div>
+        <div class="nav-right">
+          <button
+            class="nav-button sound-toggle-button"
+            onclick="window.toggleAppSound()"
+            title="Sound OFF - Click to enable"
+          >
+            🔇
+          </button>
+          <button class="nav-button prev-button" data-nav="prev">PREV</button>
+          <button class="nav-button next-button" data-nav="next">NEXT</button>
+          <button class="nav-button home-button" data-nav="home">HOME</button>
+        </div>
+      </nav>
+
+      <!-- Exhibition Window -->
+      <div class="exhibition-window">
+        <!-- Loading Animation -->
+        <div class="loading-container">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">Loading W1R3_N3TW0RK...</div>
+        </div>
+
+        <!-- Exhibition Content Area -->
+        <div class="exhibition-container">
+          <div class="exhibition-frame">
+            <div id="container" class="exhibition-canvas"></div>
           </div>
         </div>
-        <!-- Scripts -->
+      </div>
+    </div>
+
+    <!-- Core Scripts -->
     <script src="../../assets/lib/three.min.js"></script>
-    
+
+    <!-- Framework Components -->
+    <script src="../../src/components/TopMenu.js"></script>
+    <script src="../../src/components/ExhibitionWindow.js"></script>
+    <script src="../../src/core/ComponentManager.js"></script>
+    <script src="../../src/core/AudioSystem.js"></script>
+
     <!-- Exhibition Framework -->
     <script src="../../src/legacy/exhibition-compatibility.js"></script>
+
+    <!-- Exhibition Script (will be replaced per exhibition) -->
     <script src="./wire-network.js"></script>
   </body>
 </html>

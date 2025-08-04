@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GL4SS_SPH3R3S - Dancing Cube Exhibition</title>
+    <meta
+      name="description"
+      content="Interactive floating glass spheres with dynamic lighting, particles, and musical notes in an elegant 3D environment."
+    />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="../../assets/images/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../assets/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../assets/images/apple-touch-icon.png">
+
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../../src/css/exhibition-framework.css" />
+  </head>
+  <body>
+    <!-- Loading indicator -->
+    <div class="loading">INITIALIZING GL4SS SPHERES...</div>
+    <!-- Top Menu Component -->
+    <div class="top-menu">
+      <div class="nav-left">
+        <div class="menu-title">GL4SS_SPH3R3S</div>
+      </div>
+      <div class="nav-right">
+        <button class="nav-button prev-button" data-nav="prev">PREV</button>
+        <button class="nav-button next-button" data-nav="next">NEXT</button>
+        <button class="nav-button home-button" data-nav="home">HOME</button>
+      </div>
+    </div>
+      </div>
+    </div>
+    <!-- Exhibition Container -->
+    <div class="exhibition-container">
+      <div class="exhibition-frame">
+        <div class="scene exhibition-canvas">
+          <div class="glass-ball ball1"></div>
+          <div class="glass-ball ball2"></div>
+          <div class="glass-ball ball3"></div>
+          <!-- Light rays -->
+          <div
+            class="light-ray"
+            style="left: 20%; top: 10%; animation-delay: 0s"
+          ></div>
+          <div
+            class="light-ray"
+            style="right: 25%; top: 15%; animation-delay: -1s"
+          ></div>
+          <div
+            class="light-ray"
+            style="left: 60%; top: 5%; animation-delay: -2s"
+          ></div>
+          <div
+            class="light-ray"
+            style="left: 45%; bottom: 20%; animation-delay: -3s"
+          ></div>
+          <div
+            class="light-ray"
+            style="right: 45%; bottom: 30%; animation-delay: -4s"
+          ></div>
+          <!-- Swan reflections inside balls -->
+          <div
+            class="swan-reflection"
+            style="left: 18%; top: 25%; animation-delay: 0s"
+          ></div>
+          <div
+            class="swan-reflection"
+            style="right: 22%; top: 35%; animation-delay: -4s"
+          ></div>
+          <div
+            class="swan-reflection"
+            style="left: 52%; bottom: 30%; animation-delay: -8s"
+          ></div>
+        </div>
+      </div>
+    </div>
+        <!-- Scripts -->
+    <script src="../../assets/lib/three.min.js"></script>
+    
+    <!-- Exhibition Framework -->
+    <script src="../../src/legacy/exhibition-compatibility.js"></script>
+    <script src="./glass-spheres.js"></script>
+  </body>
+</html>
