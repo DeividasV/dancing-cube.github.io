@@ -131,27 +131,64 @@ body {
 
 /* Constellation Section */
 .constellation-section {
-  min-height: 80vh;
-  padding: 1rem 2rem 4rem 2rem;
+  min-height: 90vh;
+  padding: 2rem;
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.constellation-container {
-  position: relative;
+/* Exhibitions Grid */
+.exhibitions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 2rem;
   width: 100%;
-  max-width: 1200px;
-  height: 80vh;
+  max-width: 1400px;
   margin: 0 auto;
+  padding: 2rem 0;
+  min-height: 70vh;
+}
+
+/* Featured Card Enhancement */
+.featured-card {
+  grid-column: span 1;
+  grid-row: span 1;
+  position: relative;
+}
+
+.featured-card::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(
+    45deg,
+    var(--accent-color),
+    transparent,
+    var(--accent-color)
+  );
+  border-radius: 18px;
+  z-index: -1;
+  opacity: 0.6;
+  animation: featuredGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes featuredGlow {
+  0% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0.8;
+  }
 }
 
 /* Glass Cards */
 .glass-card {
-  position: absolute;
-  width: 280px;
-  height: 200px;
+  position: relative;
+  width: 100%;
+  height: 220px;
   background: var(--glass-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -159,25 +196,16 @@ body {
   border-radius: 16px;
   padding: 1.5rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: grab;
+  cursor: pointer;
   overflow: hidden;
   animation: cardFloat 6s ease-in-out infinite;
   user-select: none;
   z-index: 1;
 }
 
-/* Dragging states */
-.glass-card.dragging {
-  cursor: grabbing;
-  z-index: 1000;
-  transform: scale(1.05) rotate(2deg);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(0, 255, 136, 0.4);
-  animation: none;
-}
-
-.glass-card.moved {
-  z-index: 100;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 255, 136, 0.2);
+.glass-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3), 0 0 25px rgba(0, 255, 136, 0.3);
 }
 
 .glass-card::before {
@@ -876,56 +904,24 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
-/* Constellation Lines */
-.constellation-lines {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.constellation-lines line {
-  animation: lineFlicker 4s ease-in-out infinite;
-}
-
-.constellation-lines line:nth-child(1) {
-  animation-delay: 0s;
-}
-.constellation-lines line:nth-child(2) {
-  animation-delay: 0.8s;
-}
-.constellation-lines line:nth-child(3) {
-  animation-delay: 1.6s;
-}
-.constellation-lines line:nth-child(4) {
-  animation-delay: 2.4s;
-}
-.constellation-lines line:nth-child(5) {
-  animation-delay: 3.2s;
-}
-
-@keyframes lineFlicker {
-  0%,
-  100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
 /* Responsive Design */
+@media (max-width: 1200px) {
+  .exhibitions-grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+}
+
 @media (max-width: 1024px) {
-  .constellation-container {
-    height: 70vh;
+  .exhibitions-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    max-width: 1000px;
   }
 
   .glass-card {
-    width: 240px;
-    height: 180px;
+    height: 200px;
     padding: 1.2rem;
   }
 
@@ -942,6 +938,13 @@ body {
 @media (max-width: 768px) {
   .constellation-section {
     padding: 1rem;
+    min-height: auto;
+  }
+
+  .exhibitions-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 1rem 0;
   }
 
   .hero {
@@ -959,29 +962,28 @@ body {
     letter-spacing: 0.1em;
   }
 
-  .constellation-container {
-    height: auto;
-    min-height: 60vh;
-  }
-
   .glass-card {
-    position: relative !important;
-    width: 100%;
-    max-width: 300px;
-    margin: 1rem auto;
-    top: auto !important;
-    left: auto !important;
-    right: auto !important;
-    bottom: auto !important;
-    display: block;
+    height: 180px;
+    padding: 1rem;
   }
 
-  .constellation-lines {
-    display: none;
+  .card-icon {
+    width: 45px;
+    height: 45px;
+  }
+
+  .card-title {
+    font-size: 0.95rem;
   }
 }
 
 @media (max-width: 480px) {
+  .exhibitions-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0.5rem 0;
+  }
+
   .hero {
     min-height: 40vh;
     padding: 2rem 0 0.5rem 0;
@@ -1006,10 +1008,8 @@ body {
   }
 
   .glass-card {
-    width: 100%;
     height: 160px;
     padding: 1rem;
-    margin: 0.8rem auto;
   }
 
   .card-icon {

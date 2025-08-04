@@ -1,6 +1,6 @@
-// Dancing Cube - Constellation Cards JavaScript
+// Dancing Cube - Grid Exhibition Cards JavaScript
 
-class ConstellationCards {
+class ExhibitionGrid {
   constructor() {
     this.cards = [];
     this.mousePosition = { x: 0, y: 0 };
@@ -33,21 +33,9 @@ class ConstellationCards {
     const cardElements = document.querySelectorAll(".glass-card");
 
     cardElements.forEach((card, index) => {
-      const rect = card.getBoundingClientRect();
-      const container = document.querySelector(".constellation-container");
-      const containerRect = container.getBoundingClientRect();
-
       const cardData = {
         element: card,
         index: index,
-        originalPosition: {
-          x: ((rect.left - containerRect.left) / containerRect.width) * 100,
-          y: ((rect.top - containerRect.top) / containerRect.height) * 100,
-        },
-        currentPosition: {
-          x: ((rect.left - containerRect.left) / containerRect.width) * 100,
-          y: ((rect.top - containerRect.top) / containerRect.height) * 100,
-        },
         targetPosition: {
           x: ((rect.left - containerRect.left) / containerRect.width) * 100,
           y: ((rect.top - containerRect.top) / containerRect.height) * 100,
