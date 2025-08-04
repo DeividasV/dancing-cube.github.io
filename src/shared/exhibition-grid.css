@@ -59,80 +59,60 @@ body {
 
 /* Hero Section */
 .hero {
-  min-height: 60vh;
+  min-height: 35vh;
   height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   z-index: 1;
-  padding: 2rem 0 1rem 0;
+  padding: 1rem 0 0.5rem 0;
   overflow: visible;
 }
 
 .hero-content {
   text-align: center;
   max-width: 800px;
-  padding: 2rem;
+  padding: 1rem;
   margin: auto;
+  position: relative;
 }
 
 .hero-title {
   font-size: clamp(2.5rem, 8vw, 6rem);
   font-weight: 800;
-  background: linear-gradient(
-    135deg,
-    var(--gradient-start),
-    var(--gradient-end)
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: transparent;
+  background: transparent;
+  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.15);
+  text-shadow: 0 0 12px rgba(0, 255, 136, 0.3), 0 3px 6px rgba(0, 0, 0, 0.8),
+    0 -1px 2px rgba(255, 255, 255, 0.1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  margin-bottom: 2rem;
-  text-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+  margin-bottom: 1rem;
   animation: titlePulse 3s ease-in-out infinite alternate;
   line-height: 1.1;
   word-break: keep-all;
   overflow: visible;
+  position: relative;
+  z-index: 1;
 }
 
 @keyframes titlePulse {
   0% {
-    text-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+    text-shadow: 0 0 12px rgba(0, 255, 136, 0.3), 0 3px 6px rgba(0, 0, 0, 0.8),
+      0 -1px 2px rgba(255, 255, 255, 0.1);
   }
   100% {
-    text-shadow: 0 0 50px rgba(0, 255, 136, 0.6);
-  }
-}
-
-.title-line {
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--accent-color),
-    transparent
-  );
-  margin: 2rem auto;
-  animation: lineGlow 2s ease-in-out infinite alternate;
-}
-
-@keyframes lineGlow {
-  0% {
-    box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
-  }
-  100% {
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5), 0 3px 6px rgba(0, 0, 0, 0.8),
+      0 -1px 2px rgba(255, 255, 255, 0.2);
   }
 }
 
 /* Constellation Section */
 .constellation-section {
   min-height: 90vh;
-  padding: 2rem;
+  padding: 1rem;
   position: relative;
   display: flex;
   align-items: center;
