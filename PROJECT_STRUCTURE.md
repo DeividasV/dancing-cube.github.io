@@ -5,12 +5,12 @@
 ```
 dancing-cube.github.io/
 ├── 🏠 ROOT FILES
-│   ├── index.html              # Main gallery/homepage
+│   ├── index.html              # Main exhibition grid homepage
 │   ├── package.json            # Project metadata
 │   ├── README.md              # Project documentation
 │   ├── favicon.ico            # Website favicon
 │   ├── site.webmanifest       # PWA manifest
-│   └── .gitignore            # Git ignore rules
+│   └── template.html          # Exhibition template
 │
 ├── 🎨 ASSETS/
 │   ├── images/               # Favicons and images
@@ -21,18 +21,15 @@ dancing-cube.github.io/
 ├── 🎯 EXHIBITIONS/           # Each exhibition in its own folder
 │   ├── quantum-bounce/
 │   │   ├── index.html       # Exhibition HTML
-│   │   ├── quantum-bounce.js # Exhibition logic
-│   │   └── legacy-styles.css # Old styles (if needed)
+│   │   └── quantum-bounce.js # Exhibition logic
 │   │
 │   ├── morphing-forms/
 │   │   ├── index.html
-│   │   ├── morphing-forms.js
-│   │   └── (no legacy styles)
+│   │   └── morphing-forms.js
 │   │
 │   ├── fluid-dynamics/
 │   │   ├── index.html
-│   │   ├── fluid-dynamics.js
-│   │   └── legacy-styles.css
+│   │   └── fluid-dynamics.js
 │   │
 │   ├── wire-network/
 │   ├── individual-squares/
@@ -58,15 +55,19 @@ dancing-cube.github.io/
 │   │   └── exhibition-framework.css # Unified exhibition styles
 │   │
 │   ├── shared/             # Shared homepage assets
-│   │   ├── constellation-cards.css # Homepage styles
-│   │   └── constellation-cards.js  # Homepage logic
+│   │   ├── exhibition-grid.css # Homepage grid styles
+│   │   └── exhibition-grid.js  # Homepage grid logic
 │   │
-│   ├── legacy/             # Old code (for reference)
-│   │   ├── top-menu.js
-│   │   ├── shared-controls.js
-│   │   └── shared-navigation.css
+│   ├── legacy/             # Legacy compatibility
+│   │   └── exhibition-compatibility.js # Backward compatibility
 │   │
 │   └── README.md           # Framework documentation
+│
+├── 🔧 SCRIPTS/             # Development utilities
+│   ├── create_exhibition.sh # Creates new exhibitions
+│   ├── verify_exhibitions.sh # Verifies structure
+│   ├── test_exhibitions.sh # Tests exhibitions
+│   └── README.md          # Scripts documentation
 │
 └── 📚 DOCS/
     └── DEVELOPMENT.md      # Development guide
@@ -77,8 +78,9 @@ dancing-cube.github.io/
 ### ✅ **Clean Structure**
 
 - Each exhibition has its own folder
-- No duplicate files or folders
+- Responsive grid layout for homepage
 - Clear separation between framework and exhibitions
+- Development scripts organized separately
 - Easy to navigate and maintain
 
 ### ✅ **URL Structure**
@@ -91,12 +93,14 @@ dancing-cube.github.io/
 
 - **`index.html`** in each exhibition folder for clean URLs
 - **Framework files** centralized in `src/`
-- **Legacy files** preserved in `src/legacy/` for reference
+- **Legacy files** preserved for compatibility
 - **Shared assets** in logical locations
+- **Development scripts** in `scripts/` directory
 
 ### ✅ **Development Benefits**
 
-- **Easy to add new exhibitions**: Just create a new folder
+- **Responsive grid layout**: 4x3 on large screens, adaptive on smaller
+- **Easy to add new exhibitions**: Use creation scripts
 - **Consistent framework**: All exhibitions use the same base
 - **Clean URLs**: No `.html` extensions needed
 - **Version control**: Each exhibition is self-contained
