@@ -8,56 +8,69 @@ class FuturisticGlassOrbs {
     this.hologramLines = [];
     this.scanLines = [];
     this.time = 0;
-    this.audioContext = null;
-    this.soundEnabled = false;
 
-    this.initAudio();
+    // Use unified AudioSystem
+    this.audioSystem = new AudioSystem();
+    this.soundEnabled = false; // Default to OFF
+    this.ambientSoundId = null;
+
+    this.initializeExhibition();
+  }
+
+  initializeExhibition() {
     this.setupEnvironment();
     this.createOrbs();
     this.createEnergyFields();
     this.createHologramLines();
     this.createScanLines();
     this.createDataStreams();
+    this.createParticleEffects();
     this.initInteractions();
     this.animate();
   }
 
-  initAudio() {
-    try {
-      this.audioContext = new (window.AudioContext ||
-        window.webkitAudioContext)();
-    } catch (e) {
-      console.warn("Audio not supported");
+  // Audio control
+  toggleSound(enabled) {
+    this.soundEnabled = enabled;
+    this.audioSystem.toggle(enabled);
+
+    if (enabled) {
+      // Start ambient sci-fi atmosphere
+      this.ambientSoundId = this.audioSystem.createAmbientPad(
+        110,
+        [1, 1.5, 2.5, 3.5]
+      );
+    } else {
+      if (this.ambientSoundId) {
+        this.audioSystem.stopAmbientSound(this.ambientSoundId);
+        this.ambientSoundId = null;
+      }
     }
   }
 
   playHologramSound(frequency = 400, duration = 0.2) {
-    if (!this.soundEnabled || !this.audioContext) return;
+    if (!this.soundEnabled) return;
 
-    try {
-      const oscillator = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
+    const adjustedFreq = frequency + (Math.random() - 0.5) * 100;
+    this.audioSystem.createInteractionSound(
+      adjustedFreq,
+      "triangle",
+      duration,
+      0.08
+    );
+  }
 
-      oscillator.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
+  playEnergySound(intensity = 0.5) {
+    if (!this.soundEnabled) return;
 
-      oscillator.frequency.setValueAtTime(
-        frequency,
-        this.audioContext.currentTime
-      );
-      oscillator.type = "sine";
-
-      gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.01,
-        this.audioContext.currentTime + duration
-      );
-
-      oscillator.start();
-      oscillator.stop(this.audioContext.currentTime + duration);
-    } catch (e) {
-      console.warn("Audio playback failed");
-    }
+    const frequency = 800 + intensity * 400;
+    const duration = 0.1 + intensity * 0.2;
+    this.audioSystem.createInteractionSound(
+      frequency,
+      "sawtooth",
+      duration,
+      0.06
+    );
   }
 
   setupEnvironment() {
@@ -280,10 +293,32 @@ class FuturisticGlassOrbs {
     }
   }
 
+  createParticleEffects() {
+    // Add ambient floating particles
+    for (let i = 0; i < 30; i++) {
+      const particle = document.createElement("div");
+      particle.className = "ambient-particle";
+      particle.style.cssText = `
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.4);
+        border-radius: 50%;
+        pointer-events: none;
+        animation: floatParticle ${8 + Math.random() * 4}s ease-in-out infinite;
+        animation-delay: ${Math.random() * 4}s;
+        left: ${Math.random() * 100}%;
+        top: ${Math.random() * 100}%;
+        box-shadow: 0 0 2px rgba(255, 255, 255, 0.6);
+      `;
+      this.container.appendChild(particle);
+    }
+  }
+
   initInteractions() {
     this.orbs.forEach((orbData, index) => {
       orbData.element.addEventListener("mouseenter", () => {
-        orbData.element.style.transform = "scale(1.2)";
+        orbData.element.style.transform = "scale(1.1)";
         orbData.element.style.boxShadow = `
           0 0 30px rgba(0, 255, 255, 0.8),
           0 0 60px rgba(255, 0, 255, 0.6),
@@ -306,6 +341,7 @@ class FuturisticGlassOrbs {
           orbData.x + orbData.size / 2,
           orbData.y + orbData.size / 2
         );
+        this.playEnergySound(0.8);
         this.playHologramSound(600 + index * 100, 0.5);
       });
     });
@@ -452,13 +488,27 @@ style.textContent = `
 document.head.appendChild(style);
 
 // Global sound toggle function
-window.toggleAppSound = function () {
+window.toggleAppSound = function (enabled) {
   if (window.futuristicOrbs) {
-    window.futuristicOrbs.toggleSound();
+    window.futuristicOrbs.toggleSound(enabled);
   }
 };
 
 // Initialize when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   window.futuristicOrbs = new FuturisticGlassOrbs();
+
+  // Connect to existing sound button if present
+  const soundButton = document.querySelector(".sound-toggle-button");
+  if (soundButton) {
+    let soundEnabled = false;
+    soundButton.addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      window.futuristicOrbs.toggleSound(soundEnabled);
+      soundButton.textContent = soundEnabled ? "🔊" : "🔇";
+      soundButton.title = soundEnabled
+        ? "Sound ON - Click to disable"
+        : "Sound OFF - Click to enable";
+    });
+  }
 });

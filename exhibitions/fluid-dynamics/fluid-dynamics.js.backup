@@ -8,8 +8,8 @@ class FluidDynamicsApp {
     this.particles = [];
     this.isRunning = true;
 
-    // Audio system - initialize lazily
-    this.audioSystem = null;
+    // Audio system - using unified AudioSystem
+    this.audioSystem = new AudioSystem();
     this.soundEnabled = false; // Default to OFF
     this.ambientSoundId = null;
 
@@ -27,12 +27,6 @@ class FluidDynamicsApp {
     // Performance monitoring
     this.lastTime = 0;
 
-    // Camera tracking for audio
-    this.lastCameraPosition = { x: 0, y: 0, z: 50 };
-    this.cameraMovementTimer = 0;
-    this.visualIntensityTimer = 0;
-    this.depthSoundTimer = 0;
-
     // Enhanced visual effects
     this.flowTrails = [];
     this.vortexCenters = [];
@@ -43,78 +37,52 @@ class FluidDynamicsApp {
 
   // Audio control methods
   toggleSound(enabled) {
-    // Initialize AudioSystem lazily
-    if (!this.audioSystem && typeof AudioSystem !== "undefined") {
-      this.audioSystem = new AudioSystem();
-    }
-
     this.soundEnabled = enabled;
-
-    if (this.audioSystem) {
-      this.audioSystem.toggle(enabled);
-
-      if (enabled) {
-        // Start ambient underwater-like sound
-        this.ambientSoundId = this.audioSystem.createAmbientDrone(
-          60,
-          "sawtooth"
-        );
-      } else {
-        // Stop ambient sound
-        if (this.ambientSoundId) {
-          this.audioSystem.stopAmbientSound(this.ambientSoundId);
-          this.ambientSoundId = null;
-        }
+    this.audioSystem.toggle(enabled);
+    
+    if (enabled) {
+      // Start ambient underwater-like sound
+      this.ambientSoundId = this.audioSystem.createAmbientDrone(60, 'sawtooth');
+    } else {
+      // Stop ambient sound
+      if (this.ambientSoundId) {
+        this.audioSystem.stopAmbientSound(this.ambientSoundId);
+        this.ambientSoundId = null;
       }
     }
   }
 
   // Enhanced fluid interaction sound
   playFluidSound(velocity = 0.1, frequency = 300) {
-    if (!this.soundEnabled || !this.audioSystem) return;
-
+    if (!this.soundEnabled) return;
+    
     const adjustedFreq = frequency + (Math.random() - 0.5) * 100;
     const duration = 0.05 + velocity * 0.1;
     const volume = Math.min(0.02 + velocity * 0.03, 0.05);
-
-    this.audioSystem.createInteractionSound(
-      adjustedFreq,
-      "sine",
-      duration,
-      volume
-    );
+    
+    this.audioSystem.createInteractionSound(adjustedFreq, 'sine', duration, volume);
   }
 
   // Create a boundary collision sound
   playBoundarySound(velocity = 0.1) {
-    if (!this.soundEnabled || !this.audioSystem) return;
-
+    if (!this.soundEnabled) return;
+    
     const frequency = 150 + Math.random() * 100;
     const duration = 0.15;
     const volume = Math.min(0.02 + velocity * 0.04, 0.06);
-
-    this.audioSystem.createInteractionSound(
-      frequency,
-      "triangle",
-      duration,
-      volume
-    );
+    
+    this.audioSystem.createInteractionSound(frequency, 'triangle', duration, volume);
   }
 
   // Create a turbulence sound
   playTurbulenceSound() {
-    if (!this.soundEnabled || !this.audioSystem) return;
-
+    if (!this.soundEnabled) return;
+    
     const frequency = 200 + Math.random() * 200;
     const duration = 0.3;
     const volume = 0.08;
-
-    this.audioSystem.createInteractionSound(
-      frequency,
-      "sawtooth",
-      duration,
-      volume
-    );
+    
+    this.audioSystem.createInteractionSound(frequency, 'sawtooth', duration, volume);
   }
 
   // Create ambient camera movement sound
@@ -923,26 +891,5 @@ document.addEventListener("DOMContentLoaded", () => {
   setTimeout(() => {
     console.log("Initializing FluidDynamicsApp...");
     app = new FluidDynamicsApp();
-
-    // Make toggleSound globally accessible for the existing sound button
-    window.toggleAppSound = (enabled) => {
-      if (app) {
-        app.toggleSound(enabled);
-      }
-    };
-
-    // Connect to existing sound button if present
-    const soundButton = document.querySelector(".sound-toggle-button");
-    if (soundButton) {
-      let soundEnabled = false;
-      soundButton.addEventListener("click", () => {
-        soundEnabled = !soundEnabled;
-        app.toggleSound(soundEnabled);
-        soundButton.textContent = soundEnabled ? "🔊" : "🔇";
-        soundButton.title = soundEnabled
-          ? "Sound ON - Click to disable"
-          : "Sound OFF - Click to enable";
-      });
-    }
   }, 500);
 });

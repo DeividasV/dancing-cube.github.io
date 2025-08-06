@@ -19,6 +19,11 @@ if (typeof AudioSystem === "undefined") {
       this.isInitialized = false;
       this.activeNodes = new Set();
 
+      // Ambient sound system
+      this.ambientSources = new Map();
+      this.ambientGain = null;
+      this.effectsGain = null;
+
       // Performance monitoring
       this.analyser = null;
       this.frequencyData = null;
@@ -43,6 +48,15 @@ if (typeof AudioSystem === "undefined") {
           this.context.currentTime
         );
         this.masterGain.connect(this.context.destination);
+
+        // Create separate gain nodes for different audio types
+        this.ambientGain = this.context.createGain();
+        this.ambientGain.gain.setValueAtTime(0.4, this.context.currentTime);
+        this.ambientGain.connect(this.masterGain);
+
+        this.effectsGain = this.context.createGain();
+        this.effectsGain.gain.setValueAtTime(0.6, this.context.currentTime);
+        this.effectsGain.connect(this.masterGain);
 
         // Create analyser for visualizations
         this.analyser = this.context.createAnalyser();
@@ -443,6 +457,202 @@ if (typeof AudioSystem === "undefined") {
       if (semitone === undefined) return 440;
 
       return 440 * Math.pow(2, (semitone - 9 + (octave - 4) * 12) / 12);
+    }
+
+    // Ambient sound system
+    createAmbientDrone(frequency = 80, type = "sawtooth") {
+      if (!this.enabled || !this.context) return null;
+
+      const oscillator = this.context.createOscillator();
+      const filter = this.context.createBiquadFilter();
+      const gainNode = this.context.createGain();
+
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, this.context.currentTime);
+
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(frequency * 2, this.context.currentTime);
+      filter.Q.setValueAtTime(2, this.context.currentTime);
+
+      gainNode.gain.setValueAtTime(0, this.context.currentTime);
+      gainNode.gain.linearRampToValueAtTime(0.1, this.context.currentTime + 2);
+
+      oscillator.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(this.ambientGain);
+
+      oscillator.start();
+
+      const id = "ambient_drone_" + Date.now();
+      this.ambientSources.set(id, { oscillator, gainNode, filter });
+
+      return id;
+    }
+
+    createAmbientPad(baseFreq = 220, harmonics = [1, 1.5, 2, 2.5]) {
+      if (!this.enabled || !this.context) return null;
+
+      const nodes = [];
+      const masterGain = this.context.createGain();
+      masterGain.gain.setValueAtTime(0, this.context.currentTime);
+      masterGain.gain.linearRampToValueAtTime(
+        0.05,
+        this.context.currentTime + 3
+      );
+
+      harmonics.forEach((ratio, index) => {
+        const oscillator = this.context.createOscillator();
+        const gainNode = this.context.createGain();
+
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(
+          baseFreq * ratio,
+          this.context.currentTime
+        );
+        gainNode.gain.setValueAtTime(
+          1 / (harmonics.length * (index + 1)),
+          this.context.currentTime
+        );
+
+        oscillator.connect(gainNode);
+        gainNode.connect(masterGain);
+        oscillator.start();
+
+        nodes.push({ oscillator, gainNode });
+      });
+
+      masterGain.connect(this.ambientGain);
+
+      const id = "ambient_pad_" + Date.now();
+      this.ambientSources.set(id, { nodes, masterGain });
+
+      return id;
+    }
+
+    createAmbientNoise(type = "white", intensity = 0.05) {
+      if (!this.enabled || !this.context) return null;
+
+      const bufferSize = this.context.sampleRate * 2;
+      const noiseBuffer = this.context.createBuffer(
+        1,
+        bufferSize,
+        this.context.sampleRate
+      );
+      const output = noiseBuffer.getChannelData(0);
+
+      // Generate noise
+      for (let i = 0; i < bufferSize; i++) {
+        if (type === "pink") {
+          // Pink noise approximation
+          output[i] = (Math.random() - 0.5) * Math.pow(i / bufferSize, -0.5);
+        } else {
+          // White noise
+          output[i] = Math.random() * 2 - 1;
+        }
+      }
+
+      const whiteNoise = this.context.createBufferSource();
+      whiteNoise.buffer = noiseBuffer;
+      whiteNoise.loop = true;
+
+      const filter = this.context.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(1000, this.context.currentTime);
+
+      const gainNode = this.context.createGain();
+      gainNode.gain.setValueAtTime(0, this.context.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        intensity,
+        this.context.currentTime + 1
+      );
+
+      whiteNoise.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(this.ambientGain);
+
+      whiteNoise.start();
+
+      const id = "ambient_noise_" + Date.now();
+      this.ambientSources.set(id, { source: whiteNoise, filter, gainNode });
+
+      return id;
+    }
+
+    stopAmbientSound(id) {
+      const source = this.ambientSources.get(id);
+      if (!source) return;
+
+      if (source.oscillator) {
+        source.gainNode.gain.linearRampToValueAtTime(
+          0,
+          this.context.currentTime + 0.5
+        );
+        setTimeout(() => {
+          source.oscillator.stop();
+          this.ambientSources.delete(id);
+        }, 500);
+      } else if (source.nodes) {
+        source.masterGain.gain.linearRampToValueAtTime(
+          0,
+          this.context.currentTime + 0.5
+        );
+        setTimeout(() => {
+          source.nodes.forEach((node) => node.oscillator.stop());
+          this.ambientSources.delete(id);
+        }, 500);
+      } else if (source.source) {
+        source.gainNode.gain.linearRampToValueAtTime(
+          0,
+          this.context.currentTime + 0.5
+        );
+        setTimeout(() => {
+          source.source.stop();
+          this.ambientSources.delete(id);
+        }, 500);
+      }
+    }
+
+    stopAllAmbient() {
+      this.ambientSources.forEach((source, id) => {
+        this.stopAmbientSound(id);
+      });
+    }
+
+    // Enhanced effect creation
+    createInteractionSound(
+      frequency,
+      type = "sine",
+      duration = 0.1,
+      volume = 0.1
+    ) {
+      if (!this.enabled || !this.context) return;
+
+      const oscillator = this.context.createOscillator();
+      const gainNode = this.context.createGain();
+      const filter = this.context.createBiquadFilter();
+
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, this.context.currentTime);
+
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(frequency * 2, this.context.currentTime);
+
+      gainNode.gain.setValueAtTime(0, this.context.currentTime);
+      gainNode.gain.linearRampToValueAtTime(
+        volume,
+        this.context.currentTime + 0.01
+      );
+      gainNode.gain.exponentialRampToValueAtTime(
+        0.001,
+        this.context.currentTime + duration
+      );
+
+      oscillator.connect(filter);
+      filter.connect(gainNode);
+      gainNode.connect(this.effectsGain);
+
+      oscillator.start();
+      oscillator.stop(this.context.currentTime + duration);
     }
   }
 }

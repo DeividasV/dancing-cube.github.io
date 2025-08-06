@@ -1,76 +1,50 @@
 // DR0PL3TS_D4NC3 - Three.js Water Droplets System
 
-// Audio System
-class AudioSystem {
-  constructor() {
-    this.audioContext = null;
-    this.masterGain = null;
-    this.soundEnabled = false; // Default to OFF
-    this.ambientOscillators = [];
-    this.ambientTimers = [];
-    this.initAudio();
-  }
+// Audio system setup
+let audioSystem = new AudioSystem();
+let soundEnabled = false; // Default to OFF
+let ambientSoundId = null;
 
-  initAudio() {
-    try {
-      this.audioContext = new (window.AudioContext ||
-        window.webkitAudioContext)();
-      this.masterGain = this.audioContext.createGain();
-      this.masterGain.connect(this.audioContext.destination);
-      this.masterGain.gain.setValueAtTime(0.2, this.audioContext.currentTime);
-      console.log("Droplets audio context initialized");
-    } catch (e) {
-      console.log("Web Audio API not supported:", e);
-      this.soundEnabled = false;
+// Audio control
+function toggleSound(enabled) {
+  soundEnabled = enabled;
+  audioSystem.toggle(enabled);
+  
+  if (enabled) {
+    // Start ambient water atmosphere
+    ambientSoundId = audioSystem.createAmbientNoise('pink', 0.03);
+  } else {
+    if (ambientSoundId) {
+      audioSystem.stopAmbientSound(ambientSoundId);
+      ambientSoundId = null;
     }
   }
+}
 
-  playTone(frequency, duration = 0.3, type = "sine", volume = 0.1) {
-    if (!this.soundEnabled || !this.audioContext) return;
+// Water droplet sound
+function playDropletSound(frequency = 800, intensity = 0.5) {
+  if (!soundEnabled) return;
+  
+  const adjustedFreq = frequency + (Math.random() - 0.5) * 200;
+  const duration = 0.1 + intensity * 0.2;
+  const volume = Math.min(0.02 + intensity * 0.04, 0.08);
+  
+  audioSystem.createInteractionSound(adjustedFreq, 'sine', duration, volume);
+}
 
-    if (this.audioContext.state === "suspended") {
-      this.audioContext.resume();
-    }
+// Splash sound
+function playSplashSound(intensity = 0.3) {
+  if (!soundEnabled) return;
+  
+  const frequency = 400 + Math.random() * 300;
+  const duration = 0.2 + intensity * 0.1;
+  const volume = 0.05;
+  
+  audioSystem.createInteractionSound(frequency, 'triangle', duration, volume);
+}
 
-    try {
-      const oscillator = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
-      const filter = this.audioContext.createBiquadFilter();
-
-      oscillator.connect(filter);
-      filter.connect(gainNode);
-      gainNode.connect(this.masterGain);
-
-      oscillator.type = type;
-      oscillator.frequency.setValueAtTime(
-        frequency,
-        this.audioContext.currentTime
-      );
-
-      // Water-like filter
-      filter.type = "lowpass";
-      filter.frequency.setValueAtTime(2000, this.audioContext.currentTime);
-      filter.Q.setValueAtTime(1, this.audioContext.currentTime);
-
-      // Gentle envelope
-      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(
-        volume,
-        this.audioContext.currentTime + 0.03
-      );
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.001,
-        this.audioContext.currentTime + duration
-      );
-
-      oscillator.start(this.audioContext.currentTime);
-      oscillator.stop(this.audioContext.currentTime + duration);
-    } catch (e) {
-      console.log("Audio playback error:", e);
-    }
-  }
-
-  playWaterDropSound(intensity = 1.0) {
+// Water droplet simulation and visuals
+class WaterDropletSimulation {
     const frequencies = [400, 600, 800, 1000];
     const baseFreq =
       frequencies[Math.floor(Math.random() * frequencies.length)];

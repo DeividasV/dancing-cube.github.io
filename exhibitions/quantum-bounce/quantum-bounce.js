@@ -13,9 +13,10 @@ class BouncingCubesApp {
     this.CUBE_SIZE = 2.5;
     this.SPACING = 3.0;
 
-    // Use framework AudioSystem if available
-    this.audioSystem = window.exhibitionAudioSystem || null;
+    // Audio system
+    this.audioSystem = new AudioSystem();
     this.soundEnabled = false; // Default to OFF
+    this.ambientSoundId = null;
 
     // Mouse controls
     this.mouseX = 0;
@@ -32,65 +33,52 @@ class BouncingCubesApp {
     this.init();
   }
 
+  // Audio control
+  toggleSound(enabled) {
+    this.soundEnabled = enabled;
+    this.audioSystem.toggle(enabled);
+
+    if (enabled) {
+      // Start ambient quantum atmosphere
+      this.ambientSoundId = this.audioSystem.createAmbientDrone(100, "square");
+    } else {
+      if (this.ambientSoundId) {
+        this.audioSystem.stopAmbientSound(this.ambientSoundId);
+        this.ambientSoundId = null;
+      }
+    }
+  }
+
   // Create a subtle collision sound
   playCollisionSound(velocity = 0.1) {
-    if (!this.soundEnabled || !this.audioSystem) return;
+    if (!this.soundEnabled) return;
 
-    // Use framework audio system if available
-    if (this.audioSystem && this.audioSystem.playTone) {
-      const frequency = 220 + Math.random() * 110;
-      const duration = 0.15;
-      const volume = Math.min(0.05 + velocity * 0.1, 0.15);
-      this.audioSystem.playTone(frequency, duration, "sine", volume);
-      return;
-    }
+    const frequency = 220 + Math.random() * 110;
+    const duration = 0.15;
+    const volume = Math.min(0.05 + velocity * 0.1, 0.15);
 
-    // Fallback to basic audio implementation
-    try {
-      if (!this.audioContext) {
-        this.audioContext = new (window.AudioContext ||
-          window.webkitAudioContext)();
-      }
+    this.audioSystem.createInteractionSound(
+      frequency,
+      "square",
+      duration,
+      volume
+    );
+  }
 
-      const oscillator = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
-      const filterNode = this.audioContext.createBiquadFilter();
+  // Quantum phase sound
+  playQuantumSound(phase = 0.5) {
+    if (!this.soundEnabled) return;
 
-      oscillator.connect(filterNode);
-      filterNode.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
+    const frequency = 440 + phase * 220;
+    const duration = 0.3;
+    const volume = 0.04;
 
-      const baseFrequency = 220 + Math.random() * 110;
-      oscillator.frequency.setValueAtTime(
-        baseFrequency,
-        this.audioContext.currentTime
-      );
-      oscillator.frequency.exponentialRampToValueAtTime(
-        baseFrequency * 0.5,
-        this.audioContext.currentTime + 0.1
-      );
-
-      filterNode.type = "lowpass";
-      filterNode.frequency.setValueAtTime(800, this.audioContext.currentTime);
-      filterNode.Q.setValueAtTime(1, this.audioContext.currentTime);
-
-      const volume = Math.min(0.05 + velocity * 0.1, 0.15);
-      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(
-        volume,
-        this.audioContext.currentTime + 0.01
-      );
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.001,
-        this.audioContext.currentTime + 0.15
-      );
-
-      oscillator.type = "sine";
-      oscillator.start(this.audioContext.currentTime);
-      oscillator.stop(this.audioContext.currentTime + 0.15);
-    } catch (e) {
-      // Silent fail
-    }
+    this.audioSystem.createInteractionSound(
+      frequency,
+      "triangle",
+      duration,
+      volume
+    );
   }
 
   // Create a wall bounce sound (slightly different tone)
@@ -694,11 +682,32 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // Wait a bit for the top menu to create the container structure
+  // Wait a bit for the DOM to be ready
   setTimeout(() => {
     const container = document.getElementById("container");
     if (container) {
       app = new BouncingCubesApp();
+
+      // Make toggleSound globally accessible for the existing sound button
+      window.toggleAppSound = (enabled) => {
+        if (app) {
+          app.toggleSound(enabled);
+        }
+      };
+
+      // Connect to existing sound button if present
+      const soundButton = document.querySelector(".sound-toggle-button");
+      if (soundButton) {
+        let soundEnabled = false;
+        soundButton.addEventListener("click", () => {
+          soundEnabled = !soundEnabled;
+          app.toggleSound(soundEnabled);
+          soundButton.textContent = soundEnabled ? "🔊" : "🔇";
+          soundButton.title = soundEnabled
+            ? "Sound ON - Click to disable"
+            : "Sound OFF - Click to enable";
+        });
+      }
     } else {
       console.error("Container element not found for quantum-bounce");
     }

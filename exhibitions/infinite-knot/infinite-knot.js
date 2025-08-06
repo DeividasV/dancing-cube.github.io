@@ -6,6 +6,11 @@
 
 class InfiniteKnot3D {
   constructor() {
+    // Audio system
+    this.audioSystem = new AudioSystem();
+    this.soundEnabled = false; // Default to OFF
+    this.ambientSoundId = null;
+
     // Get or create canvas
     this.canvas =
       document.getElementById("knotCanvas") ||
@@ -35,6 +40,55 @@ class InfiniteKnot3D {
     this.initialize();
     this.hideLoading();
     this.setupEventListeners();
+  }
+
+  // Audio control
+  toggleSound(enabled) {
+    this.soundEnabled = enabled;
+    this.audioSystem.toggle(enabled);
+
+    if (enabled) {
+      // Start ambient hypnotic atmosphere
+      this.ambientSoundId = this.audioSystem.createAmbientDrone(65, "triangle");
+    } else {
+      if (this.ambientSoundId) {
+        this.audioSystem.stopAmbientSound(this.ambientSoundId);
+        this.ambientSoundId = null;
+      }
+    }
+  }
+
+  // Knot transformation sound
+  playKnotSound(intensity = 0.3) {
+    if (!this.soundEnabled) return;
+
+    const frequency = 330 + intensity * 220;
+    const duration = 0.4;
+    const volume = 0.03;
+
+    this.audioSystem.createInteractionSound(
+      frequency,
+      "sine",
+      duration,
+      volume
+    );
+  }
+
+  // Harmonic resonance sound
+  playResonanceSound(harmonicRatio = 1.5) {
+    if (!this.soundEnabled) return;
+
+    const baseFreq = 220;
+    const frequency = baseFreq * harmonicRatio;
+    const duration = 0.6;
+    const volume = 0.02;
+
+    this.audioSystem.createInteractionSound(
+      frequency,
+      "triangle",
+      duration,
+      volume
+    );
   }
 
   initialize() {
@@ -404,6 +458,31 @@ if (document.readyState === "loading") {
 } else {
   // DOM is already loaded
   initializeKnots();
+
+  // Connect to existing sound button if present
+  setTimeout(() => {
+    if (window.knotInstance) {
+      // Make toggleSound globally accessible
+      window.toggleAppSound = (enabled) => {
+        if (window.knotInstance) {
+          window.knotInstance.toggleSound(enabled);
+        }
+      };
+
+      const soundButton = document.querySelector(".sound-toggle-button");
+      if (soundButton) {
+        let soundEnabled = false;
+        soundButton.addEventListener("click", () => {
+          soundEnabled = !soundEnabled;
+          window.knotInstance.toggleSound(soundEnabled);
+          soundButton.textContent = soundEnabled ? "🔊" : "🔇";
+          soundButton.title = soundEnabled
+            ? "Sound ON - Click to disable"
+            : "Sound OFF - Click to enable";
+        });
+      }
+    }
+  }, 500);
 }
 
 // Also try window.onload as backup

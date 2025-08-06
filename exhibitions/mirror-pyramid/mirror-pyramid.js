@@ -8,12 +8,59 @@ let scene,
   cubeCamera,
   cubeRenderTarget;
 
+// Audio system
+let audioSystem = new AudioSystem();
+let soundEnabled = false; // Default to OFF
+let ambientSoundId = null;
+
 const SPHERE_RADIUS = 3.5;
 const BALL_RADIUS = 0.1;
 const NUM_BALLS_PER_SPHERE = 512;
 const NUM_SPHERES = 4;
 let pyramidRotationX = 0;
 let pyramidRotationY = 0;
+
+// Enhanced visual effects
+let particleSystem = null;
+let lightBeams = [];
+
+// Audio control
+function toggleSound(enabled) {
+  soundEnabled = enabled;
+  audioSystem.toggle(enabled);
+
+  if (enabled) {
+    // Start ambient crystalline atmosphere
+    ambientSoundId = audioSystem.createAmbientPad(150, [1, 1.5, 2, 3]);
+  } else {
+    if (ambientSoundId) {
+      audioSystem.stopAmbientSound(ambientSoundId);
+      ambientSoundId = null;
+    }
+  }
+}
+
+// Enhanced collision sound
+function playCollisionSound(velocity = 0.5) {
+  if (!soundEnabled) return;
+
+  const frequency = 800 + Math.random() * 400;
+  const duration = 0.08 + velocity * 0.05;
+  const volume = Math.min(0.02 + velocity * 0.03, 0.08);
+
+  audioSystem.createInteractionSound(frequency, "triangle", duration, volume);
+}
+
+// Crystal reflection sound
+function playReflectionSound(intensity = 0.3) {
+  if (!soundEnabled) return;
+
+  const frequency = 1200 + intensity * 600;
+  const duration = 0.2;
+  const volume = 0.04;
+
+  audioSystem.createInteractionSound(frequency, "sine", duration, volume);
+}
 
 // Ball physics properties
 class Ball {
@@ -83,6 +130,10 @@ class Ball {
       const separation = normal.clone().multiplyScalar(overlap * 0.5);
       this.position.sub(separation);
       otherBall.position.add(separation);
+
+      // Play collision sound with velocity-based intensity
+      const impactVelocity = Math.abs(speed);
+      playCollisionSound(impactVelocity);
     }
   }
 }
@@ -411,4 +462,25 @@ function onWindowResize() {
 window.addEventListener("resize", onWindowResize);
 
 // Initialize when DOM is loaded
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener("DOMContentLoaded", () => {
+  init();
+
+  // Make toggleSound globally accessible for the existing sound button
+  window.toggleAppSound = (enabled) => {
+    toggleSound(enabled);
+  };
+
+  // Connect to existing sound button if present
+  const soundButton = document.querySelector(".sound-toggle-button");
+  if (soundButton) {
+    let soundEnabled = false;
+    soundButton.addEventListener("click", () => {
+      soundEnabled = !soundEnabled;
+      toggleSound(soundEnabled);
+      soundButton.textContent = soundEnabled ? "🔊" : "🔇";
+      soundButton.title = soundEnabled
+        ? "Sound ON - Click to disable"
+        : "Sound OFF - Click to enable";
+    });
+  }
+});

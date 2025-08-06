@@ -44,7 +44,7 @@ if (typeof TopMenu === "undefined") {
       this.navigationButtons = null;
 
       // State
-      this.audioEnabled = false;
+      this.audioEnabled = false; // Always default to OFF
       this.isFullscreen = false;
       this.showingHelp = false;
 
