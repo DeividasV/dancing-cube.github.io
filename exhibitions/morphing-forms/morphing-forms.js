@@ -1,21 +1,28 @@
 // M0RPH1N_F0RMS - 3D Morphing Shapes Simulation
 
-const canvas = document.getElementById("morphing-canvas");
+// Get container and set up scene
+const container = document.getElementById("container");
+if (!container) {
+  console.error("Container element not found");
+}
 
 // Scene setup
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({
-  canvas: canvas,
   antialias: true,
   alpha: true,
 });
 
+// Append renderer to container
+if (container) {
+  container.appendChild(renderer.domElement);
+}
+
 // Container-based sizing
 function resizeCanvas() {
-  const container = canvas.parentElement;
-  const width = container.offsetWidth;
-  const height = container.offsetHeight;
+  const width = container.offsetWidth || window.innerWidth;
+  const height = container.offsetHeight || window.innerHeight;
 
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
@@ -775,16 +782,13 @@ window.addShape = function () {
   }
 };
 
-// Hide loading text once everything is initialized
 setTimeout(() => {
   const loading = document.querySelector(".loading");
   if (loading) {
     loading.style.transition = "opacity 0.5s ease, visibility 0.5s ease";
     loading.style.opacity = "0";
     loading.style.visibility = "hidden";
-    setTimeout(() => {
-      loading.style.display = "none";
-    }, 500);
+    setTimeout(() => {}, 500);
   }
 }, 1000);
 

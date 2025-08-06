@@ -234,7 +234,22 @@ window.toggleAppSound = function () {
   audioSystem.toggleSound();
 };
 
-const canvas = document.getElementById("blood-canvas");
+const canvas =
+  document.getElementById("blood-canvas") ||
+  (() => {
+    // Create canvas if it doesn't exist
+    const container = document.getElementById("container");
+    if (!container) {
+      console.error("Container element not found");
+      return null;
+    }
+    const newCanvas = document.createElement("canvas");
+    newCanvas.id = "blood-canvas";
+    newCanvas.style.width = "100%";
+    newCanvas.style.height = "100%";
+    container.appendChild(newCanvas);
+    return newCanvas;
+  })();
 const ctx = canvas.getContext("2d");
 
 // 3D perspective parameters
@@ -774,16 +789,12 @@ function animate() {
   requestAnimationFrame(animate);
 }
 
-// Hide loading text once everything is initialized
 setTimeout(() => {
-  const loading = document.querySelector(".loading-container");
   if (loading) {
     loading.style.transition = "opacity 0.5s ease, visibility 0.5s ease";
     loading.style.opacity = "0";
     loading.style.visibility = "hidden";
-    setTimeout(() => {
-      loading.style.display = "none";
-    }, 500);
+    setTimeout(() => {}, 500);
   }
 }, 1000);
 

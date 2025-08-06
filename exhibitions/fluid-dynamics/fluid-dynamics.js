@@ -390,12 +390,6 @@ class FluidDynamicsApp {
     this.createParticles();
     this.setupEventListeners();
     this.animate();
-
-    // Hide loading indicator
-    const loadingContainer = document.querySelector(".loading-container");
-    const loading = document.querySelector(".loading");
-    if (loadingContainer) loadingContainer.style.display = "none";
-    if (loading) loading.style.display = "none";
   }
 
   setupScene() {
@@ -403,39 +397,29 @@ class FluidDynamicsApp {
     this.scene = new THREE.Scene();
 
     // Get the exhibition container dimensions
-    const container = document.querySelector(".exhibition-frame");
-    const canvas = document.getElementById("fluid-canvas");
+    const container = document.getElementById("container");
 
     console.log("Container:", container);
-    console.log("Canvas:", canvas);
 
-    if (!container || !canvas) {
-      console.error("Exhibition container or canvas not found");
+    if (!container) {
+      console.error("Container element not found");
       console.log("Available elements:", {
+        containerById: document.getElementById("container"),
         exhibitionFrame: document.querySelector(".exhibition-frame"),
-        fluidCanvas: document.getElementById("fluid-canvas"),
         topMenu: document.querySelector(".top-menu"),
         exhibitionContainer: document.querySelector(".exhibition-container"),
       });
       return;
     }
 
-    let width = container.offsetWidth;
-    let height = container.offsetHeight;
+    const width = container.offsetWidth || window.innerWidth;
+    const height = container.offsetHeight || window.innerHeight;
 
-    // Fallback to window dimensions if container dimensions are zero
-    if (width === 0 || height === 0) {
-      width = window.innerWidth;
-      height = window.innerHeight - 60; // Account for top menu
-      console.log("Using fallback dimensions:", width, height);
-    } else {
-      console.log("Container dimensions:", width, height);
-    }
+    console.log("Container dimensions:", width, height);
 
     this.camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
 
     this.renderer = new THREE.WebGLRenderer({
-      canvas: canvas,
       antialias: true,
       alpha: true,
       powerPreference: "high-performance",
@@ -444,6 +428,9 @@ class FluidDynamicsApp {
     this.renderer.setSize(width, height);
     this.renderer.setClearColor(0x000000, 0.0);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Append renderer to container
+    container.appendChild(this.renderer.domElement);
 
     this.camera.position.set(0, 0, 50);
     console.log("Scene setup complete");
@@ -954,7 +941,7 @@ class FluidDynamicsApp {
   }
 
   onWindowResize() {
-    const container = document.querySelector(".exhibition-frame");
+    const container = document.getElementById("container");
     if (!container) return;
 
     const width = container.offsetWidth;

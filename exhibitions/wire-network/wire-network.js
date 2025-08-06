@@ -307,12 +307,12 @@ class WireNetworkGenerator {
 
   setup() {
     console.log("Setting up wire network...");
-    this.container = document.getElementById("wire-container");
+    this.container = document.getElementById("container");
     if (!this.container) {
-      console.error("Wire container not found");
+      console.error("Container not found");
       return;
     }
-    console.log("Wire container found:", this.container);
+    console.log("Container found:", this.container);
 
     // Enable audio context on user interaction
     this.container.addEventListener("click", () => {
@@ -321,17 +321,12 @@ class WireNetworkGenerator {
       }
     });
 
-    // Hide loading animation
-    const loadingContainer = document.querySelector(".loading-container");
-    if (loadingContainer) {
-      setTimeout(() => {
-        loadingContainer.style.display = "none";
-        // Play gentle startup chord only if sound is enabled
-        if (this.soundEnabled) {
-          this.playChord([220, 277, 330], 1.0, 0.06);
-        }
-      }, 1000);
-    }
+    setTimeout(() => {
+      // Play gentle startup chord only if sound is enabled
+      if (this.soundEnabled) {
+        this.playChord([220, 277, 330], 1.0, 0.06);
+      }
+    }, 1000);
 
     this.generateRandomNetwork();
   }

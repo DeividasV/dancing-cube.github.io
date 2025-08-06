@@ -270,26 +270,47 @@ window.toggleAppSound = function () {
 
 // Scene setup
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
+
+// Get container and set up camera with proper aspect ratio
+const container = document.getElementById("container");
+if (!container) {
+  console.error("Container element not found");
+}
+
+const width = container ? container.offsetWidth : window.innerWidth;
+const height = container ? container.offsetHeight : window.innerHeight;
+
+const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+
+// Get container and set up renderer
 const renderer = new THREE.WebGLRenderer({
-  canvas: document.getElementById("canvas"),
   antialias: true,
 });
-renderer.setSize(window.innerWidth, window.innerHeight);
+
+// Set container dimensions
+renderer.setSize(width, height);
 renderer.setClearColor(0x001122);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
+// Append renderer to container
+if (container) {
+  container.appendChild(renderer.domElement);
+}
+
 // Mouse tracking
 const mouse = { x: 0, y: 0 };
 window.addEventListener("mousemove", (event) => {
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  const rect = container
+    ? container.getBoundingClientRect()
+    : { left: 0, top: 0 };
+  const containerWidth = container ? container.offsetWidth : window.innerWidth;
+  const containerHeight = container
+    ? container.offsetHeight
+    : window.innerHeight;
+
+  mouse.x = ((event.clientX - rect.left) / containerWidth) * 2 - 1;
+  mouse.y = -((event.clientY - rect.top) / containerHeight) * 2 + 1;
 });
 
 // Lighting
@@ -662,23 +683,13 @@ function animate() {
 
 // Handle window resize
 window.addEventListener("resize", () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
+  const newWidth = container ? container.offsetWidth : window.innerWidth;
+  const newHeight = container ? container.offsetHeight : window.innerHeight;
+
+  camera.aspect = newWidth / newHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(newWidth, newHeight);
 });
 
 // Start animation
 animate();
-
-// Hide loading text once everything is initialized
-setTimeout(() => {
-  const loading = document.querySelector(".loading");
-  if (loading) {
-    loading.style.transition = "opacity 0.5s ease, visibility 0.5s ease";
-    loading.style.opacity = "0";
-    loading.style.visibility = "hidden";
-    setTimeout(() => {
-      loading.style.display = "none";
-    }, 500);
-  }
-}, 1000);

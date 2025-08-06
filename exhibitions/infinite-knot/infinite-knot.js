@@ -6,7 +6,25 @@
 
 class InfiniteKnot3D {
   constructor() {
-    this.canvas = document.getElementById("knotCanvas");
+    // Get or create canvas
+    this.canvas =
+      document.getElementById("knotCanvas") ||
+      (() => {
+        const container = document.getElementById("container");
+        if (!container) {
+          console.error("Container element not found");
+          return null;
+        }
+        const newCanvas = document.createElement("canvas");
+        newCanvas.id = "knotCanvas";
+        newCanvas.style.width = "100%";
+        newCanvas.style.height = "100%";
+        container.appendChild(newCanvas);
+        return newCanvas;
+      })();
+
+    if (!this.canvas) return;
+
     this.knots = [];
     this.knotCount = 3;
 
@@ -353,9 +371,7 @@ class InfiniteKnot3D {
     if (loadingElement) {
       setTimeout(() => {
         loadingElement.style.opacity = "0";
-        setTimeout(() => {
-          loadingElement.style.display = "none";
-        }, 500);
+        setTimeout(() => {}, 500);
       }, 1000);
     }
   }

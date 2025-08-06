@@ -256,7 +256,35 @@ body {
   background: #0a0a0a;
 }
 
-.exhibition-content canvas {
+/* Exhibition container and frame classes used in HTML */
+.exhibition-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: #0a0a0a;
+  width: 100%;
+  height: 100%;
+}
+
+.exhibition-frame {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.exhibition-canvas,
+#container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: block;
+}
+
+.exhibition-content canvas,
+.exhibition-canvas canvas,
+#container canvas {
   display: block;
   width: 100%;
   height: 100%;
@@ -590,5 +618,249 @@ body {
 
   .exhibition-content {
     background: #000000;
+  }
+}
+
+/* ============= EXHIBITION-SPECIFIC STYLES ============= */
+
+/* Glass Spheres Exhibition */
+.particles {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(100, 200, 255, 0.4) 100%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+  animation: float 8s infinite ease-in-out;
+  box-shadow: 0 0 10px rgba(100, 200, 255, 0.6);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-10vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.music-note {
+  position: absolute;
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+  animation: musicFloat 12s infinite ease-in-out;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes musicFloat {
+  0%,
+  100% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-10vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.glass-ball {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(255, 255, 255, 0.8),
+    rgba(100, 200, 255, 0.2)
+  );
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 20px rgba(100, 200, 255, 0.6),
+    inset 0 0 20px rgba(255, 255, 255, 0.2);
+  animation: glassBallFloat 6s infinite ease-in-out;
+  backdrop-filter: blur(5px);
+}
+
+@keyframes glassBallFloat {
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.1);
+  }
+}
+
+/* Individual Squares Exhibition */
+.square {
+  width: 40px;
+  height: 40px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  background-size: 300% 300%;
+  animation: gradientMove 5s ease-in-out infinite;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.square::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.square:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 4px 20px rgba(0, 255, 136, 0.3);
+  z-index: 10;
+}
+
+.square:hover::before {
+  opacity: 1;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% 0%;
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  25% {
+    background-position: 100% 0%;
+    filter: hue-rotate(90deg) brightness(1.2);
+  }
+  50% {
+    background-position: 100% 100%;
+    filter: hue-rotate(180deg) brightness(1);
+  }
+  75% {
+    background-position: 0% 100%;
+    filter: hue-rotate(270deg) brightness(1.2);
+  }
+  100% {
+    background-position: 0% 0%;
+    filter: hue-rotate(360deg) brightness(1);
+  }
+}
+
+.square:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+}
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+  animation: rippleEffect 0.6s ease-out;
+}
+
+@keyframes rippleEffect {
+  from {
+    transform: scale(0);
+    opacity: 1;
+  }
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+.particle {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  animation: particleFloat 2s ease-out forwards;
+}
+
+@keyframes particleFloat {
+  from {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translate(var(--dx), var(--dy)) scale(0);
+    opacity: 0;
+  }
+}
+
+/* Wire Network Exhibition */
+.wire {
+  position: absolute;
+  background: linear-gradient(
+    90deg,
+    rgba(100, 200, 255, 0.8) 0%,
+    rgba(255, 100, 200, 0.8) 50%,
+    rgba(100, 255, 200, 0.8) 100%
+  );
+  transform-origin: left center;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  animation: wireGlow 3s infinite ease-in-out;
+}
+
+@keyframes wireGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+  }
+}
+
+.node {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(100, 200, 255, 0.8) 100%
+  );
+  border-radius: 50%;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+  animation: nodeGlow 2s infinite ease-in-out;
+}
+
+@keyframes nodeGlow {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 25px rgba(255, 255, 255, 1);
   }
 }

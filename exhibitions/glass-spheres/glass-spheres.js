@@ -26,6 +26,21 @@ function createMusicNotes() {
   }
 }
 
+// Create glass balls
+function createGlassBalls() {
+  const container = document.getElementById("container");
+  if (!container) return;
+
+  for (let i = 0; i < 8; i++) {
+    const ball = document.createElement("div");
+    ball.className = "glass-ball";
+    ball.style.left = Math.random() * 80 + 10 + "%";
+    ball.style.top = Math.random() * 80 + 10 + "%";
+    ball.style.animationDelay = Math.random() * 3 + "s";
+    container.appendChild(ball);
+  }
+}
+
 // Interactive mouse effects
 function initMouseEffects() {
   document.addEventListener("mousemove", (e) => {
@@ -58,13 +73,12 @@ function initDynamicLighting() {
 
 // Initialize all effects
 function init() {
-  // Hide loading indicator
   setTimeout(() => {
     const loading = document.querySelector(".loading");
-    if (loading) loading.style.display = "none";
   }, 2000);
 
   // Initialize effects
+  createGlassBalls();
   createParticles();
   createMusicNotes();
   initMouseEffects();

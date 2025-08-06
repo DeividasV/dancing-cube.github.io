@@ -188,10 +188,6 @@ class BouncingCubesApp {
     this.createMovingCubes();
     this.setupEventListeners();
     this.animate();
-
-    // Hide loading indicator
-    const loadingContainer = document.querySelector(".loading-container");
-    if (loadingContainer) loadingContainer.style.display = "none";
   }
 
   setupScene() {

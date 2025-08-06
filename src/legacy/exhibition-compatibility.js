@@ -122,9 +122,10 @@ if (!window.exhibitionFrameworkInitialized) {
           canvas.style.width = width + "px";
           canvas.style.height = height + "px";
 
-          // Trigger resize event for the exhibition
-          if (window.dispatchEvent) {
-            window.dispatchEvent(new Event("resize"));
+          // Update canvas internal dimensions if needed
+          if (canvas.width !== width || canvas.height !== height) {
+            canvas.width = width;
+            canvas.height = height;
           }
         }
       }

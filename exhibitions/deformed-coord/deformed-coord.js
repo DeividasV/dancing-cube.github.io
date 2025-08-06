@@ -5,13 +5,31 @@
 
 class DeformedCoordinateSystem {
   constructor() {
-    this.canvas = document.getElementById("deformed-canvas");
+    // Get or create canvas
+    this.canvas =
+      document.getElementById("deformed-canvas") ||
+      (() => {
+        const container = document.getElementById("container");
+        if (!container) {
+          console.error("Container element not found");
+          return null;
+        }
+        const newCanvas = document.createElement("canvas");
+        newCanvas.id = "deformed-canvas";
+        newCanvas.style.width = "100%";
+        newCanvas.style.height = "100%";
+        container.appendChild(newCanvas);
+        return newCanvas;
+      })();
+
+    if (!this.canvas) return;
+
     this.ctx = this.canvas.getContext("2d");
 
     // Get container dimensions for responsive sizing
     const container = this.canvas.parentElement;
-    this.width = container.clientWidth;
-    this.height = container.clientHeight;
+    this.width = container.clientWidth || window.innerWidth;
+    this.height = container.clientHeight || window.innerHeight - 60; // Account for top menu
 
     // Set canvas size
     this.canvas.width = this.width;
@@ -19,6 +37,8 @@ class DeformedCoordinateSystem {
 
     this.centerX = this.width / 2;
     this.centerY = this.height / 2;
+
+    console.log("Deformed Coord Canvas dimensions:", this.width, this.height);
 
     this.animationId = null;
     this.isAnimating = true; // Start with animation enabled
@@ -28,12 +48,6 @@ class DeformedCoordinateSystem {
     this.setupEventListeners();
     this.draw();
     this.animate(); // Start animation immediately
-
-    // Hide loading text once initialized
-    const loadingElement = document.querySelector(".loading");
-    if (loadingElement) {
-      loadingElement.style.display = "none";
-    }
   }
 
   initializeParameters() {
@@ -426,14 +440,6 @@ class DeformedCoordinateSystem {
 
 // Initialize when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
-  // Hide loading screen
-  setTimeout(() => {
-    const loadingContainer = document.querySelector(".loading-container");
-    if (loadingContainer) {
-      loadingContainer.classList.add("hidden");
-    }
-  }, 1000);
-
   // Initialize the coordinate system
   new DeformedCoordinateSystem();
 });

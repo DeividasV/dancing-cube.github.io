@@ -7,19 +7,13 @@ class AxisVisualizer {
     this.setupAnimation();
     this.bindEvents();
     this.animate();
-
-    // Remove loading text once initialized
-    const loadingElement = document.querySelector(".loading");
-    if (loadingElement) {
-      loadingElement.style.display = "none";
-    }
   }
 
   initScene() {
     // Get container dimensions
-    const container = document.getElementById("container");
-    const width = container.offsetWidth;
-    const height = container.offsetHeight;
+    this.container = document.getElementById("container");
+    const width = this.container.offsetWidth;
+    const height = this.container.offsetHeight;
 
     // Scene setup
     this.scene = new THREE.Scene();
@@ -31,7 +25,6 @@ class AxisVisualizer {
     );
 
     this.renderer = new THREE.WebGLRenderer({
-      canvas: document.getElementById("canvas3d"),
       antialias: true,
       alpha: true,
     });
@@ -40,6 +33,9 @@ class AxisVisualizer {
     this.renderer.setClearColor(0x000000, 0); // Transparent background
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    // Append renderer to container
+    this.container.appendChild(this.renderer.domElement);
 
     // Main group for all connections
     this.connectionGroup = new THREE.Group();
@@ -401,9 +397,12 @@ class AxisVisualizer {
   bindEvents() {
     // Window resize
     window.addEventListener("resize", () => {
-      this.camera.aspect = window.innerWidth / window.innerHeight;
+      const newWidth = this.container.offsetWidth;
+      const newHeight = this.container.offsetHeight;
+
+      this.camera.aspect = newWidth / newHeight;
       this.camera.updateProjectionMatrix();
-      this.renderer.setSize(window.innerWidth, window.innerHeight);
+      this.renderer.setSize(newWidth, newHeight);
     });
 
     // Click interaction
@@ -432,12 +431,6 @@ class AxisVisualizer {
 
 // Initialize the visualization
 function init() {
-  // Hide loading indicator
-  setTimeout(() => {
-    const loading = document.querySelector(".loading");
-    if (loading) loading.style.display = "none";
-  }, 2000);
-
   // Initialize the axis visualizer
   new AxisVisualizer();
 }

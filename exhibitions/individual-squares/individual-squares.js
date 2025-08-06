@@ -5,7 +5,15 @@
 
 class IndividualSquares {
   constructor() {
-    this.container = document.getElementById("squaresContainer");
+    const mainContainer = document.getElementById("container");
+    if (!mainContainer) {
+      console.error("Container element not found");
+      return;
+    }
+
+    // Create the proper squares container structure
+    this.setupContainer(mainContainer);
+
     this.totalSquares = 100;
 
     // Sound system
@@ -18,6 +26,45 @@ class IndividualSquares {
 
     this.initAudio();
     this.initialize();
+  }
+
+  setupContainer(mainContainer) {
+    // Clear the main container
+    mainContainer.innerHTML = "";
+
+    // Create the exhibition structure
+    const mainContent = document.createElement("div");
+    mainContent.className = "main-content";
+    mainContent.style.cssText = `
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100%;
+      padding: 20px;
+    `;
+
+    const squaresContainer = document.createElement("div");
+    squaresContainer.className = "squares-container";
+    squaresContainer.id = "squaresContainer";
+    squaresContainer.style.cssText = `
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 2px;
+      max-width: 500px;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    `;
+
+    mainContent.appendChild(squaresContainer);
+    mainContainer.appendChild(mainContent);
+
+    // Store reference to the squares container
+    this.container = squaresContainer;
   }
 
   initAudio() {
@@ -787,14 +834,6 @@ window.toggleAppSound = function () {
 
 // Initialize when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
-  // Hide loading screen
-  setTimeout(() => {
-    const loadingContainer = document.querySelector(".loading-container");
-    if (loadingContainer) {
-      loadingContainer.classList.add("hidden");
-    }
-  }, 1000);
-
   // Initialize the squares
   window.squaresInstance = new IndividualSquares();
 
