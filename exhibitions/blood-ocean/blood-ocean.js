@@ -226,12 +226,19 @@ class AudioSystem {
   }
 }
 
-// Initialize audio system
-const audioSystem = new AudioSystem();
+// Initialize audio system lazily
+let audioSystem = null;
 
 // Global function for sound toggle button
 window.toggleAppSound = function () {
-  audioSystem.toggleSound();
+  // Initialize AudioSystem lazily
+  if (!audioSystem && typeof AudioSystem !== "undefined") {
+    audioSystem = new AudioSystem();
+  }
+
+  if (audioSystem) {
+    audioSystem.toggleSound();
+  }
 };
 
 const canvas =

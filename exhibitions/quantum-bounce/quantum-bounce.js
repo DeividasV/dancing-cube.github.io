@@ -13,8 +13,8 @@ class BouncingCubesApp {
     this.CUBE_SIZE = 2.5;
     this.SPACING = 3.0;
 
-    // Audio system
-    this.audioSystem = new AudioSystem();
+    // Audio system - initialize lazily
+    this.audioSystem = null;
     this.soundEnabled = false; // Default to OFF
     this.ambientSoundId = null;
 
@@ -35,23 +35,34 @@ class BouncingCubesApp {
 
   // Audio control
   toggleSound(enabled) {
-    this.soundEnabled = enabled;
-    this.audioSystem.toggle(enabled);
+    // Initialize AudioSystem lazily
+    if (!this.audioSystem && typeof AudioSystem !== "undefined") {
+      this.audioSystem = new AudioSystem();
+    }
 
-    if (enabled) {
-      // Start ambient quantum atmosphere
-      this.ambientSoundId = this.audioSystem.createAmbientDrone(100, "square");
-    } else {
-      if (this.ambientSoundId) {
-        this.audioSystem.stopAmbientSound(this.ambientSoundId);
-        this.ambientSoundId = null;
+    this.soundEnabled = enabled;
+
+    if (this.audioSystem) {
+      this.audioSystem.toggle(enabled);
+
+      if (enabled) {
+        // Start ambient quantum atmosphere
+        this.ambientSoundId = this.audioSystem.createAmbientDrone(
+          100,
+          "square"
+        );
+      } else {
+        if (this.ambientSoundId) {
+          this.audioSystem.stopAmbientSound(this.ambientSoundId);
+          this.ambientSoundId = null;
+        }
       }
     }
   }
 
   // Create a subtle collision sound
   playCollisionSound(velocity = 0.1) {
-    if (!this.soundEnabled) return;
+    if (!this.soundEnabled || !this.audioSystem) return;
 
     const frequency = 220 + Math.random() * 110;
     const duration = 0.15;
@@ -67,7 +78,7 @@ class BouncingCubesApp {
 
   // Quantum phase sound
   playQuantumSound(phase = 0.5) {
-    if (!this.soundEnabled) return;
+    if (!this.soundEnabled || !this.audioSystem) return;
 
     const frequency = 440 + phase * 220;
     const duration = 0.3;

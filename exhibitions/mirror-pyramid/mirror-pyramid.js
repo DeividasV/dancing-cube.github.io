@@ -8,8 +8,8 @@ let scene,
   cubeCamera,
   cubeRenderTarget;
 
-// Audio system
-let audioSystem = new AudioSystem();
+// Audio system - initialize lazily
+let audioSystem = null;
 let soundEnabled = false; // Default to OFF
 let ambientSoundId = null;
 
@@ -26,23 +26,31 @@ let lightBeams = [];
 
 // Audio control
 function toggleSound(enabled) {
-  soundEnabled = enabled;
-  audioSystem.toggle(enabled);
+  // Initialize AudioSystem lazily
+  if (!audioSystem && typeof AudioSystem !== "undefined") {
+    audioSystem = new AudioSystem();
+  }
 
-  if (enabled) {
-    // Start ambient crystalline atmosphere
-    ambientSoundId = audioSystem.createAmbientPad(150, [1, 1.5, 2, 3]);
-  } else {
-    if (ambientSoundId) {
-      audioSystem.stopAmbientSound(ambientSoundId);
-      ambientSoundId = null;
+  soundEnabled = enabled;
+
+  if (audioSystem) {
+    audioSystem.toggle(enabled);
+
+    if (enabled) {
+      // Start ambient crystalline atmosphere
+      ambientSoundId = audioSystem.createAmbientPad(150, [1, 1.5, 2, 3]);
+    } else {
+      if (ambientSoundId) {
+        audioSystem.stopAmbientSound(ambientSoundId);
+        ambientSoundId = null;
+      }
     }
   }
 }
 
 // Enhanced collision sound
 function playCollisionSound(velocity = 0.5) {
-  if (!soundEnabled) return;
+  if (!soundEnabled || !audioSystem) return;
 
   const frequency = 800 + Math.random() * 400;
   const duration = 0.08 + velocity * 0.05;
@@ -53,7 +61,7 @@ function playCollisionSound(velocity = 0.5) {
 
 // Crystal reflection sound
 function playReflectionSound(intensity = 0.3) {
-  if (!soundEnabled) return;
+  if (!soundEnabled || !audioSystem) return;
 
   const frequency = 1200 + intensity * 600;
   const duration = 0.2;

@@ -6,8 +6,8 @@
 
 class InfiniteKnot3D {
   constructor() {
-    // Audio system
-    this.audioSystem = new AudioSystem();
+    // Audio system - initialize lazily
+    this.audioSystem = null;
     this.soundEnabled = false; // Default to OFF
     this.ambientSoundId = null;
 
@@ -44,23 +44,34 @@ class InfiniteKnot3D {
 
   // Audio control
   toggleSound(enabled) {
-    this.soundEnabled = enabled;
-    this.audioSystem.toggle(enabled);
+    // Initialize AudioSystem lazily
+    if (!this.audioSystem && typeof AudioSystem !== "undefined") {
+      this.audioSystem = new AudioSystem();
+    }
 
-    if (enabled) {
-      // Start ambient hypnotic atmosphere
-      this.ambientSoundId = this.audioSystem.createAmbientDrone(65, "triangle");
-    } else {
-      if (this.ambientSoundId) {
-        this.audioSystem.stopAmbientSound(this.ambientSoundId);
-        this.ambientSoundId = null;
+    this.soundEnabled = enabled;
+
+    if (this.audioSystem) {
+      this.audioSystem.toggle(enabled);
+
+      if (enabled) {
+        // Start ambient hypnotic atmosphere
+        this.ambientSoundId = this.audioSystem.createAmbientDrone(
+          65,
+          "triangle"
+        );
+      } else {
+        if (this.ambientSoundId) {
+          this.audioSystem.stopAmbientSound(this.ambientSoundId);
+          this.ambientSoundId = null;
+        }
       }
     }
   }
 
   // Knot transformation sound
   playKnotSound(intensity = 0.3) {
-    if (!this.soundEnabled) return;
+    if (!this.soundEnabled || !this.audioSystem) return;
 
     const frequency = 330 + intensity * 220;
     const duration = 0.4;
@@ -76,7 +87,7 @@ class InfiniteKnot3D {
 
   // Harmonic resonance sound
   playResonanceSound(harmonicRatio = 1.5) {
-    if (!this.soundEnabled) return;
+    if (!this.soundEnabled || !this.audioSystem) return;
 
     const baseFreq = 220;
     const frequency = baseFreq * harmonicRatio;

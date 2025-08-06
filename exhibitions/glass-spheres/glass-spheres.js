@@ -9,8 +9,8 @@ class FuturisticGlassOrbs {
     this.scanLines = [];
     this.time = 0;
 
-    // Use unified AudioSystem
-    this.audioSystem = new AudioSystem();
+    // Use unified AudioSystem - initialize lazily
+    this.audioSystem = null;
     this.soundEnabled = false; // Default to OFF
     this.ambientSoundId = null;
 
@@ -31,25 +31,33 @@ class FuturisticGlassOrbs {
 
   // Audio control
   toggleSound(enabled) {
-    this.soundEnabled = enabled;
-    this.audioSystem.toggle(enabled);
+    // Initialize AudioSystem lazily
+    if (!this.audioSystem && typeof AudioSystem !== "undefined") {
+      this.audioSystem = new AudioSystem();
+    }
 
-    if (enabled) {
-      // Start ambient sci-fi atmosphere
-      this.ambientSoundId = this.audioSystem.createAmbientPad(
-        110,
-        [1, 1.5, 2.5, 3.5]
-      );
-    } else {
-      if (this.ambientSoundId) {
-        this.audioSystem.stopAmbientSound(this.ambientSoundId);
-        this.ambientSoundId = null;
+    this.soundEnabled = enabled;
+
+    if (this.audioSystem) {
+      this.audioSystem.toggle(enabled);
+
+      if (enabled) {
+        // Start ambient sci-fi atmosphere
+        this.ambientSoundId = this.audioSystem.createAmbientPad(
+          110,
+          [1, 1.5, 2.5, 3.5]
+        );
+      } else {
+        if (this.ambientSoundId) {
+          this.audioSystem.stopAmbientSound(this.ambientSoundId);
+          this.ambientSoundId = null;
+        }
       }
     }
   }
 
   playHologramSound(frequency = 400, duration = 0.2) {
-    if (!this.soundEnabled) return;
+    if (!this.soundEnabled || !this.audioSystem) return;
 
     const adjustedFreq = frequency + (Math.random() - 0.5) * 100;
     this.audioSystem.createInteractionSound(
@@ -61,7 +69,7 @@ class FuturisticGlassOrbs {
   }
 
   playEnergySound(intensity = 0.5) {
-    if (!this.soundEnabled) return;
+    if (!this.soundEnabled || !this.audioSystem) return;
 
     const frequency = 800 + intensity * 400;
     const duration = 0.1 + intensity * 0.2;
