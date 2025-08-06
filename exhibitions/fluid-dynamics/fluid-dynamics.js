@@ -1,4 +1,176 @@
 // Fluid Dynamics Simulation Application
+
+// Simple AudioSystem fallback if the framework version isn't available
+class AudioSystem {
+  constructor() {
+    this.context = null;
+    this.enabled = false;
+    this.masterGain = null;
+    this.ambientGain = null;
+    this.effectsGain = null;
+    this.ambientSources = new Map();
+    this.isInitialized = false;
+  }
+
+  async init() {
+    if (this.isInitialized) return;
+
+    try {
+      this.context = new (window.AudioContext || window.webkitAudioContext)();
+
+      if (this.context.state === "suspended") {
+        await this.context.resume();
+      }
+
+      this.masterGain = this.context.createGain();
+      this.masterGain.gain.setValueAtTime(0.3, this.context.currentTime);
+      this.masterGain.connect(this.context.destination);
+
+      this.ambientGain = this.context.createGain();
+      this.ambientGain.gain.setValueAtTime(0.4, this.context.currentTime);
+      this.ambientGain.connect(this.masterGain);
+
+      this.effectsGain = this.context.createGain();
+      this.effectsGain.gain.setValueAtTime(0.6, this.context.currentTime);
+      this.effectsGain.connect(this.masterGain);
+
+      this.isInitialized = true;
+      console.log("🎵 AudioSystem initialized successfully");
+    } catch (error) {
+      console.error("❌ Failed to initialize audio system:", error);
+      this.enabled = false;
+    }
+  }
+
+  async toggle(enabled) {
+    this.enabled = enabled;
+
+    if (enabled) {
+      if (!this.isInitialized) {
+        await this.init();
+      }
+
+      if (this.context && this.context.state === "suspended") {
+        await this.context.resume();
+      }
+
+      console.log("🔊 Audio enabled");
+    } else {
+      console.log("🔇 Audio disabled");
+    }
+  }
+
+  createAmbientDrone(frequency = 80, type = "sawtooth") {
+    if (!this.enabled || !this.context) return null;
+
+    const oscillator = this.context.createOscillator();
+    const filter = this.context.createBiquadFilter();
+    const gainNode = this.context.createGain();
+
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency, this.context.currentTime);
+
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(frequency * 2, this.context.currentTime);
+    filter.Q.setValueAtTime(2, this.context.currentTime);
+
+    gainNode.gain.setValueAtTime(0, this.context.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.1, this.context.currentTime + 2);
+
+    oscillator.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(this.ambientGain);
+
+    oscillator.start();
+
+    const id = "ambient_drone_" + Date.now();
+    this.ambientSources.set(id, { oscillator, gainNode, filter });
+
+    return id;
+  }
+
+  createInteractionSound(
+    frequency,
+    type = "sine",
+    duration = 0.1,
+    volume = 0.1
+  ) {
+    if (!this.enabled || !this.context) return;
+
+    const oscillator = this.context.createOscillator();
+    const gainNode = this.context.createGain();
+    const filter = this.context.createBiquadFilter();
+
+    oscillator.type = type;
+    oscillator.frequency.setValueAtTime(frequency, this.context.currentTime);
+
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(frequency * 2, this.context.currentTime);
+
+    gainNode.gain.setValueAtTime(0, this.context.currentTime);
+    gainNode.gain.linearRampToValueAtTime(
+      volume,
+      this.context.currentTime + 0.01
+    );
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.001,
+      this.context.currentTime + duration
+    );
+
+    oscillator.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(this.effectsGain);
+
+    oscillator.start();
+    oscillator.stop(this.context.currentTime + duration);
+  }
+
+  playTone(frequency, duration = 0.1, type = "sine", options = {}) {
+    if (!this.enabled || !this.context) return null;
+
+    const oscillator = this.context.createOscillator();
+    const gainNode = this.context.createGain();
+
+    oscillator.frequency.setValueAtTime(frequency, this.context.currentTime);
+    oscillator.type = type;
+
+    const gain = options.gain || 0.1;
+    const fadeTime = options.fadeTime || 0.01;
+
+    gainNode.gain.setValueAtTime(0, this.context.currentTime);
+    gainNode.gain.linearRampToValueAtTime(
+      gain,
+      this.context.currentTime + fadeTime
+    );
+    gainNode.gain.exponentialRampToValueAtTime(
+      0.001,
+      this.context.currentTime + duration - fadeTime
+    );
+
+    oscillator.connect(gainNode);
+    gainNode.connect(this.masterGain);
+
+    oscillator.start();
+    oscillator.stop(this.context.currentTime + duration);
+
+    return { oscillator, gainNode };
+  }
+
+  stopAmbientSound(id) {
+    const source = this.ambientSources.get(id);
+    if (!source) return;
+
+    source.gainNode.gain.linearRampToValueAtTime(
+      0,
+      this.context.currentTime + 0.5
+    );
+    setTimeout(() => {
+      source.oscillator.stop();
+      this.ambientSources.delete(id);
+    }, 500);
+  }
+}
+
 class FluidDynamicsApp {
   constructor() {
     this.scene = null;
@@ -42,41 +214,63 @@ class FluidDynamicsApp {
   }
 
   // Audio control methods
-  toggleSound(enabled) {
+  async toggleSound(enabled) {
+    console.log("FluidDynamicsApp toggleSound called with:", enabled);
+
     // Initialize AudioSystem lazily
     if (!this.audioSystem && typeof AudioSystem !== "undefined") {
+      console.log("Initializing AudioSystem...");
       this.audioSystem = new AudioSystem();
+      await this.audioSystem.init();
+      console.log("AudioSystem initialized:", this.audioSystem);
     }
 
     this.soundEnabled = enabled;
+    console.log("Sound enabled set to:", this.soundEnabled);
 
     if (this.audioSystem) {
-      this.audioSystem.toggle(enabled);
+      await this.audioSystem.toggle(enabled);
+      console.log("AudioSystem toggled to:", enabled);
 
       if (enabled) {
         // Start ambient underwater-like sound
+        console.log("Creating ambient drone...");
         this.ambientSoundId = this.audioSystem.createAmbientDrone(
           60,
           "sawtooth"
         );
+        console.log("Ambient sound ID:", this.ambientSoundId);
       } else {
         // Stop ambient sound
         if (this.ambientSoundId) {
+          console.log("Stopping ambient sound:", this.ambientSoundId);
           this.audioSystem.stopAmbientSound(this.ambientSoundId);
           this.ambientSoundId = null;
         }
       }
+    } else {
+      console.error("AudioSystem not available");
     }
   }
 
   // Enhanced fluid interaction sound
-  playFluidSound(velocity = 0.1, frequency = 300) {
-    if (!this.soundEnabled || !this.audioSystem) return;
+  playFluidSound(frequency = 300, velocity = 0.1) {
+    console.log(
+      "playFluidSound called with frequency:",
+      frequency,
+      "velocity:",
+      velocity
+    );
+    if (!this.soundEnabled || !this.audioSystem) {
+      console.log("Sound disabled or no audio system");
+      return;
+    }
 
     const adjustedFreq = frequency + (Math.random() - 0.5) * 100;
     const duration = 0.05 + velocity * 0.1;
     const volume = Math.min(0.02 + velocity * 0.03, 0.05);
 
+    console.log("Playing interaction sound:", adjustedFreq, duration, volume);
     this.audioSystem.createInteractionSound(
       adjustedFreq,
       "sine",
@@ -119,196 +313,41 @@ class FluidDynamicsApp {
 
   // Create ambient camera movement sound
   playCameraMovementSound(intensity = 0.1) {
-    if (!this.soundEnabled || !this.audioContext) return;
+    if (!this.soundEnabled || !this.audioSystem) return;
 
-    try {
-      const oscillator1 = this.audioContext.createOscillator();
-      const oscillator2 = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
-      const filterNode = this.audioContext.createBiquadFilter();
-
-      oscillator1.connect(filterNode);
-      oscillator2.connect(filterNode);
-      filterNode.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
-
-      // Ethereal dual-tone for camera drift
-      const baseFreq = 220 + intensity * 80;
-      oscillator1.frequency.setValueAtTime(
-        baseFreq,
-        this.audioContext.currentTime
-      );
-      oscillator2.frequency.setValueAtTime(
-        baseFreq * 1.618,
-        this.audioContext.currentTime
-      ); // Golden ratio
-
-      oscillator1.frequency.exponentialRampToValueAtTime(
-        baseFreq * 0.9,
-        this.audioContext.currentTime + 1.5
-      );
-      oscillator2.frequency.exponentialRampToValueAtTime(
-        baseFreq * 1.618 * 0.9,
-        this.audioContext.currentTime + 1.5
-      );
-
-      filterNode.type = "lowpass";
-      filterNode.frequency.setValueAtTime(
-        400 + intensity * 200,
-        this.audioContext.currentTime
-      );
-      filterNode.Q.setValueAtTime(0.3, this.audioContext.currentTime);
-
-      const volume = Math.min(0.01 + intensity * 0.02, 0.03);
-      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(
-        volume,
-        this.audioContext.currentTime + 0.3
-      );
-      gainNode.gain.linearRampToValueAtTime(
-        0.001,
-        this.audioContext.currentTime + 1.5
-      );
-
-      oscillator1.type = "sine";
-      oscillator2.type = "sine";
-      oscillator1.start(this.audioContext.currentTime);
-      oscillator2.start(this.audioContext.currentTime);
-      oscillator1.stop(this.audioContext.currentTime + 1.5);
-      oscillator2.stop(this.audioContext.currentTime + 1.5);
-    } catch (e) {
-      // Silent fail
-    }
+    const baseFreq = 220 + intensity * 80;
+    this.audioSystem.createInteractionSound(
+      baseFreq,
+      "sine",
+      1.5,
+      Math.min(0.01 + intensity * 0.02, 0.03)
+    );
   }
 
   // Create depth perception sound for zoom
   playDepthSound(depth = 0.5) {
-    if (!this.soundEnabled || !this.audioContext) return;
+    if (!this.soundEnabled || !this.audioSystem) return;
 
-    try {
-      const oscillator = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
-      const filterNode = this.audioContext.createBiquadFilter();
-      const delayNode = this.audioContext.createDelay();
-
-      oscillator.connect(filterNode);
-      filterNode.connect(delayNode);
-      delayNode.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
-
-      // Lower frequency for depth sensation
-      const frequency = 100 + depth * 150;
-      oscillator.frequency.setValueAtTime(
-        frequency,
-        this.audioContext.currentTime
-      );
-      oscillator.frequency.exponentialRampToValueAtTime(
-        frequency * 0.8,
-        this.audioContext.currentTime + 0.8
-      );
-
-      // Add subtle delay for spatial depth
-      delayNode.delayTime.setValueAtTime(
-        0.01 + depth * 0.02,
-        this.audioContext.currentTime
-      );
-
-      filterNode.type = "highpass";
-      filterNode.frequency.setValueAtTime(80, this.audioContext.currentTime);
-      filterNode.Q.setValueAtTime(0.5, this.audioContext.currentTime);
-
-      const volume = Math.min(0.008 + depth * 0.015, 0.025);
-      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(
-        volume,
-        this.audioContext.currentTime + 0.1
-      );
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.001,
-        this.audioContext.currentTime + 0.8
-      );
-
-      oscillator.type = "triangle";
-      oscillator.start(this.audioContext.currentTime);
-      oscillator.stop(this.audioContext.currentTime + 0.8);
-    } catch (e) {
-      // Silent fail
-    }
+    const frequency = 100 + depth * 150;
+    this.audioSystem.createInteractionSound(
+      frequency,
+      "triangle",
+      0.8,
+      Math.min(0.008 + depth * 0.015, 0.025)
+    );
   }
 
   // Create visual intensity sound based on particle density
   playVisualIntensitySound(intensity = 0.5) {
-    if (!this.soundEnabled || !this.audioContext) return;
+    if (!this.soundEnabled || !this.audioSystem) return;
 
-    try {
-      const oscillator = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
-      const filterNode = this.audioContext.createBiquadFilter();
-
-      oscillator.connect(filterNode);
-      filterNode.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
-
-      // Crystalline sound for visual complexity
-      const frequency = 800 + intensity * 400;
-      oscillator.frequency.setValueAtTime(
-        frequency,
-        this.audioContext.currentTime
-      );
-      oscillator.frequency.exponentialRampToValueAtTime(
-        frequency * 1.2,
-        this.audioContext.currentTime + 0.4
-      );
-
-      filterNode.type = "bandpass";
-      filterNode.frequency.setValueAtTime(
-        frequency * 0.8,
-        this.audioContext.currentTime
-      );
-      filterNode.Q.setValueAtTime(2.0, this.audioContext.currentTime);
-
-      const volume = Math.min(0.005 + intensity * 0.01, 0.015);
-      gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(
-        volume,
-        this.audioContext.currentTime + 0.05
-      );
-      gainNode.gain.exponentialRampToValueAtTime(
-        0.001,
-        this.audioContext.currentTime + 0.4
-      );
-
-      oscillator.type = "sine";
-      oscillator.start(this.audioContext.currentTime);
-      oscillator.stop(this.audioContext.currentTime + 0.4);
-    } catch (e) {
-      // Silent fail
-    }
-  }
-
-  // Toggle sound on/off
-  toggleSound() {
-    this.soundEnabled = !this.soundEnabled;
-
-    const soundButton = document.querySelector(".sound-toggle-button");
-    if (soundButton) {
-      soundButton.textContent = this.soundEnabled ? "🔊" : "🔇";
-      soundButton.title = this.soundEnabled
-        ? "Sound ON - Click to mute"
-        : "Sound OFF - Click to enable";
-    }
-
-    if (
-      this.soundEnabled &&
-      this.audioContext &&
-      this.audioContext.state === "suspended"
-    ) {
-      this.audioContext.resume();
-    }
-
-    if (this.soundEnabled) {
-      setTimeout(() => this.playFluidSound(300, 0.3), 100);
-    }
+    const frequency = 800 + intensity * 400;
+    this.audioSystem.createInteractionSound(
+      frequency,
+      "sine",
+      0.4,
+      Math.min(0.005 + intensity * 0.01, 0.015)
+    );
   }
 
   init() {
@@ -885,9 +924,34 @@ class FluidDynamicsApp {
 let app;
 
 // Toggle sound function for the button
-window.toggleAppSound = function () {
+window.toggleAppSound = async function () {
+  console.log("toggleAppSound called");
   if (app) {
-    app.toggleSound();
+    const newState = !app.soundEnabled;
+    console.log("Toggling sound to:", newState);
+    await app.toggleSound(newState);
+
+    // Update button state
+    const soundButton = document.querySelector(".sound-toggle-button");
+    if (soundButton) {
+      soundButton.textContent = newState ? "🔊" : "🔇";
+      soundButton.title = newState
+        ? "Sound ON - Click to disable"
+        : "Sound OFF - Click to enable";
+    }
+
+    // Play confirmation sound
+    if (newState) {
+      console.log("Playing confirmation sound");
+      setTimeout(() => {
+        app.playFluidSound(440, 0.3);
+        // Also try a simple test tone
+        if (app.audioSystem && app.audioSystem.enabled) {
+          console.log("Playing test tone");
+          app.audioSystem.playTone(880, 0.5, "sine", { gain: 0.1 });
+        }
+      }, 200);
+    }
   }
 };
 
@@ -919,15 +983,19 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  // AudioSystem is now defined locally in this file, so we can proceed
+  console.log("AudioSystem available:", typeof AudioSystem !== "undefined");
+  console.log("AudioSystem:", AudioSystem);
+
   // Add a delay to ensure all elements are rendered and CSS is applied
   setTimeout(() => {
     console.log("Initializing FluidDynamicsApp...");
     app = new FluidDynamicsApp();
 
     // Make toggleSound globally accessible for the existing sound button
-    window.toggleAppSound = (enabled) => {
+    window.toggleAppSound = async (enabled) => {
       if (app) {
-        app.toggleSound(enabled);
+        await app.toggleSound(enabled);
       }
     };
 
@@ -935,9 +1003,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const soundButton = document.querySelector(".sound-toggle-button");
     if (soundButton) {
       let soundEnabled = false;
-      soundButton.addEventListener("click", () => {
+      soundButton.addEventListener("click", async () => {
         soundEnabled = !soundEnabled;
-        app.toggleSound(soundEnabled);
+        await app.toggleSound(soundEnabled);
         soundButton.textContent = soundEnabled ? "🔊" : "🔇";
         soundButton.title = soundEnabled
           ? "Sound ON - Click to disable"
