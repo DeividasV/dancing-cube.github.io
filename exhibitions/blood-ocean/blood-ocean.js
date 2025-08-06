@@ -231,13 +231,19 @@ let audioSystem = null;
 
 // Global function for sound toggle button
 window.toggleAppSound = function () {
+  console.log("toggleAppSound called for blood-ocean");
+
   // Initialize AudioSystem lazily
-  if (!audioSystem && typeof AudioSystem !== "undefined") {
+  if (!audioSystem) {
+    console.log("Creating new AudioSystem for blood-ocean");
     audioSystem = new AudioSystem();
   }
 
   if (audioSystem) {
+    console.log("Calling audioSystem.toggleSound()");
     audioSystem.toggleSound();
+  } else {
+    console.error("Failed to create audioSystem");
   }
 };
 
@@ -628,7 +634,7 @@ class BloodDrop3D {
 
     // Play drop impact sound based on drop size
     if (this.dropType === "tiny") {
-      audioSystem.playWaveInteraction(0.3);
+      if (audioSystem) audioSystem.playWaveInteraction(0.3);
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity * 0.6, 0, 40));
       if (Math.random() < 0.6) {
         ripples.push(
@@ -636,7 +642,7 @@ class BloodDrop3D {
         );
       }
     } else if (this.dropType === "medium") {
-      audioSystem.playWaveInteraction(0.6);
+      if (audioSystem) audioSystem.playWaveInteraction(0.6);
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity, 0, 80));
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity * 0.7, 0.15, 60));
       if (Math.random() < 0.7) {
@@ -645,7 +651,7 @@ class BloodDrop3D {
         );
       }
     } else {
-      audioSystem.playWaveInteraction(1.0);
+      if (audioSystem) audioSystem.playWaveInteraction(1.0);
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity * 1.2, 0, 120));
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity * 0.9, 0.1, 100));
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity * 0.6, 0.25, 80));
@@ -741,7 +747,7 @@ canvas.addEventListener("click", (e) => {
   ripples.push(new Ripple3D(worldX, worldZ, 0.3, 0.45, 40));
 
   // Play wave interaction sound
-  audioSystem.playWaveInteraction(1.2);
+  if (audioSystem) audioSystem.playWaveInteraction(1.2);
 });
 
 function animate() {
@@ -795,15 +801,6 @@ function animate() {
 
   requestAnimationFrame(animate);
 }
-
-setTimeout(() => {
-  if (loading) {
-    loading.style.transition = "opacity 0.5s ease, visibility 0.5s ease";
-    loading.style.opacity = "0";
-    loading.style.visibility = "hidden";
-    setTimeout(() => {}, 500);
-  }
-}, 1000);
 
 // Start animation
 animate();
