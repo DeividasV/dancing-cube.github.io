@@ -23,7 +23,7 @@ class BloodOceanAudioSystem {
       const savedVolume = localStorage.getItem("bloodOceanVolume");
       const savedEnabled = localStorage.getItem("bloodOceanSoundEnabled");
 
-      this.masterVolume = savedVolume ? parseFloat(savedVolume) : 0.35;
+      this.masterVolume = savedVolume ? parseFloat(savedVolume) : 0.5; // Increased default volume
       this.soundEnabled = savedEnabled === "true";
 
       console.log(
@@ -31,7 +31,7 @@ class BloodOceanAudioSystem {
       );
     } catch (e) {
       console.warn("Could not load audio settings from localStorage:", e);
-      this.masterVolume = 0.35;
+      this.masterVolume = 0.5; // Increased default volume
       this.soundEnabled = false;
     }
   }
@@ -118,7 +118,7 @@ class BloodOceanAudioSystem {
 
       // Play brief confirmation sound
       setTimeout(() => {
-        this.playTone(880, 0.5, "sine", 0.3);
+        this.playTone(880, 0.5, "sine", 0.4); // Increased volume from 0.3 to 0.4
       }, 100);
 
       // Start ambient sounds
@@ -135,6 +135,17 @@ class BloodOceanAudioSystem {
 
   isEnabled() {
     return this.soundEnabled && this.isInitialized;
+  }
+
+  getStatus() {
+    return {
+      soundEnabled: this.soundEnabled,
+      isInitialized: this.isInitialized,
+      audioContextState: this.audioContext ? this.audioContext.state : "null",
+      masterVolume: this.masterVolume,
+      ambientSourcesCount: this.ambientSources.length,
+      ambientTimersCount: this.ambientTimers.length,
+    };
   }
 
   setVolume(volume) {
@@ -212,15 +223,27 @@ class BloodOceanAudioSystem {
   }
 
   startBackgroundAmbient() {
-    if (!this.isEnabled()) return;
+    if (!this.isEnabled()) {
+      console.log("Cannot start ambient - audio not enabled");
+      return;
+    }
 
     console.log("Starting enhanced background ambient sounds...");
     this.stopBackgroundAmbient();
 
-    // Create ambient sources
-    this.createOceanDrone();
-    this.createWaveNoise();
-    this.scheduleWaveSounds();
+    // Add delay to ensure audio context is fully ready
+    setTimeout(() => {
+      if (!this.isEnabled()) return;
+
+      // Create ambient sources
+      this.createOceanDrone();
+      this.createWaveNoise();
+      this.scheduleWaveSounds();
+
+      console.log(
+        `Started ${this.ambientSources.length} ambient sources and ${this.ambientTimers.length} timers`
+      );
+    }, 200);
   }
 
   stopBackgroundAmbient() {
@@ -248,9 +271,14 @@ class BloodOceanAudioSystem {
   }
 
   createOceanDrone() {
-    if (!this.isEnabled()) return;
+    if (!this.isEnabled()) {
+      console.log("Cannot create ocean drone - audio not enabled");
+      return;
+    }
 
     try {
+      console.log("Creating ocean drone...");
+
       // Deep bass drone (60Hz)
       const bassOsc = this.audioContext.createOscillator();
       const bassGain = this.audioContext.createGain();
@@ -265,7 +293,7 @@ class BloodOceanAudioSystem {
 
       bassGain.gain.setValueAtTime(0, this.audioContext.currentTime);
       bassGain.gain.linearRampToValueAtTime(
-        0.25,
+        0.4, // Increased from 0.25
         this.audioContext.currentTime + 2
       );
 
@@ -275,6 +303,7 @@ class BloodOceanAudioSystem {
 
       bassOsc.start();
       this.ambientSources.push(bassOsc);
+      console.log("Bass drone created and started");
 
       // Mid-frequency drone with slight detuning (90Hz)
       const midOsc = this.audioContext.createOscillator();
@@ -290,7 +319,7 @@ class BloodOceanAudioSystem {
 
       midGain.gain.setValueAtTime(0, this.audioContext.currentTime);
       midGain.gain.linearRampToValueAtTime(
-        0.15,
+        0.25, // Increased from 0.15
         this.audioContext.currentTime + 3
       );
 
@@ -300,8 +329,11 @@ class BloodOceanAudioSystem {
 
       midOsc.start();
       this.ambientSources.push(midOsc);
+      console.log("Mid drone created and started");
 
-      console.log("Ocean drone created successfully");
+      console.log(
+        `Ocean drone created successfully with ${this.ambientSources.length} sources`
+      );
     } catch (error) {
       console.error("Error creating ocean drone:", error);
     }
@@ -309,9 +341,14 @@ class BloodOceanAudioSystem {
 
   // Create noise-based wave sounds instead of tones
   createWaveNoise() {
-    if (!this.isEnabled()) return;
+    if (!this.isEnabled()) {
+      console.log("Cannot create wave noise - audio not enabled");
+      return;
+    }
 
     try {
+      console.log("Creating wave noise...");
+
       // Create brown noise buffer for more natural wave sounds
       const bufferSize = this.audioContext.sampleRate * 2; // 2 seconds
       const buffer = this.audioContext.createBuffer(
@@ -354,7 +391,7 @@ class BloodOceanAudioSystem {
       const waveGain = this.audioContext.createGain();
       waveGain.gain.setValueAtTime(0, this.audioContext.currentTime);
       waveGain.gain.linearRampToValueAtTime(
-        0.12,
+        0.2, // Increased from 0.12
         this.audioContext.currentTime + 4
       );
 
@@ -367,15 +404,23 @@ class BloodOceanAudioSystem {
       lfo.start();
 
       this.ambientSources.push(noiseSource, lfo);
+      console.log("Wave noise created and started");
 
-      console.log("Wave noise created successfully");
+      console.log(
+        `Wave noise created successfully, total sources: ${this.ambientSources.length}`
+      );
     } catch (error) {
       console.error("Error creating wave noise:", error);
     }
   }
 
   scheduleWaveSounds() {
-    if (!this.isEnabled()) return;
+    if (!this.isEnabled()) {
+      console.log("Cannot schedule wave sounds - audio not enabled");
+      return;
+    }
+
+    console.log("Scheduling wave sounds...");
 
     const scheduleNextWave = () => {
       if (!this.isEnabled()) return;
@@ -383,15 +428,17 @@ class BloodOceanAudioSystem {
       // Generate wave sound with noise instead of pure tone
       this.playWaveNoise();
 
-      // Schedule next wave (3-9 seconds)
-      const nextDelay = 3000 + Math.random() * 6000;
+      // Schedule next wave (2-6 seconds instead of 3-9)
+      const nextDelay = 2000 + Math.random() * 4000;
       const timer = setTimeout(scheduleNextWave, nextDelay);
       this.ambientTimers.push(timer);
+      console.log(`Next wave scheduled in ${(nextDelay / 1000).toFixed(1)}s`);
     };
 
-    // Start scheduling after initial delay
-    const timer = setTimeout(scheduleNextWave, 2000);
+    // Start scheduling after initial delay (reduced from 2000ms to 1000ms)
+    const timer = setTimeout(scheduleNextWave, 1000);
     this.ambientTimers.push(timer);
+    console.log("Wave scheduling initialized");
   }
 
   playWaveNoise() {
@@ -442,7 +489,7 @@ class BloodOceanAudioSystem {
       const gain = this.audioContext.createGain();
       gain.gain.setValueAtTime(0, this.audioContext.currentTime);
       gain.gain.linearRampToValueAtTime(
-        0.2,
+        0.3, // Increased from 0.2
         this.audioContext.currentTime + 0.05
       );
       gain.gain.exponentialRampToValueAtTime(
@@ -503,7 +550,7 @@ class BloodOceanAudioSystem {
       panner.pan.value = Math.max(-1, Math.min(1, pan));
 
       const gain = this.audioContext.createGain();
-      gain.gain.value = 0.15 * intensity;
+      gain.gain.value = 0.25 * intensity; // Increased from 0.15
 
       splashSource.connect(filter);
       filter.connect(gain);
@@ -554,6 +601,53 @@ window.toggleAppSound = async function () {
     console.error("Blood Ocean audio system not available");
     return false;
   }
+};
+
+// Debug function to check audio status
+window.debugBloodOceanAudio = function () {
+  if (window.bloodOceanAudio) {
+    const status = window.bloodOceanAudio.getStatus();
+    console.log("Blood Ocean Audio Status:", status);
+    return status;
+  } else {
+    console.error("Blood Ocean audio system not available");
+    return null;
+  }
+};
+
+// Debug function to test audio manually
+window.testBloodOceanAudio = async function () {
+  if (window.bloodOceanAudio) {
+    console.log("Testing Blood Ocean Audio...");
+
+    // Force enable if not already
+    if (!window.bloodOceanAudio.isEnabled()) {
+      console.log("Audio not enabled, enabling...");
+      await window.bloodOceanAudio.toggleSound();
+    }
+
+    // Test tone
+    console.log("Playing test tone...");
+    window.bloodOceanAudio.playTone(440, 1.0, "sine", 0.3);
+
+    // Test wave interaction
+    setTimeout(() => {
+      console.log("Playing wave interaction...");
+      window.bloodOceanAudio.playWaveInteraction(1.0, 0);
+    }, 1200);
+
+    return "Audio test started";
+  } else {
+    console.error("Blood Ocean audio system not available");
+    return false;
+  }
+};
+
+// Debug function to reset audio settings
+window.resetBloodOceanAudio = function () {
+  localStorage.removeItem("bloodOceanVolume");
+  localStorage.removeItem("bloodOceanSoundEnabled");
+  console.log("Blood Ocean audio settings reset. Reload page to apply.");
 };
 
 // Export for module usage
