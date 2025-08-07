@@ -41,6 +41,12 @@ class BloodOceanRenderer {
     this.drops = [];
     this.oceanSurface = null;
 
+    // Mouse tracking
+    this.mouseX = 0;
+    this.mouseZ = 0;
+    this.lastMouseTime = 0;
+    this.mouseRippleDelay = 0.1; // Create mouse ripples every 100ms
+
     // Enhanced blood red palette - solid dark bordeaux colors
     this.bloodColors = [
       { base: "#5a0000", reflect: "#8b0000", shine: "#a52a2a" }, // Dark bordeaux
@@ -111,6 +117,7 @@ class BloodOceanRenderer {
 
     // Mouse interaction
     this.canvas.addEventListener("click", (e) => this.handleClick(e));
+    this.canvas.addEventListener("mousemove", (e) => this.handleMouseMove(e));
 
     // Performance monitoring
     window.addEventListener("beforeunload", () => this.dispose());
@@ -121,25 +128,91 @@ class BloodOceanRenderer {
     const screenX = e.clientX - rect.left;
     const screenY = e.clientY - rect.top;
 
-    const worldX = (screenX - this.canvas.clientWidth / 2) * 2;
-    const worldZ = (screenY - this.perspective.horizon) * 4;
+    const worldPos = this.screenToWorld(screenX, screenY);
 
-    this.createClickRipples(worldX, worldZ); // Create subtle wave interaction sound for the flowing lines
+    this.createClickRipples(worldPos.x, worldPos.z); // Create bigger ripples for clicks
     if (window.bloodOceanAudio && window.bloodOceanAudio.isEnabled()) {
       const normalizedX = Math.max(
         -1,
         Math.min(1, (screenX / this.canvas.clientWidth) * 2 - 1)
       );
-      // Gentler sound for the elegant wave aesthetic
-      window.bloodOceanAudio.playWaveInteraction(0.8, normalizedX);
+      // Stronger sound for clicks
+      window.bloodOceanAudio.playWaveInteraction(1.2, normalizedX);
     }
   }
 
+  handleMouseMove(e) {
+    const rect = this.canvas.getBoundingClientRect();
+    const screenX = e.clientX - rect.left;
+    const screenY = e.clientY - rect.top;
+
+    const worldPos = this.screenToWorld(screenX, screenY);
+    this.mouseX = worldPos.x;
+    this.mouseZ = worldPos.z;
+
+    // Create small following ripples periodically
+    if (this.time - this.lastMouseTime > this.mouseRippleDelay) {
+      this.createMouseRipples(this.mouseX, this.mouseZ);
+      this.lastMouseTime = this.time;
+    }
+  }
+
+  // Convert screen coordinates to world coordinates using inverse projection
+  screenToWorld(screenX, screenY) {
+    // This must exactly reverse the project3D transformation
+
+    // Step 1: Convert screen coordinates back to relative coordinates
+    const screenCenterX = this.canvas.clientWidth / 2;
+    const relativeX = screenX - screenCenterX;
+    const relativeY = screenY - this.perspective.horizon;
+
+    // Step 2: We need to estimate the depth (rotZ) to calculate proper scale
+    // For points on the water surface, assume y ≈ 0 in world space
+    // Points closer to horizon are further away (smaller rotZ)
+    // Points further from horizon are closer (larger rotZ)
+
+    const estimatedRotZ = Math.max(-500, Math.min(500, -relativeY * 1.5));
+
+    // Step 3: Calculate scale (same formula as project3D)
+    const scale =
+      this.perspective.distance / (estimatedRotZ + this.perspective.distance);
+
+    // Step 4: Reverse the screen projection
+    const viewX = relativeX / scale;
+    const rotY = relativeY / scale;
+
+    // Step 5: Reverse the viewing angle rotation
+    const angleRad = (this.perspective.viewAngle * Math.PI) / 180;
+    // project3D: rotY = viewY * cos - viewZ * sin
+    // project3D: rotZ = viewY * sin + viewZ * cos
+    // Solving for viewY and viewZ:
+    const viewY =
+      rotY * Math.cos(angleRad) + estimatedRotZ * Math.sin(angleRad);
+    const viewZ =
+      -rotY * Math.sin(angleRad) + estimatedRotZ * Math.cos(angleRad);
+
+    // Step 6: Convert back to world coordinates
+    const worldX = viewX + this.perspective.camera.x;
+    const worldY = viewY + this.perspective.camera.y;
+    const worldZ = viewZ + this.perspective.camera.z;
+
+    return { x: worldX, z: worldZ };
+  }
+
   createClickRipples(worldX, worldZ) {
-    this.addRipple(worldX, worldZ, 1.2, 0, 120);
-    this.addRipple(worldX, worldZ, 0.8, 0.1, 90);
-    this.addRipple(worldX, worldZ, 0.5, 0.25, 60);
-    this.addRipple(worldX, worldZ, 0.3, 0.45, 40);
+    // Bigger, more dramatic ripples for clicks
+    this.addRipple(worldX, worldZ, 2.0, 0, 180);
+    this.addRipple(worldX, worldZ, 1.5, 0.1, 140);
+    this.addRipple(worldX, worldZ, 1.0, 0.25, 100);
+    this.addRipple(worldX, worldZ, 0.7, 0.45, 70);
+    this.addRipple(worldX, worldZ, 0.4, 0.7, 50);
+  }
+
+  createMouseRipples(worldX, worldZ) {
+    // Small, subtle ripples that follow the mouse
+    const intensity = 0.3 + Math.random() * 0.2;
+    const radius = 30 + Math.random() * 20;
+    this.addRipple(worldX, worldZ, intensity, 0, radius);
   }
 
   // Object pool management for GC optimization
@@ -366,6 +439,7 @@ class BloodOceanRenderer {
 
     if (this.canvas) {
       this.canvas.removeEventListener("click", this.handleClick);
+      this.canvas.removeEventListener("mousemove", this.handleMouseMove);
       // Remove canvas from DOM if we created it
       if (this.canvas.id === "blood-canvas" && this.canvas.parentNode) {
         this.canvas.parentNode.removeChild(this.canvas);
