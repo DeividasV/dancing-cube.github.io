@@ -124,20 +124,46 @@ class BloodOceanRenderer {
   }
 
   handleClick(e) {
+    console.log("Click detected at:", e.clientX, e.clientY);
+
     const rect = this.canvas.getBoundingClientRect();
     const screenX = e.clientX - rect.left;
     const screenY = e.clientY - rect.top;
 
     const worldPos = this.screenToWorld(screenX, screenY);
+    console.log("World position:", worldPos);
 
     this.createClickRipples(worldPos.x, worldPos.z); // Create bigger ripples for clicks
     if (window.bloodOceanAudio && window.bloodOceanAudio.isEnabled()) {
+      console.log("Audio is enabled, playing ripple sound");
       const normalizedX = Math.max(
         -1,
         Math.min(1, (screenX / this.canvas.clientWidth) * 2 - 1)
       );
-      // Stronger sound for clicks
-      window.bloodOceanAudio.playWaveInteraction(1.2, normalizedX);
+
+      // Create ripple data for audio context
+      const rippleData = {
+        maxRadius: 180, // Largest ripple from createClickRipples
+        intensity: 2.0,
+        position: { x: worldPos.x, z: worldPos.z },
+        type: "click",
+      };
+
+      console.log("Calling playWaveInteraction with:", {
+        intensity: 1.2,
+        pan: normalizedX,
+        rippleData,
+      });
+
+      // Stronger sound for clicks with ripple context
+      window.bloodOceanAudio.playWaveInteraction(1.2, normalizedX, rippleData);
+    } else {
+      console.log("Audio not available or not enabled:", {
+        audioExists: !!window.bloodOceanAudio,
+        audioEnabled: window.bloodOceanAudio
+          ? window.bloodOceanAudio.isEnabled()
+          : false,
+      });
     }
   }
 
@@ -213,6 +239,28 @@ class BloodOceanRenderer {
     const intensity = 0.3 + Math.random() * 0.2;
     const radius = 30 + Math.random() * 20;
     this.addRipple(worldX, worldZ, intensity, 0, radius);
+
+    // Occasionally play subtle mouse ripple sounds
+    if (
+      Math.random() < 0.1 &&
+      window.bloodOceanAudio &&
+      window.bloodOceanAudio.isEnabled()
+    ) {
+      const normalizedX = Math.max(-1, Math.min(1, worldX / 500)); // Normalize world position
+      const rippleData = {
+        maxRadius: radius,
+        intensity: intensity,
+        position: { x: worldX, z: worldZ },
+        type: "mouse",
+      };
+
+      // Very subtle mouse ripple sound
+      window.bloodOceanAudio.playWaveInteraction(
+        intensity * 0.3,
+        normalizedX,
+        rippleData
+      );
+    }
   }
 
   // Object pool management for GC optimization
@@ -336,12 +384,60 @@ class BloodOceanRenderer {
     //   this.addDrop();
     // }
 
+    // Send wave data to audio system (every few frames for performance)
+    if (this.frameCount % 10 === 0) {
+      this.updateAudioWithWaveData();
+    }
+
     // Cap array sizes for GC management
     if (this.ripples.length > this.maxRipples) {
       this.ripples.length = this.maxRipples;
     }
     if (this.drops.length > this.maxDrops) {
       this.drops.length = this.maxDrops;
+    }
+  }
+
+  // Send wave analysis data to audio system for dynamic sound
+  updateAudioWithWaveData() {
+    if (!window.bloodOceanAudio || !window.bloodOceanAudio.isEnabled()) return;
+
+    try {
+      // Analyze current wave state
+      const rippleCount = this.ripples.length;
+      const dropCount = this.drops.length;
+
+      // Calculate average ripple amplitude/intensity
+      let totalAmplitude = 0;
+      let activeRipples = 0;
+      for (const ripple of this.ripples) {
+        if (ripple.active && ripple.opacity > 0.1) {
+          totalAmplitude += ripple.amplitude * ripple.opacity;
+          activeRipples++;
+        }
+      }
+      const averageAmplitude =
+        activeRipples > 0 ? totalAmplitude / activeRipples / 12 : 0; // Normalize to 0-1
+
+      // Calculate overall wave intensity based on multiple factors
+      const baseWaveIntensity = (Math.sin(this.time * 0.8) + 1) / 2; // Base ocean rhythm
+      const rippleActivity = Math.min(rippleCount / 20, 1); // Ripple density factor
+      const waveIntensity = baseWaveIntensity * 0.6 + rippleActivity * 0.4;
+
+      // Create wave data object
+      const waveData = {
+        rippleCount,
+        dropCount,
+        averageAmplitude,
+        waveIntensity,
+        time: this.time,
+        activeRipples,
+      };
+
+      // Send to audio system
+      window.bloodOceanAudio.updateAmbientWithWaveData(waveData);
+    } catch (error) {
+      console.warn("Error updating audio with wave data:", error);
     }
   }
 

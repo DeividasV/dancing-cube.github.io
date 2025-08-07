@@ -10,6 +10,7 @@ class BloodOceanAudioSystem {
     this.isInitialized = false;
     this.ambientSources = [];
     this.ambientTimers = [];
+    this.waveScheduleMultiplier = 1.0; // For dynamic wave timing
 
     // Load settings from localStorage
     this.loadSettings();
@@ -105,6 +106,10 @@ class BloodOceanAudioSystem {
   }
 
   async toggleSound() {
+    console.log(
+      `toggleSound called. Current state: enabled=${this.soundEnabled}, initialized=${this.isInitialized}`
+    );
+
     this.soundEnabled = !this.soundEnabled;
     console.log(`Sound ${this.soundEnabled ? "enabled" : "disabled"}`);
 
@@ -112,24 +117,29 @@ class BloodOceanAudioSystem {
       // Initialize audio context on first enable (user gesture)
       const initialized = await this.initAudio();
       if (!initialized) {
+        console.error("Failed to initialize audio, disabling sound");
         this.soundEnabled = false;
         return false;
       }
 
       // Play brief confirmation sound
       setTimeout(() => {
+        console.log("Playing confirmation beep...");
         this.playTone(880, 0.5, "sine", 0.4); // Increased volume from 0.3 to 0.4
       }, 100);
 
       // Start ambient sounds
       setTimeout(() => {
+        console.log("Starting background ambient...");
         this.startBackgroundAmbient();
       }, 600);
     } else {
+      console.log("Stopping background ambient...");
       this.stopBackgroundAmbient();
     }
 
     this.saveSettings();
+    console.log(`Toggle complete. Final state: enabled=${this.soundEnabled}`);
     return this.soundEnabled;
   }
 
@@ -293,7 +303,7 @@ class BloodOceanAudioSystem {
 
       bassGain.gain.setValueAtTime(0, this.audioContext.currentTime);
       bassGain.gain.linearRampToValueAtTime(
-        0.4, // Increased from 0.25
+        0.3, // Restored ambient volume for better ocean atmosphere
         this.audioContext.currentTime + 2
       );
 
@@ -319,7 +329,7 @@ class BloodOceanAudioSystem {
 
       midGain.gain.setValueAtTime(0, this.audioContext.currentTime);
       midGain.gain.linearRampToValueAtTime(
-        0.25, // Increased from 0.15
+        0.2, // Restored ambient volume for better ocean atmosphere
         this.audioContext.currentTime + 3
       );
 
@@ -391,7 +401,7 @@ class BloodOceanAudioSystem {
       const waveGain = this.audioContext.createGain();
       waveGain.gain.setValueAtTime(0, this.audioContext.currentTime);
       waveGain.gain.linearRampToValueAtTime(
-        0.2, // Increased from 0.12
+        0.15, // Restored ambient volume for better ocean atmosphere
         this.audioContext.currentTime + 4
       );
 
@@ -428,11 +438,16 @@ class BloodOceanAudioSystem {
       // Generate wave sound with noise instead of pure tone
       this.playWaveNoise();
 
-      // Schedule next wave (2-6 seconds instead of 3-9)
-      const nextDelay = 2000 + Math.random() * 4000;
+      // Schedule next wave (2-6 seconds, modified by activity level)
+      const baseDelay = 2000 + Math.random() * 4000;
+      const nextDelay = baseDelay * (this.waveScheduleMultiplier || 1.0);
       const timer = setTimeout(scheduleNextWave, nextDelay);
       this.ambientTimers.push(timer);
-      console.log(`Next wave scheduled in ${(nextDelay / 1000).toFixed(1)}s`);
+      console.log(
+        `Next wave scheduled in ${(nextDelay / 1000).toFixed(
+          1
+        )}s (multiplier: ${(this.waveScheduleMultiplier || 1.0).toFixed(2)})`
+      );
     };
 
     // Start scheduling after initial delay (reduced from 2000ms to 1000ms)
@@ -507,9 +522,14 @@ class BloodOceanAudioSystem {
     }
   }
 
-  // Enhanced wave interaction with spatial audio
-  async playWaveInteraction(intensity = 1.0, pan = 0) {
-    if (!this.isEnabled()) return;
+  // Enhanced wave interaction with spatial audio and visual context
+  async playWaveInteraction(intensity = 1.0, pan = 0, rippleData = null) {
+    if (!this.isEnabled()) {
+      console.log("playWaveInteraction called but audio not enabled");
+      return;
+    }
+
+    console.log("playWaveInteraction called:", { intensity, pan, rippleData });
 
     try {
       // Resume context if needed
@@ -517,8 +537,24 @@ class BloodOceanAudioSystem {
         await this.audioContext.resume();
       }
 
-      // Create short noise burst for splash
-      const bufferSize = this.audioContext.sampleRate * 0.3;
+      // Calculate sound properties based on ripple characteristics
+      let baseFreq = 120 + intensity * 80;
+      let filterQ = 0.5;
+      let duration = 0.3;
+
+      if (rippleData) {
+        // Adjust sound based on ripple size and properties
+        const sizeScale = Math.min(rippleData.maxRadius / 100, 2.0);
+        baseFreq = 200 - rippleData.maxRadius * 0.5; // Larger ripples = lower frequency
+        filterQ = 0.3 + intensity * 0.7; // More intensity = sharper filter
+        duration = 0.4 + sizeScale * 0.6; // Larger ripples = longer sound
+        console.log("Ripple data found:", { sizeScale, baseFreq, duration });
+      } else {
+        console.log("No ripple data provided, using defaults");
+      }
+
+      // Create ripple-like oscillating wave sound
+      const bufferSize = this.audioContext.sampleRate * duration;
       const buffer = this.audioContext.createBuffer(
         1,
         bufferSize,
@@ -526,31 +562,64 @@ class BloodOceanAudioSystem {
       );
       const data = buffer.getChannelData(0);
 
-      // Generate noise with envelope
+      // Generate ripple wave: oscillating frequency that decreases over time
       for (let i = 0; i < data.length; i++) {
-        const t = i / bufferSize;
-        const envelope = Math.exp(-t * 8) * (1 - t);
-        data[i] = (Math.random() * 2 - 1) * envelope * intensity;
+        const t = i / this.audioContext.sampleRate; // Time in seconds
+        const progress = i / bufferSize; // 0 to 1 over duration
+
+        // More aggressive exponential decay for sharper attack
+        const envelope =
+          Math.exp(-progress * 3) * (1 - Math.pow(progress, 0.2));
+
+        // Frequency sweeps down as the ripple expands (like doppler effect)
+        const freqSweep = baseFreq * (1 - progress * 0.6); // Frequency drops 60%
+
+        // Main ripple oscillation with extra harmonics for clarity
+        const phase = freqSweep * t * 2 * Math.PI;
+        let sample = Math.sin(phase) * envelope;
+
+        // Always add harmonics for better audibility
+        const harmonic = Math.sin(phase * 2) * 0.4 * envelope;
+        const subHarmonic = Math.sin(phase * 0.5) * 0.3 * envelope;
+
+        // Blend harmonics for richer, more audible sound
+        if (rippleData && rippleData.maxRadius > 100) {
+          sample = sample * 0.5 + harmonic * 0.3 + subHarmonic * 0.2;
+        } else {
+          sample = sample * 0.7 + harmonic * 0.2 + subHarmonic * 0.1;
+        }
+
+        // Add subtle noise texture for realism
+        const noise = (Math.random() * 2 - 1) * 0.1 * envelope;
+        sample += noise;
+
+        data[i] = sample * intensity;
       }
 
       const splashSource = this.audioContext.createBufferSource();
       splashSource.buffer = buffer;
 
-      // Filter for splash character
+      // Filter to shape the ripple sound character
       const filter = this.audioContext.createBiquadFilter();
-      filter.type = "highpass";
+      filter.type = "lowpass"; // Changed from highpass to lowpass for warmer ripple sound
       filter.frequency.setValueAtTime(
-        120 + intensity * 80,
+        baseFreq * 2, // Filter frequency follows the wave
         this.audioContext.currentTime
       );
-      filter.Q.setValueAtTime(0.5, this.audioContext.currentTime);
+      filter.Q.setValueAtTime(filterQ, this.audioContext.currentTime);
+
+      // Sweep the filter down with the frequency for realistic ripple effect
+      filter.frequency.exponentialRampToValueAtTime(
+        baseFreq * 0.5,
+        this.audioContext.currentTime + duration * 0.8
+      );
 
       // Spatial positioning
       const panner = this.audioContext.createStereoPanner();
       panner.pan.value = Math.max(-1, Math.min(1, pan));
 
       const gain = this.audioContext.createGain();
-      gain.gain.value = 0.25 * intensity; // Increased from 0.15
+      gain.gain.value = 1.2 * intensity; // Much louder ripple sounds
 
       splashSource.connect(filter);
       filter.connect(gain);
@@ -559,13 +628,84 @@ class BloodOceanAudioSystem {
 
       splashSource.start();
 
+      console.log("Ripple sound started successfully");
+
       console.log(
-        `Wave interaction: intensity=${intensity.toFixed(2)}, pan=${pan.toFixed(
+        `Ripple wave: intensity=${intensity.toFixed(2)}, pan=${pan.toFixed(
           2
-        )}`
+        )}, freq=${baseFreq.toFixed(0)}Hz→${(baseFreq * 0.4).toFixed(0)}Hz${
+          rippleData ? `, ripple=${rippleData.maxRadius.toFixed(0)}` : ""
+        }`
       );
     } catch (error) {
       console.error("Error playing wave interaction:", error);
+    }
+  }
+
+  // Update ambient sounds based on visual wave activity
+  updateAmbientWithWaveData(waveData) {
+    if (!this.isEnabled() || this.ambientSources.length === 0) return;
+
+    try {
+      // waveData should contain: { rippleCount, averageAmplitude, waveIntensity, time }
+      const {
+        rippleCount = 0,
+        averageAmplitude = 0,
+        waveIntensity = 0.5,
+        time = 0,
+      } = waveData;
+
+      // Modulate ocean drone based on wave activity
+      if (this.ambientSources.length >= 2) {
+        // Bass oscillator (index 0)
+        const bassOsc = this.ambientSources[0];
+        if (bassOsc.frequency) {
+          // Vary bass frequency slightly based on wave activity (58-62 Hz)
+          const bassFreq =
+            60 + Math.sin(time * 0.1) * 2 + (waveIntensity - 0.5) * 4;
+          bassOsc.frequency.setValueAtTime(
+            bassFreq,
+            this.audioContext.currentTime
+          );
+        }
+
+        // Mid oscillator (index 1)
+        const midOsc = this.ambientSources[1];
+        if (midOsc.frequency) {
+          // Vary mid frequency based on ripple activity (85-95 Hz)
+          const midFreq = 90 + Math.sin(time * 0.15 + 1) * 5 + rippleCount / 10;
+          midOsc.frequency.setValueAtTime(
+            Math.min(midFreq, 95),
+            this.audioContext.currentTime
+          );
+        }
+      }
+
+      // Modulate wave noise LFO if available
+      if (this.ambientSources.length >= 4) {
+        const lfo = this.ambientSources[3]; // LFO should be 4th source
+        if (lfo.frequency) {
+          // Speed up wave modulation when there's more activity
+          const lfoFreq = 0.08 + waveIntensity * 0.05 + rippleCount * 0.002;
+          lfo.frequency.setValueAtTime(
+            Math.min(lfoFreq, 0.2),
+            this.audioContext.currentTime
+          );
+        }
+      }
+
+      // Adjust the scheduled wave sounds frequency based on activity
+      if (averageAmplitude > 0.7) {
+        // More frequent waves when there's high visual activity
+        this.waveScheduleMultiplier = 0.7;
+      } else if (averageAmplitude < 0.3) {
+        // Less frequent waves when calm
+        this.waveScheduleMultiplier = 1.3;
+      } else {
+        this.waveScheduleMultiplier = 1.0;
+      }
+    } catch (error) {
+      console.warn("Error updating ambient with wave data:", error);
     }
   }
 
@@ -595,11 +735,28 @@ window.bloodOceanAudio = new BloodOceanAudioSystem();
 window.toggleAppSound = async function () {
   console.log("toggleAppSound called for blood-ocean");
 
-  if (window.bloodOceanAudio) {
-    return await window.bloodOceanAudio.toggleSound();
-  } else {
-    console.error("Blood Ocean audio system not available");
-    return false;
+  // Prevent rapid toggling
+  if (window.toggleAppSound._debouncing) {
+    console.log("Toggle debounced - ignoring rapid call");
+    return window.bloodOceanAudio ? window.bloodOceanAudio.soundEnabled : false;
+  }
+
+  window.toggleAppSound._debouncing = true;
+
+  try {
+    if (window.bloodOceanAudio) {
+      const result = await window.bloodOceanAudio.toggleSound();
+      console.log("Toggle result:", result);
+      return result;
+    } else {
+      console.error("Blood Ocean audio system not available");
+      return false;
+    }
+  } finally {
+    // Clear debounce after a short delay
+    setTimeout(() => {
+      window.toggleAppSound._debouncing = false;
+    }, 1000);
   }
 };
 
@@ -648,6 +805,135 @@ window.resetBloodOceanAudio = function () {
   localStorage.removeItem("bloodOceanVolume");
   localStorage.removeItem("bloodOceanSoundEnabled");
   console.log("Blood Ocean audio settings reset. Reload page to apply.");
+};
+
+// Debug function to test contextual ripple sounds
+window.testContextualRipples = function () {
+  if (!window.bloodOceanAudio || !window.bloodOceanAudio.isEnabled()) {
+    console.log("Audio not enabled. Enable audio first with the sound button.");
+    return;
+  }
+
+  console.log("Testing new ripple-like sounds...");
+
+  // Test small mouse ripple
+  setTimeout(() => {
+    console.log("Small mouse ripple (high freq, short)...");
+    const smallRippleData = {
+      maxRadius: 35,
+      intensity: 0.4,
+      position: { x: 0, z: 0 },
+      type: "mouse",
+    };
+    window.bloodOceanAudio.playWaveInteraction(0.4, 0, smallRippleData);
+  }, 500);
+
+  // Test medium click ripple
+  setTimeout(() => {
+    console.log("Medium click ripple (mid freq, medium)...");
+    const mediumRippleData = {
+      maxRadius: 100,
+      intensity: 1.0,
+      position: { x: 200, z: 100 },
+      type: "click",
+    };
+    window.bloodOceanAudio.playWaveInteraction(1.0, 0.3, mediumRippleData);
+  }, 1800);
+
+  // Test large click ripple
+  setTimeout(() => {
+    console.log("Large click ripple (low freq, long, harmonics)...");
+    const largeRippleData = {
+      maxRadius: 180,
+      intensity: 2.0,
+      position: { x: -100, z: 200 },
+      type: "click",
+    };
+    window.bloodOceanAudio.playWaveInteraction(1.2, -0.5, largeRippleData);
+  }, 3200);
+
+  // Test extra large ripple
+  setTimeout(() => {
+    console.log(
+      "Extra large ripple (very low freq, very long, rich harmonics)..."
+    );
+    const extraLargeRippleData = {
+      maxRadius: 250,
+      intensity: 2.5,
+      position: { x: 0, z: 0 },
+      type: "click",
+    };
+    window.bloodOceanAudio.playWaveInteraction(1.5, 0, extraLargeRippleData);
+  }, 5000);
+
+  return "Ripple sound test started - listen for frequency sweeps and expanding wave sounds!";
+};
+
+// Simple test for immediate ripple sound
+window.testSingleRipple = function () {
+  if (!window.bloodOceanAudio || !window.bloodOceanAudio.isEnabled()) {
+    console.log("Audio not enabled. Enable audio first with the sound button.");
+    return;
+  }
+
+  console.log("Testing single ripple sound immediately...");
+  const rippleData = {
+    maxRadius: 180,
+    intensity: 2.0,
+    position: { x: 0, z: 0 },
+    type: "click",
+  };
+  window.bloodOceanAudio.playWaveInteraction(1.2, 0, rippleData);
+  return "Single ripple test fired!";
+};
+
+// Test immediate loud beep to verify audio output
+window.testLoudBeep = function () {
+  if (!window.bloodOceanAudio || !window.bloodOceanAudio.isEnabled()) {
+    console.log("Audio not enabled. Enable audio first with the sound button.");
+    return;
+  }
+
+  console.log("Testing loud beep...");
+  window.bloodOceanAudio.playTone(800, 0.5, "sine", 0.8); // Very loud test tone
+  return "Loud beep test fired!";
+};
+
+// Force enable audio (bypass toggle issues)
+window.forceEnableBloodOceanAudio = async function () {
+  if (!window.bloodOceanAudio) {
+    console.error("Blood Ocean audio system not available");
+    return false;
+  }
+
+  console.log("Force enabling audio...");
+
+  // Force enable without toggle
+  window.bloodOceanAudio.soundEnabled = true;
+
+  // Initialize if not already
+  const initialized = await window.bloodOceanAudio.initAudio();
+  if (!initialized) {
+    console.error("Failed to initialize audio");
+    window.bloodOceanAudio.soundEnabled = false;
+    return false;
+  }
+
+  // Start ambient
+  setTimeout(() => {
+    window.bloodOceanAudio.startBackgroundAmbient();
+  }, 500);
+
+  // Test sound
+  setTimeout(() => {
+    console.log("Playing test beep...");
+    window.bloodOceanAudio.playTone(880, 0.5, "sine", 0.4);
+  }, 100);
+
+  window.bloodOceanAudio.saveSettings();
+  console.log("Audio force-enabled successfully!");
+
+  return true;
 };
 
 // Export for module usage
