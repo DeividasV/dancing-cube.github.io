@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BL00D_0C34N - Dancing Cube Exhibition</title>
-    <meta name="description" content="Dynamic blood ocean simulation" />
+    <meta
+      name="description"
+      content="Pure flowing red wave lines - minimalist liquid dynamics"
+    />
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="../../favicon.ico" />
@@ -82,7 +85,16 @@
     <script src="../../src/core/AudioSystem.js"></script>
     <script src="../../src/legacy/exhibition-compatibility.js"></script>
 
-    <!-- Exhibition Script (will be replaced per exhibition) -->
-    <script src="./blood-ocean.js"></script>
+    <!-- Performance marker -->
+    <script>
+      if (typeof performance !== "undefined" && performance.mark) {
+        performance.mark("blood-ocean-load-start");
+      }
+    </script>
+
+    <!-- Blood Ocean Production Modules -->
+    <script src="./blood-ocean-audio.js"></script>
+    <script src="./blood-ocean-renderer.js"></script>
+    <script src="./blood-ocean-main.js"></script>
   </body>
 </html>
