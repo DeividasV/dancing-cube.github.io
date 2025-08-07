@@ -95,10 +95,6 @@ class BloodOceanRenderer {
 
     // Update perspective based on new canvas size
     this.perspective.horizon = h * 0.3;
-
-    console.log(
-      `Canvas resized: ${w}x${h} (DPR: ${dpr}, Buffer: ${this.canvas.width}x${this.canvas.height})`
-    );
   }
 
   setupEventListeners() {
@@ -110,9 +106,6 @@ class BloodOceanRenderer {
       this.isPaused = document.hidden;
       if (!this.isPaused) {
         this.lastTime = performance.now();
-        console.log("Animation resumed");
-      } else {
-        console.log("Animation paused for battery optimization");
       }
     });
 
@@ -131,10 +124,7 @@ class BloodOceanRenderer {
     const worldX = (screenX - this.canvas.clientWidth / 2) * 2;
     const worldZ = (screenY - this.perspective.horizon) * 4;
 
-    console.log("Canvas clicked - creating elegant ripples");
-    this.createClickRipples(worldX, worldZ);
-
-    // Create subtle wave interaction sound for the flowing lines
+    this.createClickRipples(worldX, worldZ); // Create subtle wave interaction sound for the flowing lines
     if (window.bloodOceanAudio && window.bloodOceanAudio.isEnabled()) {
       const normalizedX = Math.max(
         -1,
@@ -230,9 +220,6 @@ class BloodOceanRenderer {
       // Performance monitoring (every 60 frames)
       if (this.frameCount % 60 === 0) {
         this.fps = Math.round(1 / this.deltaTime);
-        console.log(
-          `FPS: ${this.fps}, Ripples: ${this.ripples.length}, Drops: ${this.drops.length}`
-        );
       }
 
       this.update();
@@ -343,11 +330,7 @@ class BloodOceanRenderer {
     this.animate(this.lastTime);
 
     // Disabled initial drops - focus on pure wave aesthetics
-    // for (let i = 0; i < 5; i++) {
-    //   setTimeout(() => this.addDrop(), i * 800);
-    // }
-
-    console.log("Blood Ocean renderer started - wave lines only mode");
+    // Initial drops removed for clean wave lines aesthetic
   }
 
   stop() {
@@ -356,13 +339,11 @@ class BloodOceanRenderer {
       this.animationId = null;
     }
     this.isPaused = true;
-    console.log("Blood Ocean renderer stopped");
   }
 
   setIntensity(intensity) {
     // Adjust visual intensity (0-1 range)
     this.intensity = Math.max(0, Math.min(1, intensity));
-    console.log(`Blood Ocean intensity set to: ${this.intensity}`);
   }
 
   dispose() {
@@ -397,8 +378,6 @@ class BloodOceanRenderer {
     this.oceanSurface = null;
     this.container = null;
     this.isDisposed = true;
-
-    console.log("Blood Ocean renderer disposed");
   }
 }
 
