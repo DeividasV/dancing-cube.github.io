@@ -522,7 +522,7 @@ class BloodOceanAudioSystem {
     }
   }
 
-  // Enhanced wave interaction with spatial audio and visual context
+  // Enhanced wave interaction with physics-based sound generation
   async playWaveInteraction(intensity = 1.0, pan = 0, rippleData = null) {
     if (!this.isEnabled()) {
       console.log("playWaveInteraction called but audio not enabled");
@@ -537,108 +537,131 @@ class BloodOceanAudioSystem {
         await this.audioContext.resume();
       }
 
-      // Calculate sound properties based on ripple characteristics
-      let baseFreq = 120 + intensity * 80;
-      let filterQ = 0.5;
-      let duration = 0.3;
-
+      // Defaults
+      let energy = 0.8,
+        slope = 0.4,
+        curvature = 0.0,
+        vertVel = 0.3,
+        maxRadius = 100;
       if (rippleData) {
-        // Adjust sound based on ripple size and properties
-        const sizeScale = Math.min(rippleData.maxRadius / 100, 2.0);
-        baseFreq = 200 - rippleData.maxRadius * 0.5; // Larger ripples = lower frequency
-        filterQ = 0.3 + intensity * 0.7; // More intensity = sharper filter
-        duration = 0.4 + sizeScale * 0.6; // Larger ripples = longer sound
-        console.log("Ripple data found:", { sizeScale, baseFreq, duration });
-      } else {
-        console.log("No ripple data provided, using defaults");
+        energy = rippleData.energy ?? energy;
+        slope = rippleData.slope ?? slope;
+        curvature = rippleData.curvature ?? curvature;
+        vertVel = rippleData.vertVel ?? vertVel;
+        maxRadius = rippleData.maxRadius ?? maxRadius;
       }
 
-      // Create ripple-like oscillating wave sound
-      const bufferSize = this.audioContext.sampleRate * duration;
-      const buffer = this.audioContext.createBuffer(
-        1,
-        bufferSize,
-        this.audioContext.sampleRate
+      // Map physics -> sound parameters
+      const brightness = 300 + slope * 1800; // splash brightness (Hz)
+      const burstDur = 0.18 + energy * 0.25; // 0.18..0.43s
+      const burstGain = 0.18 + energy * 0.5; // loudness
+      const chirpStart = 220 + vertVel * 600; // chirp start
+      const chirpEnd = chirpStart * 0.5; // downward sweep
+      const hasThump = curvature > 0.15; // concave pocket
+
+      console.log("Physics-based sound parameters:", {
+        brightness,
+        burstDur,
+        burstGain,
+        chirpStart,
+        chirpEnd,
+        hasThump,
+        slope,
+        curvature,
+        vertVel,
+        energy,
+      });
+
+      // === SPLASH (pink-noise burst, bandpass) ===
+      const splashBuf = this._makePinkNoise(burstDur);
+      const splashSrc = this.audioContext.createBufferSource();
+      splashSrc.buffer = splashBuf;
+
+      const bp = this.audioContext.createBiquadFilter();
+      bp.type = "bandpass";
+      bp.frequency.setValueAtTime(brightness, this.audioContext.currentTime);
+      bp.Q.setValueAtTime(1.2 + slope * 2.0, this.audioContext.currentTime);
+
+      const splashPan = this.audioContext.createStereoPanner();
+      splashPan.pan.value = Math.max(-1, Math.min(1, pan));
+
+      const splashGain = this.audioContext.createGain();
+      // sharp attack + expo release
+      const t0 = this.audioContext.currentTime;
+      splashGain.gain.setValueAtTime(0, t0);
+      splashGain.gain.linearRampToValueAtTime(burstGain, t0 + 0.012);
+      splashGain.gain.exponentialRampToValueAtTime(0.001, t0 + burstDur);
+
+      splashSrc.connect(bp);
+      bp.connect(splashGain);
+      splashGain.connect(splashPan);
+      splashPan.connect(this.masterGain);
+
+      // === CHIRP (short sine/triangle sweep for "slap") ===
+      const chirp = this.audioContext.createOscillator();
+      chirp.type = "triangle";
+      chirp.frequency.setValueAtTime(chirpStart, t0);
+      chirp.frequency.exponentialRampToValueAtTime(
+        chirpEnd,
+        t0 + burstDur * 0.9
       );
-      const data = buffer.getChannelData(0);
 
-      // Generate ripple wave: oscillating frequency that decreases over time
-      for (let i = 0; i < data.length; i++) {
-        const t = i / this.audioContext.sampleRate; // Time in seconds
-        const progress = i / bufferSize; // 0 to 1 over duration
+      const chirpGain = this.audioContext.createGain();
+      const chirpLvl = 0.05 + vertVel * 0.18; // louder with vertical motion
+      chirpGain.gain.setValueAtTime(0, t0);
+      chirpGain.gain.linearRampToValueAtTime(chirpLvl, t0 + 0.01);
+      chirpGain.gain.exponentialRampToValueAtTime(0.001, t0 + burstDur);
 
-        // More aggressive exponential decay for sharper attack
-        const envelope =
-          Math.exp(-progress * 3) * (1 - Math.pow(progress, 0.2));
+      const chirpPan = this.audioContext.createStereoPanner();
+      chirpPan.pan.value = splashPan.pan.value;
 
-        // Frequency sweeps down as the ripple expands (like doppler effect)
-        const freqSweep = baseFreq * (1 - progress * 0.6); // Frequency drops 60%
+      chirp.connect(chirpGain);
+      chirpGain.connect(chirpPan);
+      chirpPan.connect(this.masterGain);
 
-        // Main ripple oscillation with extra harmonics for clarity
-        const phase = freqSweep * t * 2 * Math.PI;
-        let sample = Math.sin(phase) * envelope;
+      // === Optional THUMP (very short low sine if concave) ===
+      let thumpOsc = null,
+        thumpGain = null;
+      if (hasThump) {
+        thumpOsc = this.audioContext.createOscillator();
+        thumpOsc.type = "sine";
+        const f0 = 60 + Math.min(40, curvature * 120); // 60..100 Hz
+        thumpOsc.frequency.setValueAtTime(f0, t0);
 
-        // Always add harmonics for better audibility
-        const harmonic = Math.sin(phase * 2) * 0.4 * envelope;
-        const subHarmonic = Math.sin(phase * 0.5) * 0.3 * envelope;
+        thumpGain = this.audioContext.createGain();
+        const lvl = 0.06 + Math.min(0.12, curvature * 0.25);
+        thumpGain.gain.setValueAtTime(0, t0);
+        thumpGain.gain.linearRampToValueAtTime(lvl, t0 + 0.01);
+        thumpGain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.2);
 
-        // Blend harmonics for richer, more audible sound
-        if (rippleData && rippleData.maxRadius > 100) {
-          sample = sample * 0.5 + harmonic * 0.3 + subHarmonic * 0.2;
-        } else {
-          sample = sample * 0.7 + harmonic * 0.2 + subHarmonic * 0.1;
-        }
+        const thumpPan = this.audioContext.createStereoPanner();
+        thumpPan.pan.value = splashPan.pan.value;
 
-        // Add subtle noise texture for realism
-        const noise = (Math.random() * 2 - 1) * 0.1 * envelope;
-        sample += noise;
+        thumpOsc.connect(thumpGain);
+        thumpGain.connect(thumpPan);
+        thumpPan.connect(this.masterGain);
 
-        data[i] = sample * intensity;
+        console.log("Added thump component:", { frequency: f0, level: lvl });
       }
 
-      const splashSource = this.audioContext.createBufferSource();
-      splashSource.buffer = buffer;
+      // Start/stop
+      splashSrc.start(t0);
+      chirp.start(t0);
+      if (thumpOsc) thumpOsc.start(t0);
 
-      // Filter to shape the ripple sound character
-      const filter = this.audioContext.createBiquadFilter();
-      filter.type = "lowpass"; // Changed from highpass to lowpass for warmer ripple sound
-      filter.frequency.setValueAtTime(
-        baseFreq * 2, // Filter frequency follows the wave
-        this.audioContext.currentTime
-      );
-      filter.Q.setValueAtTime(filterQ, this.audioContext.currentTime);
-
-      // Sweep the filter down with the frequency for realistic ripple effect
-      filter.frequency.exponentialRampToValueAtTime(
-        baseFreq * 0.5,
-        this.audioContext.currentTime + duration * 0.8
-      );
-
-      // Spatial positioning
-      const panner = this.audioContext.createStereoPanner();
-      panner.pan.value = Math.max(-1, Math.min(1, pan));
-
-      const gain = this.audioContext.createGain();
-      gain.gain.value = 1.2 * intensity; // Much louder ripple sounds
-
-      splashSource.connect(filter);
-      filter.connect(gain);
-      gain.connect(panner);
-      panner.connect(this.masterGain);
-
-      splashSource.start();
-
-      console.log("Ripple sound started successfully");
+      splashSrc.stop(t0 + burstDur + 0.05);
+      chirp.stop(t0 + burstDur + 0.05);
+      if (thumpOsc) thumpOsc.stop(t0 + 0.25);
 
       console.log(
-        `Ripple wave: intensity=${intensity.toFixed(2)}, pan=${pan.toFixed(
+        `Physics-driven ripple: slope=${slope.toFixed(
           2
-        )}, freq=${baseFreq.toFixed(0)}Hz→${(baseFreq * 0.4).toFixed(0)}Hz${
-          rippleData ? `, ripple=${rippleData.maxRadius.toFixed(0)}` : ""
-        }`
+        )}, curvature=${curvature.toFixed(2)}, vertVel=${vertVel.toFixed(
+          2
+        )}, energy=${energy.toFixed(2)}`
       );
-    } catch (error) {
-      console.error("Error playing wave interaction:", error);
+    } catch (err) {
+      console.error("playWaveInteraction error:", err);
     }
   }
 
@@ -707,6 +730,40 @@ class BloodOceanAudioSystem {
     } catch (error) {
       console.warn("Error updating ambient with wave data:", error);
     }
+  }
+
+  // helper: quick pink noise buffer
+  _makePinkNoise(durationSec) {
+    const len = Math.max(
+      1,
+      Math.floor(this.audioContext.sampleRate * durationSec)
+    );
+    const buf = this.audioContext.createBuffer(
+      1,
+      len,
+      this.audioContext.sampleRate
+    );
+    const out = buf.getChannelData(0);
+    // Voss-McCartney-ish pink
+    let b0 = 0,
+      b1 = 0,
+      b2 = 0,
+      b3 = 0,
+      b4 = 0,
+      b5 = 0,
+      b6 = 0;
+    for (let i = 0; i < len; i++) {
+      const white = Math.random() * 2 - 1;
+      b0 = 0.99886 * b0 + white * 0.0555179;
+      b1 = 0.99332 * b1 + white * 0.0750759;
+      b2 = 0.969 * b2 + white * 0.153852;
+      b3 = 0.8665 * b3 + white * 0.3104856;
+      b4 = 0.55 * b4 + white * 0.5329522;
+      b5 = -0.7616 * b5 - white * 0.016898;
+      out[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.08;
+      b6 = white * 0.115926;
+    }
+    return buf;
   }
 
   dispose() {
@@ -897,6 +954,70 @@ window.testLoudBeep = function () {
   console.log("Testing loud beep...");
   window.bloodOceanAudio.playTone(800, 0.5, "sine", 0.8); // Very loud test tone
   return "Loud beep test fired!";
+};
+
+// Test new physics-based ripple sounds
+window.testPhysicsRipples = function () {
+  if (!window.bloodOceanAudio || !window.bloodOceanAudio.isEnabled()) {
+    console.log("Audio not enabled. Enable audio first with the sound button.");
+    return;
+  }
+
+  console.log("Testing new physics-based ripple sounds...");
+
+  // Test sharp steep slope (bright, hissy splash)
+  setTimeout(() => {
+    console.log("Sharp slope ripple (bright & hissy)...");
+    const sharpRippleData = {
+      energy: 0.9,
+      slope: 0.8, // High slope = bright splash
+      curvature: 0.1, // Slightly convex
+      vertVel: 0.6, // Medium velocity
+      maxRadius: 100,
+    };
+    window.bloodOceanAudio.playWaveInteraction(1.0, 0, sharpRippleData);
+  }, 500);
+
+  // Test high vertical velocity (loud, sharp attack)
+  setTimeout(() => {
+    console.log("High velocity ripple (loud & sharp)...");
+    const fastRippleData = {
+      energy: 1.0,
+      slope: 0.4, // Medium slope
+      curvature: 0.0, // Flat
+      vertVel: 0.9, // High velocity = loud chirp
+      maxRadius: 120,
+    };
+    window.bloodOceanAudio.playWaveInteraction(1.2, 0.3, fastRippleData);
+  }, 1800);
+
+  // Test concave curvature (deep thump)
+  setTimeout(() => {
+    console.log("Concave curvature ripple (deep thump)...");
+    const concaveRippleData = {
+      energy: 0.8,
+      slope: 0.3, // Low slope = darker splash
+      curvature: 0.6, // High concavity = thump
+      vertVel: 0.4, // Medium velocity
+      maxRadius: 150,
+    };
+    window.bloodOceanAudio.playWaveInteraction(1.0, -0.5, concaveRippleData);
+  }, 3200);
+
+  // Test extreme physics (all components)
+  setTimeout(() => {
+    console.log("Extreme physics ripple (all components)...");
+    const extremeRippleData = {
+      energy: 1.2,
+      slope: 0.9, // Very steep = very bright
+      curvature: 0.7, // Very concave = deep thump
+      vertVel: 0.8, // High velocity = loud chirp
+      maxRadius: 200,
+    };
+    window.bloodOceanAudio.playWaveInteraction(1.5, 0, extremeRippleData);
+  }, 5000);
+
+  return "Physics-based ripple test started - listen for brightness, chirps, and thumps!";
 };
 
 // Force enable audio (bypass toggle issues)

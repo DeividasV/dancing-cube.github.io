@@ -134,29 +134,39 @@ class BloodOceanRenderer {
     console.log("World position:", worldPos);
 
     this.createClickRipples(worldPos.x, worldPos.z); // Create bigger ripples for clicks
+
+    // Audio driven by wave physics
     if (window.bloodOceanAudio && window.bloodOceanAudio.isEnabled()) {
-      console.log("Audio is enabled, playing ripple sound");
-      const normalizedX = Math.max(
+      console.log("Audio is enabled, playing physics-driven ripple sound");
+      const metrics = this.sampleWaveInteraction(
+        worldPos.x,
+        worldPos.z,
+        this.time
+      );
+      const pan = Math.max(
         -1,
         Math.min(1, (screenX / this.canvas.clientWidth) * 2 - 1)
       );
+      const intensity = 0.6 + metrics.energy * 0.9; // 0.6..1.5
 
-      // Create ripple data for audio context
-      const rippleData = {
-        maxRadius: 180, // Largest ripple from createClickRipples
-        intensity: 2.0,
-        position: { x: worldPos.x, z: worldPos.z },
-        type: "click",
-      };
-
-      console.log("Calling playWaveInteraction with:", {
-        intensity: 1.2,
-        pan: normalizedX,
-        rippleData,
+      console.log("Wave physics metrics:", metrics);
+      console.log("Calling playWaveInteraction with physics data:", {
+        intensity,
+        pan,
+        maxRadius: 120 * (0.7 + metrics.energy * 0.6),
+        energy: metrics.energy,
+        slope: metrics.slope,
+        curvature: metrics.curvature,
+        vertVel: metrics.vertVel,
       });
 
-      // Stronger sound for clicks with ripple context
-      window.bloodOceanAudio.playWaveInteraction(1.2, normalizedX, rippleData);
+      window.bloodOceanAudio.playWaveInteraction(intensity, pan, {
+        maxRadius: 120 * (0.7 + metrics.energy * 0.6),
+        energy: metrics.energy,
+        slope: metrics.slope,
+        curvature: metrics.curvature,
+        vertVel: metrics.vertVel,
+      });
     } else {
       console.log("Audio not available or not enabled:", {
         audioExists: !!window.bloodOceanAudio,
@@ -319,6 +329,39 @@ class BloodOceanRenderer {
     height += Math.cos(x * 0.015 + z * 0.012 + t * 1.8) * 8;
     height += Math.sin(x * 0.02 + z * 0.015 + t * 2.2) * 5;
     return height;
+  }
+
+  // Sample local wave physics for audio-driven ripple sounds
+  sampleWaveInteraction(x, z, t) {
+    const eps = 1.0;
+    const hC = this.getWaveHeight(x, z, t);
+    const hL = this.getWaveHeight(x - eps, z, t);
+    const hR = this.getWaveHeight(x + eps, z, t);
+    const hD = this.getWaveHeight(x, z - eps, t);
+    const hU = this.getWaveHeight(x, z + eps, t);
+
+    // gradient magnitude (surface steepness)
+    const dX = (hR - hL) / (2 * eps);
+    const dZ = (hU - hD) / (2 * eps);
+    const slope = Math.min(1.0, Math.sqrt(dX * dX + dZ * dZ) / 12); // normalize to ~[0..1]
+
+    // curvature (Laplacian) – concave (>0) vs convex (<0)
+    const lap = (hL + hR + hD + hU - 4 * hC) / (eps * eps);
+    const curvature = Math.max(-1, Math.min(1, lap / 8)); // clamp for mapping
+
+    // vertical velocity (approx using tiny dt)
+    const dt = 1 / 120;
+    const hNext = this.getWaveHeight(x, z, t + dt);
+    const v = (hNext - hC) / dt; // px/s
+    const vertVel = Math.max(0, Math.min(1, Math.abs(v) / 150)); // normalize
+
+    // crude "energy" score
+    const energy = Math.max(
+      0,
+      Math.min(1, slope * 0.6 + vertVel * 0.5 + Math.abs(curvature) * 0.3)
+    );
+
+    return { slope, curvature, vertVel, energy, hC };
   }
 
   // Frame-rate independent animation loop
