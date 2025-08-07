@@ -1,7 +1,7 @@
 // BL00D_0C34N - 3D Blood Ocean Simulation
 
 // Audio System for Ocean and Ambient Sounds
-class AudioSystem {
+class BloodOceanAudioSystem {
   constructor() {
     this.audioContext = null;
     this.masterGain = null;
@@ -29,7 +29,7 @@ class AudioSystem {
     }
   }
 
-  playTone(frequency, duration = 0.3, type = "sine", volume = 0.1) {
+  async playTone(frequency, duration = 0.3, type = "sine", volume = 0.1) {
     if (!this.soundEnabled || !this.audioContext) {
       console.log("Sound disabled or no audio context");
       return;
@@ -37,7 +37,8 @@ class AudioSystem {
 
     // Resume audio context if suspended
     if (this.audioContext.state === "suspended") {
-      this.audioContext.resume();
+      console.log("Resuming audio context for tone playback...");
+      await this.audioContext.resume();
     }
 
     try {
@@ -75,46 +76,42 @@ class AudioSystem {
       oscillator.stop(this.audioContext.currentTime + duration);
 
       console.log(
-        `Playing tone: ${frequency}Hz, ${duration}s, volume: ${volume}`
+        `Playing tone: ${frequency}Hz, ${duration}s, volume: ${volume}, context state: ${this.audioContext.state}`
       );
     } catch (e) {
       console.log("Audio playback error:", e);
     }
   }
 
-  toggleSound() {
+  async toggleSound() {
     this.soundEnabled = !this.soundEnabled;
     console.log(
       "Blood Ocean sound:",
       this.soundEnabled ? "enabled" : "disabled"
     );
 
-    const button = document.querySelector(".sound-toggle-button");
-    if (button) {
-      if (this.soundEnabled) {
-        button.textContent = "🔊";
-        button.title = "Sound ON - Click to disable";
-
-        // Resume audio context if suspended
-        if (this.audioContext && this.audioContext.state === "suspended") {
-          this.audioContext.resume();
-        }
-
-        // Play immediate TEST sound - very loud and obvious
-        console.log("Playing TEST confirmation sound...");
-        setTimeout(() => {
-          this.playTone(880, 1.0, "sine", 0.5); // High A note, very loud
-        }, 100);
-
-        setTimeout(() => {
-          this.startBackgroundAmbient();
-        }, 200);
-      } else {
-        button.textContent = "🔇";
-        button.title = "Sound OFF - Click to enable";
-        this.stopBackgroundAmbient();
+    if (this.soundEnabled) {
+      // Resume audio context if suspended
+      if (this.audioContext && this.audioContext.state === "suspended") {
+        console.log("Resuming suspended audio context...");
+        await this.audioContext.resume();
+        console.log("Audio context state:", this.audioContext.state);
       }
+
+      // Play immediate TEST sound - very loud and obvious
+      console.log("Playing TEST confirmation sound...");
+      setTimeout(() => {
+        this.playTone(880, 1.0, "sine", 0.5); // High A note, very loud
+      }, 100);
+
+      setTimeout(() => {
+        this.startBackgroundAmbient();
+      }, 500); // Increased delay to ensure context is ready
+    } else {
+      this.stopBackgroundAmbient();
     }
+
+    return this.soundEnabled;
   }
 
   startBackgroundAmbient() {
@@ -131,23 +128,49 @@ class AudioSystem {
   }
 
   stopBackgroundAmbient() {
+    console.log("Stopping background ambient sounds...");
+    console.log(
+      "Stopping",
+      this.ambientOscillators.length,
+      "oscillators and",
+      this.ambientTimers.length,
+      "timers"
+    );
+
     // Stop all ambient oscillators
-    this.ambientOscillators.forEach((osc) => {
+    this.ambientOscillators.forEach((osc, index) => {
       try {
+        console.log("Stopping oscillator", index);
         osc.stop();
-      } catch (e) {}
+      } catch (e) {
+        console.log("Error stopping oscillator", index, ":", e);
+      }
     });
     this.ambientOscillators = [];
 
     // Clear all timers
-    this.ambientTimers.forEach((timer) => clearTimeout(timer));
+    this.ambientTimers.forEach((timer, index) => {
+      console.log("Clearing timer", index);
+      clearTimeout(timer);
+    });
     this.ambientTimers = [];
   }
 
   createOceanDrone() {
-    if (!this.audioContext || !this.soundEnabled) return;
+    if (!this.audioContext || !this.soundEnabled) {
+      console.log("Cannot create ocean drone - context or sound disabled");
+      return;
+    }
+
+    if (this.audioContext.state !== "running") {
+      console.log("Audio context not running, state:", this.audioContext.state);
+      return;
+    }
 
     try {
+      console.log("Creating ocean drone oscillators...");
+
+      // First oscillator - deep bass
       const osc1 = this.audioContext.createOscillator();
       const gain1 = this.audioContext.createGain();
       const filter1 = this.audioContext.createBiquadFilter();
@@ -159,7 +182,11 @@ class AudioSystem {
       filter1.frequency.setValueAtTime(120, this.audioContext.currentTime);
       filter1.Q.setValueAtTime(1, this.audioContext.currentTime);
 
-      gain1.gain.setValueAtTime(0.2, this.audioContext.currentTime); // Increased volume significantly
+      gain1.gain.setValueAtTime(0, this.audioContext.currentTime); // Start at 0
+      gain1.gain.linearRampToValueAtTime(
+        0.3,
+        this.audioContext.currentTime + 2
+      ); // Fade in over 2 seconds
 
       osc1.connect(filter1);
       filter1.connect(gain1);
@@ -168,7 +195,7 @@ class AudioSystem {
       osc1.start();
       this.ambientOscillators.push(osc1);
 
-      // Second layer
+      // Second oscillator - mid frequency
       const osc2 = this.audioContext.createOscillator();
       const gain2 = this.audioContext.createGain();
       const filter2 = this.audioContext.createBiquadFilter();
@@ -180,7 +207,11 @@ class AudioSystem {
       filter2.frequency.setValueAtTime(200, this.audioContext.currentTime);
       filter2.Q.setValueAtTime(0.5, this.audioContext.currentTime);
 
-      gain2.gain.setValueAtTime(0.15, this.audioContext.currentTime); // Increased volume significantly
+      gain2.gain.setValueAtTime(0, this.audioContext.currentTime); // Start at 0
+      gain2.gain.linearRampToValueAtTime(
+        0.2,
+        this.audioContext.currentTime + 3
+      ); // Fade in over 3 seconds
 
       osc2.connect(filter2);
       filter2.connect(gain2);
@@ -189,40 +220,73 @@ class AudioSystem {
       osc2.start();
       this.ambientOscillators.push(osc2);
 
-      console.log("Ocean drone started successfully");
+      console.log(
+        "Ocean drone created successfully with",
+        this.ambientOscillators.length,
+        "oscillators"
+      );
     } catch (e) {
-      console.log("Error creating ocean drone:", e);
+      console.error("Error creating ocean drone:", e);
     }
   }
 
   createWaveSounds() {
-    if (!this.soundEnabled) return;
+    if (!this.soundEnabled) {
+      console.log("Wave sounds disabled");
+      return;
+    }
+
+    console.log("Setting up wave sound scheduling...");
 
     const scheduleWave = () => {
-      if (!this.soundEnabled) return;
+      if (!this.soundEnabled) {
+        console.log("Wave sound cancelled - sound disabled");
+        return;
+      }
 
       // Play ocean wave sound
       const frequency = 80 + Math.random() * 60;
-      this.playTone(frequency, 1.5, "sine", 0.2); // Increased volume significantly
+      console.log("Playing wave sound at", frequency, "Hz");
+      this.playTone(frequency, 1.5, "sine", 0.3); // Increased volume
 
       // Schedule next wave
       const nextDelay = 3000 + Math.random() * 6000; // 3-9 seconds
+      console.log("Next wave sound in", nextDelay / 1000, "seconds");
       const timer = setTimeout(scheduleWave, nextDelay);
       this.ambientTimers.push(timer);
     };
 
     // Start wave scheduling
     const initialDelay = 2000; // Start after 2 seconds
+    console.log(
+      "Scheduling first wave sound in",
+      initialDelay / 1000,
+      "seconds"
+    );
     const timer = setTimeout(scheduleWave, initialDelay);
     this.ambientTimers.push(timer);
   }
 
-  playWaveInteraction(intensity = 1.0) {
-    if (!this.soundEnabled || !this.audioContext) return;
+  async playWaveInteraction(intensity = 1.0) {
+    if (!this.soundEnabled || !this.audioContext) {
+      console.log("Wave interaction sound disabled or no context");
+      return;
+    }
+
+    // Resume audio context if suspended
+    if (this.audioContext.state === "suspended") {
+      await this.audioContext.resume();
+    }
 
     const frequency = 120 + intensity * 80;
-    const volume = 0.1 * intensity;
-    this.playTone(frequency, 0.5, "sine", volume);
+    const volume = 0.2 * intensity; // Increased volume
+    console.log(
+      "Playing wave interaction sound:",
+      frequency,
+      "Hz, volume:",
+      volume
+    );
+    await this.playTone(frequency, 0.5, "sine", volume);
   }
 }
 
@@ -230,20 +294,25 @@ class AudioSystem {
 let audioSystem = null;
 
 // Global function for sound toggle button
-window.toggleAppSound = function () {
+window.toggleAppSound = async function () {
   console.log("toggleAppSound called for blood-ocean");
 
   // Initialize AudioSystem lazily
   if (!audioSystem) {
-    console.log("Creating new AudioSystem for blood-ocean");
-    audioSystem = new AudioSystem();
+    console.log("Creating new BloodOceanAudioSystem for blood-ocean");
+    audioSystem = new BloodOceanAudioSystem();
   }
 
   if (audioSystem) {
     console.log("Calling audioSystem.toggleSound()");
-    audioSystem.toggleSound();
+    const enabled = await audioSystem.toggleSound();
+
+    // Let the navigator know about the state change
+    // Don't update the button here, let the navigator handle it
+    return enabled;
   } else {
     console.error("Failed to create audioSystem");
+    return false;
   }
 };
 
@@ -634,7 +703,9 @@ class BloodDrop3D {
 
     // Play drop impact sound based on drop size
     if (this.dropType === "tiny") {
-      if (audioSystem) audioSystem.playWaveInteraction(0.3);
+      console.log("Tiny drop hit - playing sound");
+      if (audioSystem && audioSystem.soundEnabled)
+        audioSystem.playWaveInteraction(0.3);
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity * 0.6, 0, 40));
       if (Math.random() < 0.6) {
         ripples.push(
@@ -642,7 +713,9 @@ class BloodDrop3D {
         );
       }
     } else if (this.dropType === "medium") {
-      if (audioSystem) audioSystem.playWaveInteraction(0.6);
+      console.log("Medium drop hit - playing sound");
+      if (audioSystem && audioSystem.soundEnabled)
+        audioSystem.playWaveInteraction(0.6);
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity, 0, 80));
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity * 0.7, 0.15, 60));
       if (Math.random() < 0.7) {
@@ -651,7 +724,9 @@ class BloodDrop3D {
         );
       }
     } else {
-      if (audioSystem) audioSystem.playWaveInteraction(1.0);
+      console.log("Large drop hit - playing sound");
+      if (audioSystem && audioSystem.soundEnabled)
+        audioSystem.playWaveInteraction(1.0);
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity * 1.2, 0, 120));
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity * 0.9, 0.1, 100));
       ripples.push(new Ripple3D(this.x, this.z, baseIntensity * 0.6, 0.25, 80));
@@ -741,13 +816,19 @@ canvas.addEventListener("click", (e) => {
   const worldX = (screenX - canvas.width / 2) * 2;
   const worldZ = (screenY - perspective.horizon) * 4;
 
+  console.log("Canvas clicked - creating ripples and playing sound");
   ripples.push(new Ripple3D(worldX, worldZ, 1.2, 0, 120));
   ripples.push(new Ripple3D(worldX, worldZ, 0.8, 0.1, 90));
   ripples.push(new Ripple3D(worldX, worldZ, 0.5, 0.25, 60));
   ripples.push(new Ripple3D(worldX, worldZ, 0.3, 0.45, 40));
 
   // Play wave interaction sound
-  if (audioSystem) audioSystem.playWaveInteraction(1.2);
+  if (audioSystem && audioSystem.soundEnabled) {
+    console.log("Playing wave interaction sound for click");
+    audioSystem.playWaveInteraction(1.2);
+  } else {
+    console.log("Audio system not available or sound disabled");
+  }
 });
 
 function animate() {
