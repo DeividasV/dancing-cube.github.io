@@ -10,10 +10,22 @@ class AxisVisualizer {
   }
 
   initScene() {
-    // Get container dimensions
+    // Get container dimensions - ensure container is properly sized
     this.container = document.getElementById("container");
-    const width = this.container.offsetWidth;
-    const height = this.container.offsetHeight;
+
+    // Wait for container to be properly rendered before getting dimensions
+    setTimeout(() => {
+      const width = this.container.offsetWidth || window.innerWidth;
+      const height = this.container.offsetHeight || window.innerHeight;
+
+      // Update renderer and camera with correct dimensions
+      this.renderer.setSize(width, height);
+      this.camera.aspect = width / height;
+      this.camera.updateProjectionMatrix();
+    }, 10);
+
+    const width = this.container.offsetWidth || window.innerWidth;
+    const height = this.container.offsetHeight || window.innerHeight;
 
     // Scene setup
     this.scene = new THREE.Scene();
@@ -44,6 +56,7 @@ class AxisVisualizer {
       this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     }
 
+    // Enhanced antialiasing for smoother lines
     this.renderer.setClearColor(0x000000, 0); // Transparent background
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -60,7 +73,7 @@ class AxisVisualizer {
       rotationY: 0,
       targetRotationX: 0,
       targetRotationY: 0,
-      lastInteractionTime: -10, // Start with old time to prevent immediate auto-movement
+      lastInteractionTime: 0, // Initialize to 0 to prevent immediate auto-movement
     };
 
     this.setupMouseInteraction();
@@ -70,11 +83,29 @@ class AxisVisualizer {
     this.scene.add(this.connectionGroup);
 
     // Camera position - positioned to show full structure
-    this.camera.position.set(120, 80, 140);
+    this.camera.position.set(80, 60, 100);
     this.camera.lookAt(0, 0, 0);
+    this.cameraRadius = this.camera.position.length(); // store initial radius
 
-    // Scale factor - adjusted for better screen fit
-    this.scale = 24;
+    // Initialize rotation angles from starting camera position after everything is set up
+    setTimeout(() => {
+      // Ensure proper sizing first
+      this.handleResize();
+
+      // Then calculate rotation angles
+      this.mouseInteraction.rotationX = Math.asin(
+        this.camera.position.y / this.cameraRadius
+      );
+      this.mouseInteraction.rotationY = Math.atan2(
+        this.camera.position.x,
+        this.camera.position.z
+      );
+      this.mouseInteraction.targetRotationX = this.mouseInteraction.rotationX;
+      this.mouseInteraction.targetRotationY = this.mouseInteraction.rotationY;
+    }, 50); // Increased timeout to ensure DOM is ready
+
+    // Scale factor - increased for bigger screen presence
+    this.scale = 35;
 
     // Animation clock for proper timing
     this.clock = new THREE.Clock();
@@ -84,6 +115,11 @@ class AxisVisualizer {
 
     // Handle resize
     window.addEventListener("resize", () => this.handleResize());
+
+    // Trigger initial resize to ensure proper sizing - multiple times to be sure
+    setTimeout(() => this.handleResize(), 0);
+    setTimeout(() => this.handleResize(), 100);
+    setTimeout(() => this.handleResize(), 200);
   }
 
   setupMouseInteraction() {
@@ -117,8 +153,11 @@ class AxisVisualizer {
     this.renderer.domElement.addEventListener("wheel", (event) => {
       event.preventDefault();
       const zoom = event.deltaY > 0 ? 1.1 : 0.9;
-      this.camera.position.multiplyScalar(zoom);
-      this.camera.position.clampLength(80, 300); // Adjusted range for better structure viewing
+      this.cameraRadius = THREE.MathUtils.clamp(
+        this.cameraRadius * zoom,
+        60,
+        250
+      );
       this.mouseInteraction.lastInteractionTime = this.time; // Update interaction time
     });
   }
@@ -346,8 +385,8 @@ class AxisVisualizer {
   }
 
   createConnection(point1, point2, material) {
-    // Create curved line with multiple segments for bending
-    const segments = 20;
+    // Create curved line with more segments for smoother bending
+    const segments = 40; // Increased from 20 for smoother curves
     const vertices = [];
     const tValues = []; // Store parameter t for each vertex
 
@@ -395,9 +434,9 @@ class AxisVisualizer {
       zoomSpeed: 0.008,
       moveAmp: 15,
       moveSpeed: 0.006,
-      // New bending parameters - more subtle for better structure visibility
-      bendAmp: { x: 8, y: 10, z: 6 },
-      bendFreq: { x: 0.015, y: 0.02, z: 0.012 },
+      // New bending parameters - optimized for larger scale and smoother appearance
+      bendAmp: { x: 6, y: 8, z: 5 },
+      bendFreq: { x: 0.012, y: 0.016, z: 0.01 },
       bendPhase: { x: 0, y: Math.PI / 3, z: (Math.PI * 2) / 3 },
     };
 
@@ -417,13 +456,13 @@ class AxisVisualizer {
     this.animParams.zoomSpeed = 0.004 + Math.random() * 0.015;
     this.animParams.moveAmp = 8 + Math.random() * 20;
 
-    // Randomize bending parameters - keep them more controlled
-    this.animParams.bendAmp.x = 4 + Math.random() * 12;
-    this.animParams.bendAmp.y = 6 + Math.random() * 16;
-    this.animParams.bendAmp.z = 3 + Math.random() * 10;
-    this.animParams.bendFreq.x = 0.008 + Math.random() * 0.02;
-    this.animParams.bendFreq.y = 0.01 + Math.random() * 0.025;
-    this.animParams.bendFreq.z = 0.006 + Math.random() * 0.018;
+    // Randomize bending parameters - keep them smooth and controlled
+    this.animParams.bendAmp.x = 3 + Math.random() * 8;
+    this.animParams.bendAmp.y = 4 + Math.random() * 10;
+    this.animParams.bendAmp.z = 2 + Math.random() * 7;
+    this.animParams.bendFreq.x = 0.006 + Math.random() * 0.015;
+    this.animParams.bendFreq.y = 0.008 + Math.random() * 0.018;
+    this.animParams.bendFreq.z = 0.004 + Math.random() * 0.012;
   }
 
   animate() {
@@ -444,7 +483,7 @@ class AxisVisualizer {
       0.05;
 
     // Apply mouse rotation to camera
-    const radius = this.camera.position.length();
+    const radius = this.cameraRadius;
     this.camera.position.x =
       radius *
       Math.sin(this.mouseInteraction.rotationY) *
@@ -513,11 +552,11 @@ class AxisVisualizer {
       const wave =
         Math.sin(this.time * this.animParams.waveFreq + index * 0.15) *
         this.animParams.waveAmp;
-      line.position.y = wave * 0.04; // Reduced amplitude
+      line.position.y = wave * 0.02; // Much reduced amplitude
       line.position.x =
         Math.cos(this.time * this.animParams.waveFreq * 0.8 + index * 0.1) *
         this.animParams.waveAmp *
-        0.02; // Reduced amplitude
+        0.01; // Much reduced amplitude
     });
 
     // Camera zoom and movement (automatic when not interacting)
@@ -525,41 +564,28 @@ class AxisVisualizer {
       this.time - this.mouseInteraction.lastInteractionTime;
 
     if (!this.mouseInteraction.isMouseDown) {
-      // Only start automatic movement after user has interacted and then stopped
-      if (
-        timeSinceInteraction > 3.0 &&
-        this.mouseInteraction.lastInteractionTime > 0
-      ) {
-        // Subtle automatic orbital movement instead of accumulating rotation
-        const autoRotationY = Math.sin(this.time * 0.0003) * 0.2; // Gentle oscillation
-        const autoRotationX = Math.cos(this.time * 0.0002) * 0.1; // Slower vertical movement
-
-        // Gradually blend to automatic movement
-        const blendFactor = Math.min((timeSinceInteraction - 3.0) / 2.0, 1.0); // Blend over 2 seconds
-        this.mouseInteraction.targetRotationY +=
-          (autoRotationY - this.mouseInteraction.targetRotationY) *
-          blendFactor *
-          0.02;
-        this.mouseInteraction.targetRotationX +=
-          (autoRotationX - this.mouseInteraction.targetRotationX) *
-          blendFactor *
-          0.02;
+      // Gradually return rotation to center when not interacting
+      if (timeSinceInteraction > 2.0) {
+        // Slowly return to neutral rotation
+        this.mouseInteraction.targetRotationX *= 0.98; // Gradually reduce rotation
+        this.mouseInteraction.targetRotationY *= 0.98; // Gradually reduce rotation
       }
 
-      // Gentle zoom breathing
-      const breathingZoom = 1 + Math.sin(this.time * 0.001) * 0.03; // Reduced breathing
-      const baseRadius = 150; // Increased base distance to show full structure
-      const currentRadius = this.camera.position.length();
+      // Only gentle zoom breathing for subtle life
+      const breathingZoom = 1 + Math.sin(this.time * 0.001) * 0.02; // Even more reduced breathing
+      const baseRadius = 120; // Closer base distance for larger object appearance
       const targetRadius = baseRadius * breathingZoom;
-      const newRadius = currentRadius + (targetRadius - currentRadius) * 0.02;
-      this.camera.position.normalize().multiplyScalar(newRadius);
+      this.cameraRadius += (targetRadius - this.cameraRadius) * 0.01;
     }
 
-    // Always look at center
+    // Always look at exact center - no drift
     this.camera.lookAt(0, 0, 0);
 
-    // Scale pulsing
-    const scale = 1 + Math.sin(this.time * 0.01) * 0.15;
+    // Ensure connection group stays exactly at origin
+    this.connectionGroup.position.set(0, 0, 0);
+
+    // Scale pulsing - very subtle
+    const scale = 1 + Math.sin(this.time * 0.01) * 0.05; // Much reduced pulsing
     this.connectionGroup.scale.set(scale, scale, scale);
 
     // Color animation for some materials
@@ -584,26 +610,10 @@ class AxisVisualizer {
       this.renderer.setSize(newWidth, newHeight);
     });
 
-    // Click interaction
+    // Click interaction - simplified to only randomize parameters
     window.addEventListener("click", () => {
       this.randomizeParams();
-
-      // Random rotation burst (smoother)
-      this.connectionGroup.rotation.x += (Math.random() - 0.5) * 1.5;
-      this.connectionGroup.rotation.y += (Math.random() - 0.5) * 1.5;
-      this.connectionGroup.rotation.z += (Math.random() - 0.5) * 1.5;
-
-      // Random position shift (reduced)
-      this.connectionGroup.position.set(
-        (Math.random() - 0.5) * 15,
-        (Math.random() - 0.5) * 15,
-        (Math.random() - 0.5) * 15
-      );
-
-      // Reset position smoothly
-      setTimeout(() => {
-        this.connectionGroup.position.set(0, 0, 0);
-      }, 1500);
+      // No more position or rotation changes that could cause drift
     });
   }
 
