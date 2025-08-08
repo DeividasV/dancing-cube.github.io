@@ -1,0 +1,292 @@
+/* Futuristic Individual Squares Styles */
+:root {
+  /* Color schemes for different themes */
+  --cyberpunk-primary: #00ff88;
+  --cyberpunk-secondary: #ff0080;
+  --cyberpunk-accent: #00d4ff;
+  --cyberpunk-glow: rgba(0, 255, 136, 0.4);
+
+  --holographic-primary: #4fc3f7;
+  --holographic-secondary: #9c27b0;
+  --holographic-accent: #e91e63;
+  --holographic-glow: rgba(79, 195, 247, 0.4);
+
+  --quantum-primary: #ffffff;
+  --quantum-secondary: #b0bec5;
+  --quantum-accent: #37474f;
+  --quantum-glow: rgba(255, 255, 255, 0.3);
+
+  /* Active theme colors */
+  --theme-primary: var(--cyberpunk-primary);
+  --theme-secondary: var(--cyberpunk-secondary);
+  --theme-accent: var(--cyberpunk-accent);
+  --theme-glow: var(--cyberpunk-glow);
+
+  /* Container properties */
+  --container-blur: 25px;
+  --container-saturation: 1.2;
+  --container-brightness: 1.1;
+
+  /* Animation timings */
+  --base-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --hover-transition: 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --breathing-duration: 6s;
+  --pulse-duration: 1.5s;
+}
+
+/* Main container styling */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  padding: 20px;
+  background: transparent; /* Make wrapper transparent */
+}
+
+/* Futuristic container - completely transparent, no frame */
+.squares-container {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 3px;
+  max-width: 520px;
+  padding: 35px;
+  position: relative;
+
+  /* Completely transparent - no background, no border, no frame */
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+
+  border: none;
+  border-radius: 0;
+
+  /* No shadows or frame effects */
+  box-shadow: none;
+
+  /* Remove container breathing animation that might show frame */
+  animation: none;
+
+  /* Remove 3D effect that might create frame illusion */
+  transform: none;
+  transform-style: flat;
+}
+
+/* Remove container breathing animation - not needed without frame */
+
+/* Enhanced square styling */
+.square {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 6px;
+  position: relative;
+  cursor: pointer;
+  transition: all var(--base-transition);
+
+  /* Gradient setup for animation */
+  background-size: 400% 400%;
+
+  /* Subtle glow and depth */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+  /* 3D perspective */
+  transform: perspective(800px) rotateX(0deg) rotateY(0deg) translateZ(0px);
+  transform-style: preserve-3d;
+
+  /* Animated gradients */
+  animation: gradientShift var(--gradient-duration, 8s) ease-in-out infinite,
+    squareBreathing var(--breathing-duration) ease-in-out infinite;
+
+  /* Entrance animation */
+  opacity: 0;
+  transform: perspective(800px) rotateX(0deg) rotateY(0deg) translateZ(-20px)
+    scale(0.8);
+}
+
+/* Square entrance animation */
+.square.entered {
+  opacity: 1;
+  transform: perspective(800px) rotateX(0deg) rotateY(0deg) translateZ(0px)
+    scale(1);
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation-delay: var(--entrance-delay, 0s);
+}
+
+/* Gradient animation for flowing colors */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 100% 50%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  75% {
+    background-position: 0% 100%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Subtle breathing animation for squares */
+@keyframes squareBreathing {
+  0%,
+  100% {
+    transform: perspective(800px) rotateX(0deg) rotateY(0deg) translateZ(0px)
+      scale(1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    transform: perspective(800px) rotateX(1deg) rotateY(1deg) translateZ(2px)
+      scale(1.02);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 8px var(--theme-glow),
+      0 0 0 1px rgba(255, 255, 255, 0.15),
+      inset 0 2px 0 rgba(255, 255, 255, 0.25);
+  }
+}
+
+/* Enhanced hover effects */
+.square:hover {
+  transform: perspective(800px) rotateX(2deg) rotateY(2deg) translateZ(8px)
+    scale(1.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px var(--theme-glow),
+    0 0 0 2px var(--theme-primary), inset 0 2px 0 rgba(255, 255, 255, 0.3);
+  transition: all var(--hover-transition);
+}
+
+/* Pulsing animation for random squares */
+.square.pulsing {
+  animation: gradientShift var(--gradient-duration, 8s) ease-in-out infinite,
+    squareBreathing var(--breathing-duration) ease-in-out infinite,
+    futuristicPulse var(--pulse-duration) ease-out;
+}
+
+@keyframes futuristicPulse {
+  0% {
+    transform: perspective(800px) rotateX(0deg) rotateY(0deg) translateZ(0px)
+      scale(1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    transform: perspective(800px) rotateX(3deg) rotateY(3deg) translateZ(12px)
+      scale(1.08);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 24px var(--theme-glow),
+      0 0 0 3px var(--theme-primary), inset 0 3px 0 rgba(255, 255, 255, 0.4);
+  }
+  100% {
+    transform: perspective(800px) rotateX(0deg) rotateY(0deg) translateZ(0px)
+      scale(1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Enhanced ripple effect */
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: futuristicRipple 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes futuristicRipple {
+  0% {
+    width: 4px;
+    height: 4px;
+    opacity: 1;
+    border: 2px solid var(--theme-primary);
+    box-shadow: 0 0 8px var(--theme-glow),
+      inset 0 0 4px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    opacity: 0.6;
+    border: 1px solid var(--theme-accent);
+    box-shadow: 0 0 16px var(--theme-glow),
+      inset 0 0 8px rgba(255, 255, 255, 0.3);
+  }
+  100% {
+    width: 60px;
+    height: 60px;
+    opacity: 0;
+    border: 0px solid transparent;
+    box-shadow: none;
+  }
+}
+
+/* Particle explosion enhancements */
+.particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  border-radius: 2px;
+  background: linear-gradient(45deg, var(--theme-primary), var(--theme-accent));
+  box-shadow: 0 0 4px var(--theme-glow);
+}
+
+/* Theme switching animations */
+.squares-container.theme-transition {
+  transition: all 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.square.theme-transition {
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .squares-container {
+    max-width: 90vw;
+    padding: 25px;
+    gap: 2px;
+    transform: perspective(1000px) rotateX(1deg) rotateY(0deg);
+  }
+
+  .square {
+    border-radius: 4px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .squares-container {
+    border: 2px solid var(--theme-primary);
+    background: rgba(0, 0, 0, 0.8);
+  }
+
+  .square {
+    border: 1px solid var(--theme-primary);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .square,
+  .squares-container {
+    animation: none;
+  }
+
+  .square:hover {
+    transform: perspective(800px) scale(1.02);
+  }
+}
+
+/* Print styles */
+@media print {
+  .squares-container {
+    box-shadow: none;
+    background: white;
+    border: 2px solid black;
+  }
+
+  .square {
+    background: #ccc !important;
+    box-shadow: none;
+  }
+}
