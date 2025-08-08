@@ -44,10 +44,8 @@ class AxisVisualizer {
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    // Handle color space based on Three.js version
-    if (this.renderer.outputEncoding !== undefined) {
-      this.renderer.outputEncoding = THREE.sRGBEncoding; // Legacy
-    } else if (this.renderer.outputColorSpace !== undefined) {
+    // Handle color space - use modern approach
+    if (this.renderer.outputColorSpace !== undefined) {
       this.renderer.outputColorSpace = THREE.SRGBColorSpace; // Modern
     }
 
@@ -440,11 +438,7 @@ class AxisVisualizer {
       bendPhase: { x: 0, y: Math.PI / 3, z: (Math.PI * 2) / 3 },
     };
 
-    // Randomize parameters periodically with proper cleanup
-    this.randomizeInterval = setInterval(
-      () => this.randomizeParams(),
-      4000 + Math.random() * 6000
-    );
+    // Remove automatic randomization - only manual trigger on double-click
   }
 
   randomizeParams() {
@@ -610,20 +604,14 @@ class AxisVisualizer {
       this.renderer.setSize(newWidth, newHeight);
     });
 
-    // Click interaction - simplified to only randomize parameters
-    window.addEventListener("click", () => {
+    // Double-click interaction to randomize parameters
+    window.addEventListener("dblclick", () => {
       this.randomizeParams();
-      // No more position or rotation changes that could cause drift
     });
   }
 
   // Cleanup method for proper disposal
   dispose() {
-    // Clear animation interval
-    if (this.randomizeInterval) {
-      clearInterval(this.randomizeInterval);
-    }
-
     // Dispose of geometry and materials
     this.connectionGroup.children.forEach((obj) => {
       if (obj.geometry) obj.geometry.dispose();
@@ -645,6 +633,12 @@ function init() {
   // Initialize the axis visualizer
   new AxisVisualizer();
 }
+
+// Add sound toggle function for compatibility with UI
+window.toggleAppSound = function () {
+  console.log("Sound toggle clicked - no audio system in this exhibition");
+  // This exhibition doesn't use audio, but we need the function for UI compatibility
+};
 
 // Initialize when DOM is loaded
 document.addEventListener("DOMContentLoaded", init);
